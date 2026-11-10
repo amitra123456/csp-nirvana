@@ -176,8 +176,8 @@ def run_screener(
                 if not primary:
                     # Ticker does NOT satisfy the cushion requirement; omit from selected signals
                     continue
-                best = primary[0]
-                best['all_ladder_strikes'] = cands[:8]
+                best = dict(primary[0])
+                best['all_ladder_strikes'] = [dict(c) for c in cands[:8]]
 
                 # Compute Dark Pool & Microstructure Telemetry safely
                 dp_telemetry = compute_dark_pool_telemetry(sym, df)

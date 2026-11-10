@@ -77,6 +77,17 @@ def run_candle_by_candle_population_sim(data_dir: Path = DATA_DIR) -> Dict[str, 
     - Zero look-ahead: strictly causal day-by-day evaluation.
     - Accurately tracks active open signals and historical closed trades.
     """
+    sim_cache_file = PROJECT_ROOT / "data" / "daily_sim_results.json"
+    if sim_cache_file.exists():
+        try:
+            import json
+            with open(sim_cache_file, "r", encoding="utf-8") as f:
+                cached_data = json.load(f)
+                if cached_data and "active_signals" in cached_data and len(cached_data["active_signals"]) > 0:
+                    return cached_data
+        except Exception:
+            pass
+
     csv_files = sorted(glob.glob(str(data_dir / "*.csv")))
     if not csv_files:
         return {"latest_date": "2026-11-10", "active_signals": [], "closed_trades": []}
@@ -91,7 +102,12 @@ def run_candle_by_candle_population_sim(data_dir: Path = DATA_DIR) -> Dict[str, 
         if len(df) < 50:
             continue
         
-        df['date_dt'] = pd.to_datetime(df['timestamp']).dt.date
+        # Standardize column naming
+        col_rename = {c: c.capitalize() for c in df.columns if c.lower() in ['open', 'high', 'low', 'close', 'volume', 'vwap', 'timestamp']}
+        df.rename(columns=col_rename, inplace=True)
+        
+        time_col = 'Timestamp' if 'Timestamp' in df.columns else ('timestamp' if 'timestamp' in df.columns else df.columns[0])
+        df['date_dt'] = pd.to_datetime(df[time_col]).dt.date
         df['date_str'] = df['date_dt'].astype(str)
         df['SMA20'] = df['Close'].rolling(20).mean()
         df['SMA50'] = df['Close'].rolling(50).mean()
@@ -198,9 +214,19 @@ def run_candle_by_candle_population_sim(data_dir: Path = DATA_DIR) -> Dict[str, 
                 if cur_spot >= trade['strike']:
                     trade['exit_type'] = "Expired Worthless (100% Win)"
                     trade['result'] = "WIN"
+                    trade['profit_pct'] = 100.0
                 else:
-                    trade['exit_type'] = "Assigned / Discount Share Purchase"
-                    trade['result'] = "ASSIGNED"
+                    cost_basis = trade['strike'] - trade['entry_price']
+                    if cur_spot < cost_basis:
+                        trade['result'] = "LOSS"
+                        unrealized_diff = cur_spot - cost_basis
+                        trade['profit_pct'] = round((unrealized_diff / trade['strike']) * 100.0, 1)
+                        trade['realized_gain'] = round(unrealized_diff, 2)
+                        trade['exit_type'] = f"Assigned Below Basis ({trade['profit_pct']:+.1f}%)"
+                    else:
+                        trade['result'] = "WIN"
+                        trade['exit_type'] = "Assigned Above Cost Basis"
+                        trade['profit_pct'] = round(((cur_spot - cost_basis) / trade['strike']) * 100.0, 1)
                 closed_trades.append(trade)
                 del active_trades[sym]
 

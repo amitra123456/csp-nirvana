@@ -29,7 +29,12 @@ def fetch_ohlcv(ticker: str, lookback_days: int = 250) -> Optional[pd.DataFrame]
     csv_path = ALPACA_DATA_DIR / f"{sym}.csv"
     if csv_path.exists():
         try:
-            df = pd.read_csv(csv_path, index_col=0, parse_dates=True)
+            df = pd.read_csv(csv_path)
+            # Ensure standard column capitalization
+            col_rename = {c: c.capitalize() for c in df.columns if c.lower() in ['open', 'high', 'low', 'close', 'volume', 'vwap', 'timestamp']}
+            df.rename(columns=col_rename, inplace=True)
+            time_col = 'Timestamp' if 'Timestamp' in df.columns else ('timestamp' if 'timestamp' in df.columns else df.columns[0])
+            df.index = pd.to_datetime(df[time_col])
             if not df.empty and len(df) >= 50:
                 df.dropna(subset=['Close', 'High', 'Low', 'Volume'], inplace=True)
                 return df
