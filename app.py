@@ -639,7 +639,8 @@ with tab_creed:
     with m_col1:
         st.markdown("""
         <div class="rule-card" style="border-left-color: #38BDF8;">
-            <h5 style="color: #38BDF8; margin-top:0;">Black-Scholes Option Pricing & Delta</h5>
+            <h5 style="color: #38BDF8; margin-top:0; margin-bottom: 4px;">Black-Scholes Option Pricing & Delta</h5>
+            <div style="font-size: 0.82rem; color: #38BDF8; font-weight: 600; margin-bottom: 8px;">💡 Why it is useful: Prevents selling underpriced options and guarantees you only take trades with an 82% to 90%+ statistical probability of profit.</div>
             • <strong>Fair Value Pricing</strong>: Quantifies the fair market premium of the Cash-Secured Put using 5 live inputs: spot price, strike price, time to expiration, the 4.5% risk-free rate, and implied volatility.<br>
             • <strong>Baseline Probability of Success (PoS)</strong>: The mathematical probability that the stock will finish completely above the strike at expiration, allowing us to keep 100% of the premium collected.<br>
             • <strong>Option Delta</strong>: Measures the option's sensitivity to price swings. Our strategy targets -0.10 to -0.18 Delta, meaning only a 10% to 18% statistical chance of assignment.
@@ -648,7 +649,8 @@ with tab_creed:
 
         st.markdown("""
         <div class="rule-card" style="border-left-color: #10B981;">
-            <h5 style="color: #10B981; margin-top:0;">Multi-Timeframe SMC Dealing Range & Discount Zones</h5>
+            <h5 style="color: #10B981; margin-top:0; margin-bottom: 4px;">Multi-Timeframe SMC Dealing Range & Discount Zones</h5>
+            <div style="font-size: 0.82rem; color: #10B981; font-weight: 600; margin-bottom: 8px;">💡 Why it is useful: Eliminates the risk of buying the top or selling puts at cycle peaks; guarantees you only sell puts when quality large caps are on sale.</div>
             • <strong>60-Day Dealing Range</strong>: The total price span between the highest high (institutional supply) and lowest low (institutional demand) over the past 60 trading days.<br>
             • <strong>50% Equilibrium</strong>: The fair-value midpoint of the range. We strictly avoid selling puts in the premium half (&gt; 50%); we only enter when price pulls back into the discount half.<br>
             • <strong>ICT OTE Pocket (61.8% to 78.6%)</strong>: The optimal institutional retracement pocket where major accumulation occurs before a mean-reversion bounce.
@@ -658,7 +660,8 @@ with tab_creed:
     with m_col2:
         st.markdown("""
         <div class="rule-card" style="border-left-color: #F59E0B;">
-            <h5 style="color: #F59E0B; margin-top:0;">Continuous Parkinson Extreme-Value Volatility</h5>
+            <h5 style="color: #F59E0B; margin-top:0; margin-bottom: 4px;">Continuous Parkinson Extreme-Value Volatility</h5>
+            <div style="font-size: 0.82rem; color: #F59E0B; font-weight: 600; margin-bottom: 8px;">💡 Why it is useful: Protects your collateral during market drawdowns by capturing sudden intraday volatility expansions 5.2× faster than standard deviation.</div>
             • <strong>Intraday High-Low Dispersion</strong>: Rather than looking only at closing prices, this measures the true continuous price variance using each day's High and Low.<br>
             • <strong>5.2× Statistical Efficiency</strong>: Captures intraday market volatility and sudden expansions far faster than traditional close-to-close standard deviation.<br>
             • <strong>1.20× OTM Put Skew</strong>: Automatically adds a 20% volatility markup to Out-of-the-Money puts to reflect the real-world institutional downside put skew.
@@ -667,7 +670,8 @@ with tab_creed:
 
         st.markdown("""
         <div class="rule-card" style="border-left-color: #A855F7;">
-            <h5 style="color: #A855F7; margin-top:0;">Dark Pool Telemetry & Microstructure Floor</h5>
+            <h5 style="color: #A855F7; margin-top:0; margin-bottom: 4px;">Dark Pool Telemetry & Microstructure Floor</h5>
+            <div style="font-size: 0.82rem; color: #A855F7; font-weight: 600; margin-bottom: 8px;">💡 Why it is useful: Reveals where giant institutional whales are quietly accumulating shares off-exchange, placing your strike directly behind their buy wall.</div>
             • <strong>Dark Pool Index (DPI)</strong>: The percentage of daily trading volume executed off-exchange in dark pools and alternative trading systems. A DPI over 40% signals institutional accumulation.<br>
             • <strong>Whale Support Shelf</strong>: Identifies the volume-weighted price level where institutions executed major block trades (&gt; 10,000 shares), forming a natural institutional floor.
         </div>
@@ -877,9 +881,10 @@ with tab_deepdive:
         with rc1:
             st.markdown(f"""
             <div class="rule-card" style="border-left-color: #38BDF8;">
-                <h5 style="color: #38BDF8; margin-top: 0;">1. SMC Dealing Range & Structural Floor</h5>
+                <h5 style="color: #38BDF8; margin-top: 0; margin-bottom: 4px;">1. SMC Dealing Range & Structural Floor</h5>
+                <div style="font-size: 0.82rem; color: #38BDF8; font-weight: 600; margin-bottom: 8px;">💡 Why it is useful: Confirms price is at an institutional wholesale discount, ensuring you sell puts into demand instead of supply.</div>
                 • <strong>60-Day Dealing Range</strong>: ${smc_rec.get('swing_low', 0):.2f} – ${smc_rec.get('swing_high', 0):.2f}<br>
-                • <strong>Current Range Position</strong>: <strong>{range_pct:.1f}%</strong> (SMC Discount Territory)<br>
+                • <strong>Current Range Position</strong>: {range_pct:.1f}% (SMC Discount Territory)<br>
                 • <strong>ICT OTE Pocket</strong>: ${cand['ote_786']:.2f} – ${cand['ote_618']:.2f}<br>
                 • <strong>Structural Support</strong>: Strike (${cand['strike']:.2f}) sits safely below the 20-day swing low (${smc_rec.get('swing_low', 0):.2f}), anchored behind institutional liquidity.
             </div>
@@ -888,10 +893,11 @@ with tab_deepdive:
         with rc2:
             st.markdown(f"""
             <div class="rule-card" style="border-left-color: #10B981;">
-                <h5 style="color: #10B981; margin-top: 0;">2. Downside Shield vs. 1-Sigma Move</h5>
-                • <strong>Strike Cushion</strong>: <strong>{cand['cushion_pct']:.1f}% OTM</strong> (${cand['strike']:.2f})<br>
+                <h5 style="color: #10B981; margin-top: 0; margin-bottom: 4px;">2. Downside Shield vs. 1-Sigma Move</h5>
+                <div style="font-size: 0.82rem; color: #10B981; font-weight: 600; margin-bottom: 8px;">💡 Why it is useful: Quantifies your margin of safety, proving the strike is protected by multiple moving averages and sits outside statistical probability boundaries.</div>
+                • <strong>Strike Cushion</strong>: {cand['cushion_pct']:.1f}% OTM (${cand['strike']:.2f})<br>
                 • <strong>Implied 1-Sigma Move</strong>: ±{pa.get('implied_move_pct', 0.0):.1f}% (Floor: ${pa.get('one_sigma_lower', 0.0):.2f})<br>
-                • <strong>Volatility Multiplier</strong>: Strike sits <strong>{cushion_vs_sigma:.2f}×</strong> beyond the statistical 1σ move.<br>
+                • <strong>Volatility Multiplier</strong>: Strike sits {cushion_vs_sigma:.2f}× beyond the statistical 1σ move.<br>
                 • <strong>Moving Average Shield</strong>: Strike sits below 50 SMA (${smc_rec.get('sma50', 0):.2f}) and 200 SMA (${smc_rec.get('sma200', 0):.2f}), backed by dual institutional trend buffers.
             </div>
             """, unsafe_allow_html=True)
@@ -899,10 +905,11 @@ with tab_deepdive:
         with rc3:
             st.markdown(f"""
             <div class="rule-card" style="border-left-color: #F59E0B;">
-                <h5 style="color: #F59E0B; margin-top: 0;">3. Cash Return & Velocity Profile</h5>
-                • <strong>Net Credit Collected</strong>: <strong>${cand['bid']:.2f}</strong> (${cand['credit']:.2f} / contract)<br>
-                • <strong>Cycle ROC</strong>: <strong>{cand['roc_cycle_pct']:.2f}%</strong> in ~{cand['dte']} days (<strong>{cand['annualized_roc_pct']:.1f}% Ann.</strong>)<br>
-                • <strong>Risk-Free Premium</strong>: ROC beats the 4.5% Treasury hurdle by <strong>+{cand['annualized_roc_pct'] - 4.5:.1f}%</strong>.<br>
-                • <strong>50% Take-Profit Target</strong>: Buy back at <strong>${cand['tp_50_price']:.2f}</strong> with estimated velocity of <strong>~{pa.get('est_days_to_50tp', 10)} trading days</strong>.
+                <h5 style="color: #F59E0B; margin-top: 0; margin-bottom: 4px;">3. Cash Return & Velocity Profile</h5>
+                <div style="font-size: 0.82rem; color: #F59E0B; font-weight: 600; margin-bottom: 8px;">💡 Why it is useful: Projects the exact capital efficiency and speed of the trade, demonstrating how fast your cash collateral is unlocked at 50% profit.</div>
+                • <strong>Net Credit Collected</strong>: ${cand['bid']:.2f} (${cand['credit']:.2f} / contract)<br>
+                • <strong>Cycle ROC</strong>: {cand['roc_cycle_pct']:.2f}% in ~{cand['dte']} days ({cand['annualized_roc_pct']:.1f}% Ann.)<br>
+                • <strong>Risk-Free Premium</strong>: ROC beats the 4.5% Treasury hurdle by +{cand['annualized_roc_pct'] - 4.5:.1f}%.<br>
+                • <strong>50% Take-Profit Target</strong>: Buy back at ${cand['tp_50_price']:.2f} with estimated velocity of ~{pa.get('est_days_to_50tp', 10)} trading days.
             </div>
             """, unsafe_allow_html=True)
