@@ -14,12 +14,25 @@ import logging
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional
 from pathlib import Path
-from dotenv import load_dotenv
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-for env_path in [PROJECT_ROOT.parent / ".env", PROJECT_ROOT / ".env"]:
-    if env_path.exists():
-        load_dotenv(env_path)
+try:
+    from dotenv import load_dotenv
+    PROJECT_ROOT = Path(__file__).resolve().parent.parent
+    for env_path in [PROJECT_ROOT.parent / ".env", PROJECT_ROOT / ".env"]:
+        if env_path.exists():
+            load_dotenv(env_path)
+except ImportError:
+    pass
+
+# Also check Streamlit secrets if running on Streamlit Cloud
+try:
+    import streamlit as st
+    if hasattr(st, "secrets"):
+        for k in ["ALPACA_API_KEY", "APCA_API_KEY_ID", "ALPACA_SECRET_KEY", "APCA_API_SECRET_KEY"]:
+            if k in st.secrets and k not in os.environ:
+                os.environ[k] = st.secrets[k]
+except Exception:
+    pass
 
 logger = logging.getLogger("SentimentEngine")
 
