@@ -34,6 +34,7 @@ try:
     from core.smc_engine import compute_smc_structure
     from core.regime_engine import compute_market_regime
     from core.fair_value_engine import compute_lens1_fundamentals, compute_lens2_microstructure
+    from core.sentiment_engine import compute_multi_horizon_sentiment
 except (ImportError, ModuleNotFoundError):
     from csp_nirvana.config.settings import (
         CORE_TRIO,
@@ -47,6 +48,7 @@ except (ImportError, ModuleNotFoundError):
     from csp_nirvana.core.smc_engine import compute_smc_structure
     from csp_nirvana.core.regime_engine import compute_market_regime
     from csp_nirvana.core.fair_value_engine import compute_lens1_fundamentals, compute_lens2_microstructure
+    from csp_nirvana.core.sentiment_engine import compute_multi_horizon_sentiment
 
 st.set_page_config(
     page_title="CSP-Nirvana // Institutional Options Terminal",
@@ -256,11 +258,19 @@ def render_dark_table_html(df: pd.DataFrame) -> str:
                 html.append(f'<td><span style="background:{bg}; color:{c}; padding:3px 8px; border-radius:4px; font-weight:700;">{val}</span></td>')
             elif "Midpoint" in col or "Entry" in col or "Current" in col or "Strike" in col:
                 html.append(f'<td style="color: #E2E8F0; font-weight: 600;">{val}</td>')
-            elif any(w in col for w in ["Meaning", "Definition", "Role", "Description", "Significance", "Assessment", "Implication", "Methodology", "Institutional Application", "Safety Hurdle"]):
+            elif "Polarity" in col:
+                if "Bullish" in val:
+                    bg = "rgba(16, 185, 129, 0.2)"; c = "#10B981"
+                elif "Bearish" in val:
+                    bg = "rgba(239, 68, 68, 0.2)"; c = "#EF4444"
+                else:
+                    bg = "rgba(148, 163, 184, 0.2)"; c = "#94A3B8"
+                html.append(f'<td><span style="background:{bg}; color:{c}; padding:3px 8px; border-radius:4px; font-weight:600; font-size:0.78rem;">{val}</span></td>')
+            elif any(w in col for w in ["Meaning", "Definition", "Role", "Description", "Significance", "Assessment", "Implication", "Methodology", "Institutional Application", "Safety Hurdle", "Headline", "Market Psychology", "Quantitative Rule"]):
                 html.append(f'<td style="white-space: normal; line-height: 1.5; color: #E2E8F0; font-size: 0.86rem; min-width: 220px;">{val}</td>')
-            elif "Pillar" in col or "Metric" in col or "Feature" in col or "Valuation Lens" in col or "Regime State" in col:
+            elif "Horizon" in col or "Pillar" in col or "Metric" in col or "Feature" in col or "Valuation Lens" in col or "Regime State" in col or "Sentiment Horizon" in col:
                 html.append(f'<td style="color: #38BDF8; font-weight: 700; white-space: nowrap;">{val}</td>')
-            elif "Value" in col or "Level" in col or "Target" in col or "Hurdle" in col or "Cushion Gate" in col:
+            elif "Score" in col or "Value" in col or "Level" in col or "Target" in col or "Hurdle" in col or "Cushion Gate" in col or "Timescale" in col:
                 html.append(f'<td style="color: #10B981; font-weight: 700; white-space: nowrap;">{val}</td>')
             else:
                 html.append(f'<td>{val}</td>')
@@ -782,6 +792,17 @@ with tab_creed:
     ]
     st.markdown(render_dark_table_html(pd.DataFrame(fv_matrix_rows)), unsafe_allow_html=True)
 
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("#### 7. Multi-Horizon News Sentiment & Whale Divergence Theory (5D, 10D, 21D)")
+    
+    sent_theory_rows = [
+        {"Sentiment Horizon": "5-Day News Impulse", "Timescale": "5 Trading Days", "Market Psychology": "Retail headline reaction, earnings noise, and breaking news. Sharp drops inflate option IV to peak selling premiums.", "Quantitative Rule": "Contrarian indicator: Negative 5D sentiment creates peak put premium if Dark Pool DPI > 45%."},
+        {"Sentiment Horizon": "10-Day Digestion Window", "Timescale": "10 Trading Days", "Market Psychology": "Institutional algorithms digest breaking news; confirms whether the initial selling wave is exhausting.", "Quantitative Rule": "Mean-reversion trigger: If 5D sentiment is stabilizing toward 10D baseline, selling momentum is spent."},
+        {"Sentiment Horizon": "21-Day Regime Baseline", "Timescale": "21 Trading Days (~1 Month)", "Market Psychology": "Macro narrative consensus (datacenter capex, interest rate delays, cyclical demand).", "Quantitative Rule": "Defensive gate: Persistently negative 21D sentiment (< -25) enforces mandatory ≥ 12% strike cushion."},
+        {"Sentiment Horizon": "Whale Divergence Signal", "Timescale": "Confluence Indicator", "Market Psychology": "Contrasts retail headline panic against off-exchange Dark Pool whale accumulation.", "Quantitative Rule": "Golden Setup: 'Whale Absorption of FUD' (Negative 5D Sentiment + High DPI) delivers highest statistical win rates."}
+    ]
+    st.markdown(render_dark_table_html(pd.DataFrame(sent_theory_rows)), unsafe_allow_html=True)
+
 
 # =========================================================
 # TAB 3: TECHNICAL & DARK POOL DEEP-DIVE
@@ -1058,9 +1079,77 @@ with tab_deepdive:
 
             df_lens2 = pd.DataFrame([
                 {"Pillar": "Anchored VWAP", "Value": f"${lens2['anchored_vwap']:.2f} ({lens2['avwap_diff_pct']:+.1f}%)", "Institutional Defense Role": f"Collective volume-weighted cost basis of institutional buyers. Spot is testing their break-even level."},
-                {"Pillar": "Strike Shield vs AVWAP", "Value": f"{lens2['strike_vs_avwap_pct']:.1f}% Below", "Institutional Defense Role": f"Strike (${cand['strike']:.2f}) sits {lens2['strike_vs_avwap_pct']:.1f}% below institutional AVWAP. Price must plunge beneath smart money cost before put is tested."},
-                {"Pillar": "Dark Pool Whale Shelf", "Value": f"${lens2['dark_pool_shelf']:.2f} ({lens2['dp_diff_pct']:+.1f}%)", "Institutional Defense Role": "Point of Control (POC) for large off-exchange block trades (>10,000 shares); acts as solid concrete buy shelf."},
+                {"Pillar": "Strike Shield vs AVWAP", "Value": lens2['strike_avwap_val_str'], "Institutional Defense Role": lens2['strike_avwap_role_str']},
+                {"Pillar": "Dark Pool Whale Shelf", "Value": f"${lens2['dark_pool_shelf']:.2f} ({lens2['dp_diff_pct']:+.1f}%)", "Institutional Defense Role": f"Point of Control (POC) for large block trades (>10k shares). {lens2['strike_dp_role_str']}"},
                 {"Pillar": "Dark Pool Index (DPI)", "Value": f"{lens2['dark_pool_index_pct']:.1f}% {'[ACCUMULATING]' if lens2['is_accumulating'] else ''}", "Institutional Defense Role": "Readings > 40% confirm institutions are actively soaking up shares off-exchange without triggering retail momentum."},
-                {"Pillar": "Microstructure Shield", "Value": lens2['protection_badge'], "Institutional Defense Role": f"Strike sits protected behind both AVWAP (${lens2['anchored_vwap']:.2f}) and Dark Pool buy walls (${lens2['dark_pool_shelf']:.2f})."}
+                {"Pillar": "Microstructure Shield", "Value": lens2['protection_badge'], "Institutional Defense Role": lens2['protection_desc']}
             ])
             st.markdown(render_dark_table_html(df_lens2), unsafe_allow_html=True)
+
+        # -------------------------------------------------------------
+        # 3. Multi-Horizon News Sentiment & Dark Pool Divergence Radar
+        # -------------------------------------------------------------
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div class="dashboard-box" style="margin-top: 15px; margin-bottom: 12px; border-left: 4px solid #06B6D4;">
+                <h4 style="margin: 0; color: #06B6D4; font-size: 1.08rem;">📰 Multi-Horizon News Sentiment & Dark Pool Divergence Radar (5D / 10D / 21D)</h4>
+                <div style="font-size: 0.84rem; color: #06B6D4; font-weight: 600; margin-top: 4px;">
+                    💡 Why it is useful: Separates ephemeral retail media panic from institutional positioning. When 5-day sentiment plunges into fear while Dark Pool Index reveals aggressive whale accumulation, implied volatility peaks—creating textbook asymmetric CSP entries.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        sent = compute_multi_horizon_sentiment(
+            selected_ticker,
+            dark_pool_ratio_pct=lens2['dark_pool_index_pct'],
+            is_accumulating=lens2['is_accumulating']
+        )
+
+        sent_kpi1, sent_kpi2, sent_kpi3, sent_kpi4 = st.columns(4)
+        with sent_kpi1:
+            st.markdown(render_kpi("5D Headline Pulse", f"{sent['score_5d']:+.1f}", f"{sent['article_count_5d']} recent articles (Acute Shock)", "#06B6D4"), unsafe_allow_html=True)
+        with sent_kpi2:
+            st.markdown(render_kpi("10D Digestion Horizon", f"{sent['score_10d']:+.1f}", "Intermediate sentiment digestion", "#38BDF8"), unsafe_allow_html=True)
+        with sent_kpi3:
+            st.markdown(render_kpi("21D Narrative Baseline", f"{sent['score_21d']:+.1f}", f"Delta: {sent['momentum_delta']:+.1f} pts ({sent['trend_desc']})", "#A855F7"), unsafe_allow_html=True)
+        with sent_kpi4:
+            st.markdown(render_kpi("Whale Divergence Signal", sent['divergence_badge'], sent['divergence_signal'], sent['divergence_color']), unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        sent_c1, sent_c2 = st.columns(2)
+        with sent_c1:
+            st.markdown("""
+            <div class="rule-card" style="border-left-color: #06B6D4; margin-bottom: 8px;">
+                <h5 style="color: #06B6D4; margin-top: 0; margin-bottom: 4px;">📡 Rolling Multi-Horizon Sentiment Matrix</h5>
+                <div style="font-size: 0.84rem; color: #06B6D4; font-weight: 600;">💡 Why it is useful: Tracks whether sentiment is degrading rapidly or rebounding toward institutional baseline.</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            df_sent = pd.DataFrame([
+                {"Horizon": "5-Day (Acute Shock)", "Score": f"{sent['score_5d']:+.1f} / 100", "Market Psychology": "Immediate retail reaction to latest earnings, headlines, or analyst notes."},
+                {"Horizon": "10-Day (Digestion)", "Score": f"{sent['score_10d']:+.1f} / 100", "Market Psychology": "Whether initial headline panic or euphoria is beginning to normalize."},
+                {"Horizon": "21-Day (Baseline)", "Score": f"{sent['score_21d']:+.1f} / 100", "Market Psychology": "Full options cycle narrative benchmark for the underlying asset."},
+                {"Horizon": "Narrative Delta (5D - 21D)", "Score": f"{sent['momentum_delta']:+.1f} pts", "Market Psychology": sent['trend_desc']},
+                {"Horizon": "Divergence Verdict", "Score": sent['divergence_badge'], "Market Psychology": sent['divergence_desc']}
+            ])
+            st.markdown(render_dark_table_html(df_sent), unsafe_allow_html=True)
+
+        with sent_c2:
+            st.markdown("""
+            <div class="rule-card" style="border-left-color: #A855F7; margin-bottom: 8px;">
+                <h5 style="color: #A855F7; margin-top: 0; margin-bottom: 4px;">📰 Recent High-Impact Headlines (Scored via Loughran-McDonald)</h5>
+                <div style="font-size: 0.84rem; color: #A855F7; font-weight: 600;">💡 Why it is useful: Audits the exact narrative triggers influencing IV and retail sentiment in real time.</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            if sent['recent_headlines']:
+                df_news = pd.DataFrame([
+                    {"Date": h['date'], "Polarity": h['polarity'], "Headline": h['headline']}
+                    for h in sent['recent_headlines']
+                ])
+                st.markdown(render_dark_table_html(df_news), unsafe_allow_html=True)
+            else:
+                st.info("No high-impact news articles detected in the past 5 sessions. News narrative is quiescent.")

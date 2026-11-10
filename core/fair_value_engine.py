@@ -124,7 +124,6 @@ def compute_lens2_microstructure(
     """
     avwap = smc.get("anchored_vwap", spot)
     avwap_diff_pct = ((spot - avwap) / avwap) * 100.0 if avwap > 0 else 0.0
-    strike_vs_avwap_pct = ((avwap - strike) / avwap) * 100.0 if avwap > 0 else 0.0
 
     dp_shelf = dp.get("dark_pool_shelf_price", spot) if dp else spot
     dp_diff_pct = ((spot - dp_shelf) / dp_shelf) * 100.0 if dp_shelf > 0 else 0.0
@@ -133,30 +132,52 @@ def compute_lens2_microstructure(
     dpi = dp.get("dark_pool_ratio_pct", 0.0) if dp else 0.0
     is_accumulating = dp.get("is_accumulating", False) if dp else False
 
-    # Protection evaluation
+    # Exact Protection Evaluation
     below_avwap = strike <= avwap
     below_dp = strike <= dp_shelf
 
+    if below_avwap:
+        strike_vs_avwap_pct = ((avwap - strike) / avwap) * 100.0
+        strike_avwap_val_str = f"{strike_vs_avwap_pct:.1f}% Below"
+        strike_avwap_role_str = f"Strike (${strike:.2f}) sits {strike_vs_avwap_pct:.1f}% safely below institutional AVWAP (${avwap:.2f})."
+    else:
+        diff_above_pct = ((strike - avwap) / avwap) * 100.0
+        strike_avwap_val_str = f"+{diff_above_pct:.1f}% Above"
+        strike_avwap_role_str = f"Strike (${strike:.2f}) sits ${strike - avwap:.2f} (+{diff_above_pct:.1f}%) above AVWAP (${avwap:.2f}); unshielded by AVWAP."
+
+    if below_dp:
+        strike_dp_val_str = f"{strike_vs_dp_pct:.1f}% Below"
+        strike_dp_role_str = f"Strike (${strike:.2f}) sits {strike_vs_dp_pct:.1f}% below Dark Pool volume shelf (${dp_shelf:.2f})."
+    else:
+        diff_dp_above = ((strike - dp_shelf) / dp_shelf) * 100.0
+        strike_dp_val_str = f"+{diff_dp_above:.1f}% Above"
+        strike_dp_role_str = f"Strike (${strike:.2f}) sits ${strike - dp_shelf:.2f} (+{diff_dp_above:.1f}%) above Dark Pool shelf (${dp_shelf:.2f})."
+
+    # Multi-barrier confluence determination
     if below_avwap and below_dp:
         protection_badge = "🛡️ Dual Whale Shield"
-        protection_desc = "Strike sits safely beneath BOTH Anchored VWAP and the Dark Pool Block Shelf."
-    elif below_avwap:
-        protection_badge = "🛡️ AVWAP Shield"
-        protection_desc = "Strike sits beneath Anchored VWAP institutional cost basis."
-    elif below_dp:
+        protection_desc = f"Strike (${strike:.2f}) sits safely protected beneath BOTH AVWAP (${avwap:.2f}) and Dark Pool shelf (${dp_shelf:.2f})."
+    elif below_dp and not below_avwap:
         protection_badge = "🛡️ Dark Pool Shelf Shield"
-        protection_desc = "Strike sits beneath off-exchange whale accumulation floor."
+        protection_desc = f"Strike (${strike:.2f}) sits protected beneath Dark Pool shelf (${dp_shelf:.2f}), but sits ${strike - avwap:.2f} above AVWAP (${avwap:.2f})."
+    elif below_avwap and not below_dp:
+        protection_badge = "🛡️ AVWAP Shield"
+        protection_desc = f"Strike (${strike:.2f}) sits protected beneath AVWAP (${avwap:.2f}), but sits ${strike - dp_shelf:.2f} above Dark Pool shelf (${dp_shelf:.2f})."
     else:
-        protection_badge = "⚠️ Inside Institutional Range"
-        protection_desc = "Strike sits close to volume anchors; monitor price action."
+        protection_badge = "⚠️ Inside Range (Unshielded)"
+        protection_desc = f"Strike (${strike:.2f}) sits above both AVWAP (${avwap:.2f}) and Dark Pool shelf (${dp_shelf:.2f}). No volume barrier defense."
 
     return {
         "anchored_vwap": round(avwap, 2),
         "avwap_diff_pct": round(avwap_diff_pct, 1),
-        "strike_vs_avwap_pct": round(strike_vs_avwap_pct, 1),
+        "below_avwap": below_avwap,
+        "strike_avwap_val_str": strike_avwap_val_str,
+        "strike_avwap_role_str": strike_avwap_role_str,
         "dark_pool_shelf": round(dp_shelf, 2),
         "dp_diff_pct": round(dp_diff_pct, 1),
-        "strike_vs_dp_pct": round(strike_vs_dp_pct, 1),
+        "below_dp": below_dp,
+        "strike_dp_val_str": strike_dp_val_str,
+        "strike_dp_role_str": strike_dp_role_str,
         "dark_pool_index_pct": round(dpi, 1),
         "is_accumulating": is_accumulating,
         "protection_badge": protection_badge,
