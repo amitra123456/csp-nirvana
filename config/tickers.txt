@@ -1,0 +1,24 @@
+# Kirsten + Erin Institutional Watchlist
+# Tier 1: Core Blue-Chip Compounders (High balance sheet safety, deep liquidity)
+AAPL
+MSFT
+AMZN
+GOOGL
+META
+NVDA
+TSLA
+QQQ
+
+# Tier 2: High-Conviction High-Beta Growth (Juicy premium, clear SMC structures)
+HOOD
+NOW
+PLTR
+NFLX
+COIN
+MU
+MRVL
+SOXL
+APP
+INTC
+CRWV
+AVGO
