@@ -633,26 +633,25 @@ with tab_creed:
         """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("#### 2. Quantitative Model Architecture & Formulations")
+    st.markdown("#### 2. Quantitative Model Architecture & Formulations (Plain English)")
     
     m_col1, m_col2 = st.columns(2)
     with m_col1:
         st.markdown("""
         <div class="rule-card" style="border-left-color: #38BDF8;">
-            <h5 style="color: #38BDF8; margin-top:0;">Black-Scholes European Pricing & Delta</h5>
-            $$P(S, K, T) = K e^{-rT} \\mathcal{N}(-d_2) - S \\mathcal{N}(-d_1)$$
-            $$d_1 = \\frac{\\ln(S/K) + (r + \\frac{1}{2}\\sigma^2)T}{\\sigma \\sqrt{T}}, \\quad d_2 = d_1 - \\sigma \\sqrt{T}$$
-            • <strong>Baseline PoS OTM</strong>: $$\\mathcal{N}(d_2) \\times 100\\%$$<br>
-            • <strong>Delta (\\Delta)</strong>: $$-\\mathcal{N}(-d_1)$$
+            <h5 style="color: #38BDF8; margin-top:0;">Black-Scholes Option Pricing & Delta</h5>
+            • <strong>Fair Value Pricing</strong>: Quantifies the fair market premium of the Cash-Secured Put using 5 live inputs: spot price, strike price, time to expiration, the 4.5% risk-free rate, and implied volatility.<br>
+            • <strong>Baseline Probability of Success (PoS)</strong>: The mathematical probability that the stock will finish completely above the strike at expiration, allowing us to keep 100% of the premium collected.<br>
+            • <strong>Option Delta</strong>: Measures the option's sensitivity to price swings. Our strategy targets -0.10 to -0.18 Delta, meaning only a 10% to 18% statistical chance of assignment.
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown("""
         <div class="rule-card" style="border-left-color: #10B981;">
-            <h5 style="color: #10B981; margin-top:0;">Multi-Timeframe SMC Dealing Range & OTE</h5>
-            • <strong>Dealing Range</strong>: $$\\text{Range} = \\text{High}_{60} - \\text{Low}_{60}$$<br>
-            • <strong>Equilibrium (50%)</strong>: $$\\text{Low}_{60} + 0.50 \\times \\text{Range}$$<br>
-            • <strong>ICT OTE Pocket</strong>: $$\\text{High}_{60} - 0.786 \\times \\text{Range} \\le P \\le \\text{High}_{60} - 0.618 \\times \\text{Range}$$
+            <h5 style="color: #10B981; margin-top:0;">Multi-Timeframe SMC Dealing Range & Discount Zones</h5>
+            • <strong>60-Day Dealing Range</strong>: The total price span between the highest high (institutional supply) and lowest low (institutional demand) over the past 60 trading days.<br>
+            • <strong>50% Equilibrium</strong>: The fair-value midpoint of the range. We strictly avoid selling puts in the premium half (&gt; 50%); we only enter when price pulls back into the discount half.<br>
+            • <strong>ICT OTE Pocket (61.8% to 78.6%)</strong>: The optimal institutional retracement pocket where major accumulation occurs before a mean-reversion bounce.
         </div>
         """, unsafe_allow_html=True)
 
@@ -660,17 +659,17 @@ with tab_creed:
         st.markdown("""
         <div class="rule-card" style="border-left-color: #F59E0B;">
             <h5 style="color: #F59E0B; margin-top:0;">Continuous Parkinson Extreme-Value Volatility</h5>
-            $$\\sigma_{\\text{Parkinson}} = \\sqrt{\\frac{1}{4 \\ln(2) \\cdot N} \\sum_{i=1}^N \\left(\\ln \\frac{H_i}{L_i}\\right)^2} \\times \\sqrt{252}$$
-            • Captures intraday extreme price variance 5.2× more efficiently than close-to-close standard deviation.<br>
-            • Multiplied by <strong>1.20× OTM put skew</strong> to reflect institutional demand skew.
+            • <strong>Intraday High-Low Dispersion</strong>: Rather than looking only at closing prices, this measures the true continuous price variance using each day's High and Low.<br>
+            • <strong>5.2× Statistical Efficiency</strong>: Captures intraday market volatility and sudden expansions far faster than traditional close-to-close standard deviation.<br>
+            • <strong>1.20× OTM Put Skew</strong>: Automatically adds a 20% volatility markup to Out-of-the-Money puts to reflect the real-world institutional downside put skew.
         </div>
         """, unsafe_allow_html=True)
 
         st.markdown("""
         <div class="rule-card" style="border-left-color: #A855F7;">
             <h5 style="color: #A855F7; margin-top:0;">Dark Pool Telemetry & Microstructure Floor</h5>
-            • <strong>Dark Pool Index (DPI)</strong>: $$\\text{DPI} = \\frac{\\text{Off-Exchange Volume}}{\\text{Consolidated Volume}} \\times 100\\%$$<br>
-            • <strong>Whale Support POC Shelf</strong>: $$\\text{Shelf} = \\frac{\\sum (P_i \\times V_{\\text{Whale}, i})}{\\sum V_{\\text{Whale}, i}}$$
+            • <strong>Dark Pool Index (DPI)</strong>: The percentage of daily trading volume executed off-exchange in dark pools and alternative trading systems. A DPI over 40% signals institutional accumulation.<br>
+            • <strong>Whale Support Shelf</strong>: Identifies the volume-weighted price level where institutions executed major block trades (&gt; 10,000 shares), forming a natural institutional floor.
         </div>
         """, unsafe_allow_html=True)
 
@@ -678,14 +677,14 @@ with tab_creed:
     st.markdown("#### 3. Feature Dictionary, Definitions & Relative Weights")
     
     feature_dict_rows = [
-        {"Feature": "Cushion %", "Definition": "(Spot - Strike) / Spot * 100", "Weight": "25%", "Significance": "Primary safety barrier; must sit 12% to 20% below spot."},
-        {"Feature": "SMC Dealing Range %", "Definition": "(Spot - Low60) / (High60 - Low60)", "Weight": "20%", "Significance": "Validates entry in the lower discount territory (< 40%)."},
-        {"Feature": "ICT OTE Confluence", "Definition": "Strike basis inside 0.618-0.786 pocket", "Weight": "15%", "Significance": "Optimal institutional discount accumulation zone."},
-        {"Feature": "50 SMA / 200 SMA Shield", "Definition": "Strike <= 50 SMA and 200 SMA", "Weight": "15%", "Significance": "Dual moving-average support shelves defending the strike."},
-        {"Feature": "Dark Pool Shelf (DPI)", "Definition": "Strike <= Off-Exchange Whale POC", "Weight": "10%", "Significance": "Ensures whale block accumulation sits above the strike."},
-        {"Feature": "1-Sigma Multiplier", "Definition": "Cushion % / Implied Move %", "Weight": "5%", "Significance": "Ensures strike sits > 1.25x beyond the statistical 1-sigma move."},
-        {"Feature": "Volume Ratio", "Definition": "Bar Volume / 20-day Avg Volume", "Weight": "5%", "Significance": "Identifies capitulation exhaustion dips on pullback days."},
-        {"Feature": "Cycle ROC %", "Definition": "(Bid / Strike) * 100", "Weight": "5%", "Significance": "Must meet or exceed the 1.20% minimum hurdle rate."}
+        {"Feature": "Cushion %", "Definition": "Percentage distance from spot to strike: (Spot - Strike) / Spot", "Weight": "25%", "Significance": "Primary safety barrier; must sit 12% to 20% below spot."},
+        {"Feature": "SMC Dealing Range %", "Definition": "Position in 60-day high-low range: 0% = Low, 100% = High", "Weight": "20%", "Significance": "Validates entry in deep discount territory (< 40%)."},
+        {"Feature": "ICT OTE Confluence", "Definition": "Net cost basis sits inside the 61.8% to 78.6% discount zone", "Weight": "15%", "Significance": "Optimal institutional discount accumulation zone."},
+        {"Feature": "50 SMA / 200 SMA Shield", "Definition": "Strike sits beneath both the 50-day and 200-day moving averages", "Weight": "15%", "Significance": "Dual moving-average support shelves defending the strike."},
+        {"Feature": "Dark Pool Shelf (DPI)", "Definition": "Strike sits beneath the off-exchange institutional volume shelf", "Weight": "10%", "Significance": "Ensures whale block accumulation sits above the strike."},
+        {"Feature": "1-Sigma Multiplier", "Definition": "Strike cushion divided by the 35-day implied volatility move", "Weight": "5%", "Significance": "Ensures strike sits > 1.25x beyond the statistical 1-sigma move."},
+        {"Feature": "Volume Ratio", "Definition": "Today's volume compared to the 20-day moving average volume", "Weight": "5%", "Significance": "Identifies capitulation exhaustion dips on pullback days."},
+        {"Feature": "Cycle ROC %", "Definition": "Gross option credit divided by strike collateral required", "Weight": "5%", "Significance": "Must meet or exceed the 1.20% minimum hurdle rate."}
     ]
     st.markdown(render_dark_table_html(pd.DataFrame(feature_dict_rows)), unsafe_allow_html=True)
 
