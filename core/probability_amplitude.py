@@ -35,6 +35,7 @@ def compute_probability_and_amplitude(
     df: pd.DataFrame,
     smc: Dict[str, Any],
     dp: Dict[str, Any] = None,
+    regime: Dict[str, Any] = None,
     r: float = 0.045
 ) -> Dict[str, Any]:
     """
@@ -67,6 +68,18 @@ def compute_probability_and_amplitude(
             structural_boost += 3.5
         if strike <= dp.get('dark_pool_shelf_price', spot):
             structural_boost += 2.5
+
+    # Regime Alignment Boost
+    if regime:
+        rid = regime.get('regime_id', 2)
+        if rid == 2:  # Bull Retracement (Ideal CSP)
+            structural_boost += 2.5
+        elif rid == 3:  # Dead Chop / Rangebound (High Theta)
+            structural_boost += 2.0
+        elif rid == 4:  # Springboard at 200 MA
+            structural_boost += 1.5
+        elif rid == 5:  # Secular Bear / Breakdown
+            structural_boost -= 3.0
 
     # Volume spike check (capitulation wash)
     if len(df) >= 20:

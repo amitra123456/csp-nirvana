@@ -16,11 +16,13 @@ try:
     from core.smc_engine import fetch_ohlcv, compute_smc_structure
     from core.dark_pool_engine import compute_dark_pool_telemetry
     from core.probability_amplitude import compute_probability_and_amplitude
+    from core.regime_engine import compute_market_regime
     from config.settings import DEFAULTS
 except (ImportError, ModuleNotFoundError):
     from csp_nirvana.core.smc_engine import fetch_ohlcv, compute_smc_structure
     from csp_nirvana.core.dark_pool_engine import compute_dark_pool_telemetry
     from csp_nirvana.core.probability_amplitude import compute_probability_and_amplitude
+    from csp_nirvana.core.regime_engine import compute_market_regime
     from csp_nirvana.config.settings import DEFAULTS
 
 def scan_single_ticker(
@@ -140,7 +142,8 @@ def run_screener(
     cushion_pct: float = DEFAULTS["cushion_pct"],
     min_premium: float = DEFAULTS["min_premium"],
     min_roc_pct: float = DEFAULTS["min_roc_pct"],
-    red_only: bool = False
+    red_only: bool = False,
+    enforce_bear_cushion: bool = True
 ) -> Tuple[List[Dict[str, Any]], Dict[str, pd.DataFrame]]:
     """Runs the complete institutional screener across the watchlist."""
     results = []
@@ -160,10 +163,16 @@ def run_screener(
             if red_only and not smc['is_red_day']:
                 continue
 
+            # Compute Systematic Market Regime
+            regime = compute_market_regime(df)
+
+            # Dynamic Defensive Cushion: Bear/Breakdown requires >= 12% cushion
+            effective_cushion = max(cushion_pct, 12.0) if (enforce_bear_cushion and regime.get('is_bear_or_breakdown', False)) else cushion_pct
+
             cands = scan_single_ticker(
                 ticker=sym,
                 target_dte=target_dte,
-                cushion_pct=cushion_pct,
+                cushion_pct=effective_cushion,
                 min_premium=min_premium,
                 min_roc_pct=min_roc_pct,
                 df_ohlcv=df,
@@ -171,19 +180,25 @@ def run_screener(
             )
 
             if cands:
-                # Strictly require the primary pick to satisfy the cushion threshold
-                primary = [c for c in cands if c['is_primary_pick'] and c['cushion_pct'] >= cushion_pct]
+                # Strictly require the primary pick to satisfy the effective cushion threshold
+                primary = [c for c in cands if c['is_primary_pick'] and c['cushion_pct'] >= effective_cushion]
                 if not primary:
-                    # Ticker does NOT satisfy the cushion requirement; omit from selected signals
+                    # Ticker does NOT satisfy the effective cushion requirement; omit from selected signals
                     continue
                 best = dict(primary[0])
                 best['all_ladder_strikes'] = [dict(c) for c in cands[:8]]
+                best['regime'] = regime
+                best['regime_name'] = regime['regime_name']
+                best['regime_badge'] = regime['regime_badge']
+                best['regime_color'] = regime['regime_color']
+                best['effective_cushion'] = effective_cushion
+                best['is_bear_regime'] = regime.get('is_bear_or_breakdown', False)
 
                 # Compute Dark Pool & Microstructure Telemetry safely
                 dp_telemetry = compute_dark_pool_telemetry(sym, df)
                 best['dark_pool'] = dp_telemetry
 
-                # Compute Probability of Success and Move Amplitude with Dark Pool boost
+                # Compute Probability of Success and Move Amplitude with Dark Pool & Regime alignment
                 prob_amp = compute_probability_and_amplitude(
                     spot=best['spot'],
                     strike=best['strike'],
@@ -192,7 +207,8 @@ def run_screener(
                     iv=best['iv'],
                     df=df,
                     smc=smc,
-                    dp=dp_telemetry
+                    dp=dp_telemetry,
+                    regime=regime
                 )
                 best['prob_amp'] = prob_amp
                 results.append(best)

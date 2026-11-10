@@ -32,6 +32,7 @@ try:
     from core.options_scanner import run_screener
     from core.portfolio_tracker import get_active_previous_signals, HISTORICAL_CLOSED_TRADES
     from core.smc_engine import compute_smc_structure
+    from core.regime_engine import compute_market_regime
 except (ImportError, ModuleNotFoundError):
     from csp_nirvana.config.settings import (
         CORE_TRIO,
@@ -43,6 +44,7 @@ except (ImportError, ModuleNotFoundError):
     from csp_nirvana.core.options_scanner import run_screener
     from csp_nirvana.core.portfolio_tracker import get_active_previous_signals, HISTORICAL_CLOSED_TRADES
     from csp_nirvana.core.smc_engine import compute_smc_structure
+    from csp_nirvana.core.regime_engine import compute_market_regime
 
 st.set_page_config(
     page_title="CSP-Nirvana // Institutional Options Terminal",
@@ -214,6 +216,20 @@ def render_dark_table_html(df: pd.DataFrame) -> str:
                 html.append(f'<td style="color: {color}; font-weight: 600;">{val}</td>')
             elif "Ticker" in col:
                 html.append(f'<td style="color: #38BDF8; font-weight: 700;">{val}</td>')
+            elif "Regime" in col:
+                if "Bull Retrace" in val or "💎" in val:
+                    bg = "rgba(6, 182, 212, 0.2)"; c = "#06B6D4"
+                elif "Super Bull" in val or "🟢" in val:
+                    bg = "rgba(16, 185, 129, 0.2)"; c = "#10B981"
+                elif "Dead Chop" in val or "🟡" in val:
+                    bg = "rgba(234, 179, 8, 0.2)"; c = "#EAB308"
+                elif "Secular Bear" in val or "🔴" in val:
+                    bg = "rgba(239, 68, 68, 0.2)"; c = "#EF4444"
+                elif "Springboard" in val or "🔵" in val:
+                    bg = "rgba(56, 189, 248, 0.2)"; c = "#38BDF8"
+                else:
+                    bg = "rgba(148, 163, 184, 0.2)"; c = "#94A3B8"
+                html.append(f'<td><span style="background:{bg}; color:{c}; padding:3px 8px; border-radius:4px; font-weight:600; font-size:0.78rem;">{val}</span></td>')
             elif "Status" in col:
                 if "Reached" in val:
                     bg = "rgba(16, 185, 129, 0.2)"; c = "#10B981"
@@ -293,6 +309,11 @@ with st.sidebar:
     min_premium = st.slider("Min Bid Premium ($)", 0.50, 5.00, DEFAULTS["min_premium"], step=0.10)
     min_roc_pct = st.slider("Min ROC per Cycle (%)", 0.5, 5.0, DEFAULTS["min_roc_pct"], step=0.1)
     red_only = st.checkbox("Only Red Days (Pullbacks)", value=False)
+    enforce_bear_cushion = st.checkbox(
+        "🛡️ Bear/Breakdown Defensive Cushion (≥12% OTM)",
+        value=True,
+        help="Automatically requires at least a 12% strike cushion for any stock in Secular Bear or High Volatility Breakdown to defend cash collateral."
+    )
     
     st.markdown("---")
     col_btn1, col_btn2 = st.columns(2)
@@ -313,25 +334,31 @@ with st.sidebar:
 # Execution & Caching
 # ---------------------------------------------------------
 @st.cache_data(ttl=600, show_spinner=False)
-def execute_scan(tickers_tuple, dte, cushion, min_prem, min_roc, red_flg):
+def execute_scan(tickers_tuple, dte, cushion, min_prem, min_roc, red_flg, bear_cushion_flg):
     return run_screener(
         tickers=list(tickers_tuple),
         target_dte=dte,
         cushion_pct=cushion,
         min_premium=min_prem,
         min_roc_pct=min_roc,
-        red_only=red_flg
+        red_only=red_flg,
+        enforce_bear_cushion=bear_cushion_flg
     )
 
-current_params = (tuple(symbols_to_run), target_dte, cushion_pct, min_premium, min_roc_pct, red_only)
+current_params = (tuple(symbols_to_run), target_dte, cushion_pct, min_premium, min_roc_pct, red_only, enforce_bear_cushion)
 
 if run_btn or st.session_state.get("last_params") != current_params or "csp_results" not in st.session_state:
     with st.spinner(f"Scanning {len(symbols_to_run)} high-conviction assets & live options chains..."):
         raw_results, ohlcv_cache = execute_scan(
-            tuple(symbols_to_run), target_dte, cushion_pct, min_premium, min_roc_pct, red_only
+            tuple(symbols_to_run), target_dte, cushion_pct, min_premium, min_roc_pct, red_only, enforce_bear_cushion
         )
-        # Strictly enforce that only candidates passing the cushion requirement are selected
-        results = [r for r in raw_results if r.get('is_primary_pick') and r['cushion_pct'] >= cushion_pct]
+        # Strictly enforce that only candidates passing their effective cushion requirement are selected
+        results = [
+            r for r in raw_results 
+            if r.get('is_primary_pick') and r['cushion_pct'] >= (
+                max(cushion_pct, 12.0) if (enforce_bear_cushion and r.get('is_bear_regime')) else cushion_pct
+            )
+        ]
         st.session_state["csp_results"] = results
         st.session_state["csp_cache"] = ohlcv_cache
         st.session_state["last_params"] = current_params
@@ -435,11 +462,12 @@ with tab_terminal:
             # Midpoint explicitly computed (not bid)
             midpoint = r.get('midpoint', round((r['bid'] + r.get('ask', r['bid'])) / 2.0, 2))
 
-            # Strictly: Ticker, Spot, day%, Cushion, Expiry, Midpoint, PoS, PoS 50TP, ROC %, Ann. Yield
+            # Strictly: Ticker, Spot, day%, Regime, Cushion, Expiry, Midpoint, PoS, PoS 50TP, ROC %, Ann. Yield
             latest_table_rows.append({
                 "Ticker": r['ticker'],
                 "Spot": f"${r['spot']:.2f}",
                 "Day %": f"{r['day_change_pct']:+.2f}%",
+                "Regime": r.get('regime_badge', '🟡 Neutral'),
                 "Strike": f"${r['strike']:.2f}",
                 "Cushion": f"{r['cushion_pct']:.1f}% OTM",
                 "Expiry": r['expiry'],
@@ -499,8 +527,13 @@ with tab_terminal:
             bar_ascii = "█" * filled + "░" * empty
             prog_display = f"[{bar_ascii}] {prog:.0f}%"
 
+        sym_df = ohlcv_cache.get(s['ticker'])
+        reg_info = compute_market_regime(sym_df) if sym_df is not None else None
+        reg_badge = reg_info['regime_badge'] if reg_info else "🟡 Neutral"
+
         prev_table_rows.append({
             "Ticker": s['ticker'],
+            "Regime": reg_badge,
             "Strike": f"${s['strike']:.2f}",
             "Expiry": s['expiry'],
             "Entry Date": s['entry_date'],
@@ -720,6 +753,18 @@ with tab_creed:
     </div>
     """, unsafe_allow_html=True)
 
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("#### 5. Systematic Market Regime Matrix & Adaptive Shield Rules")
+    
+    regime_matrix_rows = [
+        {"Regime State": "🟢 Super Bull Breakout", "Technical Definition": "Spot > 10 EMA > 30 EMA · Spot > 200 SMA · ADX ≥ 22", "CSP Role": "High baseline win rate; rapid theta decay; standard 7% cushion.", "Cushion Gate": "Standard (≥ 7.0%)"},
+        {"Regime State": "💎 Bull Retracement / Dip", "Technical Definition": "Spot > 200 SMA · Pulled back to 50 SMA / ICT OTE (61.8%–78.6%)", "CSP Role": "The Sweet Spot for CSPs: IV expands on the dip, providing peak credit at strong structural support.", "Cushion Gate": "Standard (≥ 7.0%)"},
+        {"Regime State": "🟡 Dead Chop / Rangebound", "Technical Definition": "ADX < 20 OR Choppiness Index (CI) > 61.8", "CSP Role": "Horizontal oscillation; high theta harvest; option strikes outside range decay with zero pressure.", "Cushion Gate": "Standard (≥ 7.0%)"},
+        {"Regime State": "🔵 Sweet Spot Springboard", "Technical Definition": "Spot testing 200 SMA institutional shelf (within 3.5%)", "CSP Role": "Strong bounce probability; short put strike anchored safely beneath 200 MA.", "Cushion Gate": "Moderate (≥ 8.0%)"},
+        {"Regime State": "🔴 Secular Bear / Breakdown", "Technical Definition": "Spot < 200 SMA AND (50 SMA < 200 SMA OR Spot < 30 EMA OR -DI > +DI)", "CSP Role": "Elevated downside tail risk; systematic engine automatically enforces defensive shield.", "Cushion Gate": "🛡️ Enforced ≥ 12.0% Shield"}
+    ]
+    st.markdown(render_dark_table_html(pd.DataFrame(regime_matrix_rows)), unsafe_allow_html=True)
+
 
 # =========================================================
 # TAB 3: TECHNICAL & DARK POOL DEEP-DIVE
@@ -877,7 +922,7 @@ with tab_deepdive:
         range_pct = ((cand['spot'] - smc_rec.get('swing_low', cand['spot'] * 0.8)) / range_span) * 100.0
         cushion_vs_sigma = cand['cushion_pct'] / max(0.1, pa.get('implied_move_pct', 8.0))
 
-        rc1, rc2, rc3 = st.columns(3)
+        rc1, rc2 = st.columns(2)
         with rc1:
             st.markdown(f"""
             <div class="rule-card" style="border-left-color: #38BDF8;">
@@ -902,6 +947,8 @@ with tab_deepdive:
             </div>
             """, unsafe_allow_html=True)
 
+        st.markdown("<br>", unsafe_allow_html=True)
+        rc3, rc4 = st.columns(2)
         with rc3:
             st.markdown(f"""
             <div class="rule-card" style="border-left-color: #F59E0B;">
@@ -911,5 +958,23 @@ with tab_deepdive:
                 • <strong>Cycle ROC</strong>: {cand['roc_cycle_pct']:.2f}% in ~{cand['dte']} days ({cand['annualized_roc_pct']:.1f}% Ann.)<br>
                 • <strong>Risk-Free Premium</strong>: ROC beats the 4.5% Treasury hurdle by +{cand['annualized_roc_pct'] - 4.5:.1f}%.<br>
                 • <strong>50% Take-Profit Target</strong>: Buy back at ${cand['tp_50_price']:.2f} with estimated velocity of ~{pa.get('est_days_to_50tp', 10)} trading days.
+            </div>
+            """, unsafe_allow_html=True)
+
+        with rc4:
+            regime_rec = cand.get('regime')
+            if not regime_rec:
+                regime_rec = compute_market_regime(df_ohlcv) if df_ohlcv is not None else {}
+            ci_val = regime_rec.get('ci_14', 50.0)
+            chop_desc = "Consolidation / Chop (>61.8) - High Theta Advantage" if ci_val > 60 else ("Directional Impulse (<38.2)" if ci_val < 40 else "Balanced / Neutral")
+            cushion_gate_desc = "🛡️ Defensive ≥12% Shield Enforced (Secular Bear)" if cand.get('is_bear_regime') else f"Standard ≥{cushion_pct:.1f}% Gate Satisfied ({cand['cushion_pct']:.1f}% OTM)"
+            st.markdown(f"""
+            <div class="rule-card" style="border-left-color: #EC4899;">
+                <h5 style="color: #EC4899; margin-top: 0; margin-bottom: 4px;">4. Market Regime & Structural Health</h5>
+                <div style="font-size: 0.82rem; color: #EC4899; font-weight: 600; margin-bottom: 8px;">💡 Why it is useful: Classifies underlying momentum and volatility state, ensuring you only sell puts into favorable pullbacks or chop while enforcing defensive buffers during market breakdowns.</div>
+                • <strong>Classified Regime</strong>: {regime_rec.get('regime_badge', '🟡 Neutral')} ({regime_rec.get('regime_name', 'Neutral')}) — {regime_rec.get('summary', '')}<br>
+                • <strong>ADX Trend Strength (14)</strong>: {regime_rec.get('adx_14', 20.0)} ({regime_rec.get('trend_strength_desc', 'Moderate')}) · +DI: {regime_rec.get('plus_di', 20.0)} / -DI: {regime_rec.get('minus_di', 20.0)}<br>
+                • <strong>Choppiness Index (14)</strong>: {ci_val} ({chop_desc})<br>
+                • <strong>Defensive Cushion Gate</strong>: {cushion_gate_desc}
             </div>
             """, unsafe_allow_html=True)
