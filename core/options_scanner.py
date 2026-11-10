@@ -88,6 +88,7 @@ def scan_single_ticker(
                 continue
 
             collateral = strike * 100.0
+            midpoint = round((bid + ask) / 2.0, 2) if (ask > 0 and ask >= bid) else bid
             credit = bid * 100.0
             cost_basis = strike - bid
             cushion = ((spot - strike) / spot) * 100.0
@@ -108,6 +109,7 @@ def scan_single_ticker(
                 'strike': strike,
                 'bid': bid,
                 'ask': ask,
+                'midpoint': midpoint,
                 'iv': iv,
                 'collateral': collateral,
                 'credit': credit,
