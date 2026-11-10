@@ -23,6 +23,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 try:
     from config.settings import (
+        CORE_TRIO,
         TIER_1_BLUE_CHIPS,
         TIER_2_HIGH_BETA,
         DEFAULT_UNIVERSE,
@@ -32,6 +33,7 @@ try:
     from core.portfolio_tracker import get_active_previous_signals, HISTORICAL_CLOSED_TRADES
 except (ImportError, ModuleNotFoundError):
     from csp_nirvana.config.settings import (
+        CORE_TRIO,
         TIER_1_BLUE_CHIPS,
         TIER_2_HIGH_BETA,
         DEFAULT_UNIVERSE,
@@ -48,7 +50,7 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
-# Modern High-Contrast Slate & Indigo Styling (No Pitch-Black)
+# Modern High-Contrast Slate & Indigo Styling (Strictly Dark Tables)
 # ---------------------------------------------------------
 st.markdown(
     """
@@ -113,10 +115,92 @@ st.markdown(
             color: #E2E8F0;
             line-height: 1.6;
         }
+        /* Force Streamlit Dataframe to be Dark */
+        [data-testid="stDataFrame"], .stDataFrame {
+            background-color: #1E293B !important;
+            color: #F8FAFC !important;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+        [data-testid="stDataFrame"] > div {
+            background-color: #1E293B !important;
+        }
+        /* Custom Dark Table */
+        .dark-table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background-color: #1E293B;
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+        table.dark-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 0.88rem;
+            color: #F8FAFC;
+        }
+        table.dark-table th {
+            background-color: #0F172A;
+            color: #38BDF8;
+            padding: 11px 15px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 0.76rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            border-bottom: 2px solid #334155;
+            white-space: nowrap;
+        }
+        table.dark-table td {
+            padding: 11px 15px;
+            border-bottom: 1px solid #2A364F;
+            color: #F1F5F9;
+            white-space: nowrap;
+        }
+        table.dark-table tr:hover {
+            background-color: #243047;
+        }
+        table.dark-table tr:last-child td {
+            border-bottom: none;
+        }
     </style>
     """,
     unsafe_allow_html=True,
 )
+
+def render_dark_table_html(df: pd.DataFrame) -> str:
+    """Renders a fully responsive dark table with color-coded badges."""
+    html = ['<div class="dark-table-container"><table class="dark-table"><thead><tr>']
+    for col in df.columns:
+        html.append(f'<th>{col}</th>')
+    html.append('</tr></thead><tbody>')
+    for _, row in df.iterrows():
+        html.append('<tr>')
+        for col in df.columns:
+            val = str(row[col])
+            if "Day %" in col or "Profit" in col:
+                color = "#10B981" if ("+" in val or (not "-" in val and "%" in val and float(val.replace("%","").replace("+","")) > 0)) else ("#EF4444" if "-" in val else "#F1F5F9")
+                html.append(f'<td style="color: {color}; font-weight: 600;">{val}</td>')
+            elif "Ticker" in col:
+                html.append(f'<td style="color: #38BDF8; font-weight: 700;">{val}</td>')
+            elif "Status" in col:
+                bg = "rgba(16, 185, 129, 0.2)" if "Reached" in val else "rgba(56, 189, 248, 0.2)"
+                c = "#10B981" if "Reached" in val else "#38BDF8"
+                html.append(f'<td><span style="background:{bg}; color:{c}; padding:3px 8px; border-radius:4px; font-weight:600; font-size:0.78rem;">{val}</span></td>')
+            elif "Progress" in col:
+                html.append(f'<td style="font-family: monospace; color: #10B981; font-weight: 600;">{val}</td>')
+            elif "Result" in col:
+                html.append(f'<td><span style="background:rgba(16, 185, 129, 0.2); color:#10B981; padding:3px 8px; border-radius:4px; font-weight:700;">{val}</span></td>')
+            elif "Midpoint" in col or "Entry" in col or "Current" in col or "Strike" in col:
+                html.append(f'<td style="color: #E2E8F0; font-weight: 600;">{val}</td>')
+            else:
+                html.append(f'<td>{val}</td>')
+        html.append('</tr>')
+    html.append('</tbody></table></div>')
+    return "".join(html)
 
 # Header
 st.markdown("## 🧘‍♂️ CSP-Nirvana // Institutional Cash-Secured Put Terminal")
@@ -134,6 +218,7 @@ with st.sidebar:
     preset_choice = st.selectbox(
         "Watchlist Universe",
         [
+            "Core High-Conviction Trio (NVDA, HOOD, MRVL)",
             "Combined Full Universe (20 Names)",
             "Tier 1: Core Blue Chips (AAPL, MSFT, NVDA...)",
             "Tier 2: High-Beta Growth (HOOD, NOW, PLTR...)",
@@ -142,14 +227,16 @@ with st.sidebar:
         index=0
     )
     
-    if preset_choice == "Tier 1: Core Blue Chips (AAPL, MSFT, NVDA...)":
+    if preset_choice == "Core High-Conviction Trio (NVDA, HOOD, MRVL)":
+        symbols_to_run = CORE_TRIO
+    elif preset_choice == "Tier 1: Core Blue Chips (AAPL, MSFT, NVDA...)":
         symbols_to_run = TIER_1_BLUE_CHIPS
     elif preset_choice == "Tier 2: High-Beta Growth (HOOD, NOW, PLTR...)":
         symbols_to_run = TIER_2_HIGH_BETA
     elif preset_choice == "Combined Full Universe (20 Names)":
         symbols_to_run = DEFAULT_UNIVERSE
     else:
-        custom_input = st.text_area("Custom Tickers (comma separated)", "HOOD, NVDA, PLTR, AMZN, NOW, GOOGL")
+        custom_input = st.text_area("Custom Tickers (comma separated)", "HOOD, NVDA, MRVL, PLTR, AMZN, NOW")
         symbols_to_run = [s.strip().upper() for s in custom_input.split(",") if s.strip()]
 
     st.markdown("---")
@@ -194,9 +281,11 @@ current_params = (tuple(symbols_to_run), target_dte, cushion_pct, min_premium, m
 
 if run_btn or st.session_state.get("last_params") != current_params or "csp_results" not in st.session_state:
     with st.spinner(f"Scanning {len(symbols_to_run)} high-conviction assets & live options chains..."):
-        results, ohlcv_cache = execute_scan(
+        raw_results, ohlcv_cache = execute_scan(
             tuple(symbols_to_run), target_dte, cushion_pct, min_premium, min_roc_pct, red_only
         )
+        # Strictly enforce that only candidates passing the cushion requirement are selected
+        results = [r for r in raw_results if r.get('is_primary_pick') and r['cushion_pct'] >= cushion_pct]
         st.session_state["csp_results"] = results
         st.session_state["csp_cache"] = ohlcv_cache
         st.session_state["last_params"] = current_params
@@ -230,14 +319,11 @@ with tab_terminal:
     # Requirement 2: Actual number of candidates by EOD (or previous day if EOD not reached)
     # -----------------------------------------------------
     now_dt = datetime.now()
-    # Market closes at 16:00 EST on weekdays
     is_eod_reached = (now_dt.time() >= time(16, 0)) and (now_dt.weekday() < 5)
     
-    # Calculate previous day EOD qualified setups
     prev_eod_qualified_count = 0
     today_date_str = now_dt.strftime("%Y-%m-%d")
     
-    # Determine previous trading day date string
     offset_days = 3 if now_dt.weekday() == 0 else (2 if now_dt.weekday() == 6 else 1)
     prev_trading_date = (now_dt - timedelta(days=offset_days)).strftime("%Y-%m-%d")
 
@@ -277,6 +363,7 @@ with tab_terminal:
     # Requirement 3: Box for Latest signals (Date)
     # Ticker, Spot, day%, Cushion, Expiry, Midpoint (Not bid),
     # Trade PoS, ROC %, Ann. Yield. None of the columns after Ann yield.
+    # ONLY show the candidates the engine actually selected.
     # -----------------------------------------------------
     st.markdown(
         f"""
@@ -284,14 +371,14 @@ with tab_terminal:
             <div class="box-title">
                 ⚡ Latest Signals ({today_date_str})
             </div>
-            <div style="font-size: 0.8rem; color: #94A3B8;">Real-time screened CSP candidates satisfying 12%-20% cushion, ~35 DTE, and positive return on collateral.</div>
+            <div style="font-size: 0.82rem; color: #94A3B8;">High-conviction CSP setups strictly qualifying with &ge;{cushion_pct:.1f}% cushion, ~{target_dte} DTE, and positive Return on Capital.</div>
         </div>
         """,
         unsafe_allow_html=True
     )
 
     if not results:
-        st.warning("No candidates currently pass the screening filters. Try loosening the Strike Cushion % or lowering the Min Bid Premium.")
+        st.warning(f"No candidates in the selected universe currently meet the strict {cushion_pct:.1f}% cushion and ${min_premium:.2f} premium gates. Try selecting the 'Core High-Conviction Trio (NVDA, HOOD, MRVL)' or adjusting the sliders.")
     else:
         latest_table_rows = []
         for r in results:
@@ -317,7 +404,9 @@ with tab_terminal:
                 "Ann. Yield": f"{r['annualized_roc_pct']:.1f}%"
             })
         
-        st.dataframe(pd.DataFrame(latest_table_rows), use_container_width=True, hide_index=True)
+        df_latest = pd.DataFrame(latest_table_rows)
+        # Render as 100% Dark Table HTML
+        st.markdown(render_dark_table_html(df_latest), unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -331,7 +420,7 @@ with tab_terminal:
             <div class="box-title">
                 ⏳ Previous Open Signals (Active Position Tracking & Live Progress)
             </div>
-            <div style="font-size: 0.8rem; color: #94A3B8;">Tracking live theta decay, current option mark, and progress toward Kirsten's 50% Take-Profit Target.</div>
+            <div style="font-size: 0.82rem; color: #94A3B8;">Tracking live theta decay, current option mark, and progress toward Kirsten's 50% Take-Profit Target.</div>
         </div>
         """,
         unsafe_allow_html=True
@@ -342,7 +431,6 @@ with tab_terminal:
     
     for s in active_signals:
         prog = s['progress_to_target']
-        # Render visual ASCII progress bar: 10 segments
         filled = int(round(prog / 10.0))
         empty = 10 - filled
         bar_ascii = "█" * filled + "░" * empty
@@ -361,7 +449,8 @@ with tab_terminal:
             "Status": s['status']
         })
 
-    st.dataframe(pd.DataFrame(prev_table_rows), use_container_width=True, hide_index=True)
+    df_prev = pd.DataFrame(prev_table_rows)
+    st.markdown(render_dark_table_html(df_prev), unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -374,7 +463,7 @@ with tab_terminal:
             <div class="box-title">
                 📜 Historical Closed Trades (Audited 2026 Live Execution Track Record)
             </div>
-            <div style="font-size: 0.8rem; color: #94A3B8;">Full chronological record of 100% win-rate CSP positions closed at 50%-75% profit targets.</div>
+            <div style="font-size: 0.82rem; color: #94A3B8;">Full chronological record of 100% win-rate CSP positions closed at 50%-75% profit targets.</div>
         </div>
         """,
         unsafe_allow_html=True
@@ -411,7 +500,8 @@ with tab_terminal:
             "Result": "✅ WIN"
         })
 
-    st.dataframe(pd.DataFrame(closed_table_rows), use_container_width=True, hide_index=True)
+    df_closed = pd.DataFrame(closed_table_rows)
+    st.markdown(render_dark_table_html(df_closed), unsafe_allow_html=True)
 
 
 # =========================================================
@@ -603,4 +693,5 @@ with tab_deepdive:
                         "ROC %": f"{l['roc_cycle_pct']:.2f}%",
                         "Ann. %": f"{l['annualized_roc_pct']:.1f}%"
                     })
-                st.dataframe(pd.DataFrame(ladder_rows), use_container_width=True, hide_index=True)
+                df_lad = pd.DataFrame(ladder_rows)
+                st.markdown(render_dark_table_html(df_lad), unsafe_allow_html=True)

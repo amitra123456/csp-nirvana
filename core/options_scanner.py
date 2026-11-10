@@ -171,8 +171,12 @@ def run_screener(
             )
 
             if cands:
-                primary = [c for c in cands if c['is_primary_pick']]
-                best = primary[0] if primary else cands[0]
+                # Strictly require the primary pick to satisfy the cushion threshold
+                primary = [c for c in cands if c['is_primary_pick'] and c['cushion_pct'] >= cushion_pct]
+                if not primary:
+                    # Ticker does NOT satisfy the cushion requirement; omit from selected signals
+                    continue
+                best = primary[0]
                 best['all_ladder_strikes'] = cands[:8]
 
                 # Compute Dark Pool & Microstructure Telemetry safely

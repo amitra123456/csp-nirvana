@@ -1,5 +1,6 @@
 try:
     from config.settings import (
+        CORE_TRIO,
         TIER_1_BLUE_CHIPS,
         TIER_2_HIGH_BETA,
         DEFAULT_UNIVERSE,
@@ -10,6 +11,7 @@ try:
     )
 except (ImportError, ModuleNotFoundError):
     from csp_nirvana.config.settings import (
+        CORE_TRIO,
         TIER_1_BLUE_CHIPS,
         TIER_2_HIGH_BETA,
         DEFAULT_UNIVERSE,
