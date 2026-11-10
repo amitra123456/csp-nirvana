@@ -36,10 +36,14 @@ def compute_probability_and_amplitude(
     smc: Dict[str, Any],
     dp: Dict[str, Any] = None,
     regime: Dict[str, Any] = None,
+    lens1: Dict[str, Any] = None,
+    lens2: Dict[str, Any] = None,
+    sentiment: Dict[str, Any] = None,
     r: float = 0.045
 ) -> Dict[str, Any]:
     """
-    Computes analytical & empirical PoS, dark pool alignment, and projected move amplitude.
+    Computes analytical & empirical PoS, dark pool alignment, projected move amplitude,
+    and integrates Valuation (Lens 1) and Multi-Horizon News Sentiment into the core model.
     """
     T = max(1, dte) / 365.0
     sigma = iv if iv > 0.10 else calculate_parkinson_volatility(df)
@@ -89,18 +93,69 @@ def compute_probability_and_amplitude(
         elif vol_ratio >= 1.5:
             structural_boost += 2.0
 
-    empirical_pos_otm = min(98.5, max(50.0, bs_pos_otm + structural_boost))
+    # 3. Valuation (Lens 1) & Intrinsic Margin of Safety Boost
+    valuation_boost = 0.0
+    if lens1:
+        fcf_yield = lens1.get('fcf_yield_pct', 0.0)
+        upside = lens1.get('analyst_upside_pct', 0.0)
+        dcf_hurdle = lens1.get('reverse_dcf_growth_pct')
 
-    # 3. Probability of Hitting 50% Take-Profit Early
+        if fcf_yield >= 3.0:
+            valuation_boost += 2.5
+        elif fcf_yield >= 1.5:
+            valuation_boost += 1.5
+        elif fcf_yield < 0:
+            valuation_boost -= 2.5
+
+        if upside >= 25.0:
+            valuation_boost += 1.5
+        elif upside < -10.0:
+            valuation_boost -= 1.5
+
+        if dcf_hurdle is not None and dcf_hurdle > 45.0:
+            valuation_boost -= 1.5
+
+    # 4. Institutional Microstructure Shield (Lens 2) Confluence
+    microstructure_boost = 0.0
+    if lens2:
+        if lens2.get('below_avwap') and lens2.get('below_dp'):
+            microstructure_boost += 3.5  # Dual Whale Shield
+        elif lens2.get('below_avwap') or lens2.get('below_dp'):
+            microstructure_boost += 1.5
+        else:
+            microstructure_boost -= 2.0  # Inside range / unshielded
+
+    # 5. Multi-Horizon News Sentiment & Whale Divergence Boost
+    sentiment_boost = 0.0
+    if sentiment:
+        s5 = sentiment.get('score_5d', 0.0)
+        div_badge = sentiment.get('divergence_badge', '')
+
+        if "Whale Absorption" in div_badge:
+            sentiment_boost += 4.0  # Golden Setup: selling peak IV into whale accumulation
+        elif "FOMO Trap" in div_badge:
+            sentiment_boost -= 3.0  # High risk of cycle exhaustion
+        elif "Liquidation" in div_badge:
+            sentiment_boost -= 4.0  # True institutional liquidation
+        else:
+            if s5 >= 15.0:
+                sentiment_boost += 1.5
+            elif s5 <= -20.0:
+                sentiment_boost -= 2.0
+
+    total_boost = structural_boost + valuation_boost + microstructure_boost + sentiment_boost
+    empirical_pos_otm = min(99.0, max(45.0, bs_pos_otm + total_boost))
+
+    # 6. Probability of Hitting 50% Take-Profit Early
     prob_50_tp = min(96.0, empirical_pos_otm * 1.08)
 
-    # 4. Implied 1-Sigma Expected Move
+    # 7. Implied 1-Sigma Expected Move
     implied_move_dollar = spot * sigma * math.sqrt(T)
     implied_move_pct = (implied_move_dollar / spot) * 100.0
     one_sigma_lower = spot - implied_move_dollar
     one_sigma_upper = spot + implied_move_dollar
 
-    # 5. Bullish Mean-Reversion Target Amplitude
+    # 8. Bullish Mean-Reversion Target Amplitude
     ema20 = float(df['Close'].ewm(span=20).mean().iloc[-1]) if len(df) >= 20 else spot
     sma50 = smc['sma50'] if not math.isnan(smc['sma50']) else spot
     eq_target = smc['equilibrium']
@@ -109,13 +164,41 @@ def compute_probability_and_amplitude(
     amp_to_sma50 = ((sma50 - spot) / spot) * 100.0
     amp_to_eq = ((eq_target - spot) / spot) * 100.0
 
-    # 6. Downside Cushions
+    # 9. Downside Cushions
     downside_to_strike = -((spot - strike) / spot) * 100.0
     downside_to_basis = -((spot - cost_basis) / spot) * 100.0
     downside_to_floor = -((spot - smc['swing_low']) / spot) * 100.0
 
-    # 7. Estimated Velocity in Trading Days
+    # 10. Estimated Velocity in Trading Days
     est_days_to_50tp = max(3, int(dte * 0.38))
+
+    # 11. Holistic Nirvana Composite Score (0 - 100 Scale)
+    # Weights: Cushion Safety (25%), Fundamentals (20%), Microstructure (20%), Sentiment (15%), PoS (10%), ROC (10%)
+    cushion_subscore = min(25.0, (abs(downside_to_strike) / 18.0) * 25.0)
+
+    val_yield = lens1.get('fcf_yield_pct', 2.0) if lens1 else 2.0
+    val_subscore = min(20.0, max(0.0, (val_yield / 4.0) * 20.0))
+
+    if lens2 and lens2.get('below_avwap') and lens2.get('below_dp'):
+        ms_subscore = 20.0
+    elif lens2 and (lens2.get('below_avwap') or lens2.get('below_dp')):
+        ms_subscore = 12.0
+    else:
+        ms_subscore = 6.0
+
+    if sentiment and "Whale Absorption" in sentiment.get('divergence_badge', ''):
+        sent_subscore = 15.0
+    elif sentiment and sentiment.get('score_5d', 0.0) >= 0.0:
+        sent_subscore = 10.0
+    else:
+        sent_subscore = 6.0
+
+    pos_subscore = min(10.0, max(0.0, ((empirical_pos_otm - 60.0) / 38.0) * 10.0))
+
+    cycle_roc_val = (bid / strike) * 100.0 if strike > 0 else 1.0
+    roc_subscore = min(10.0, max(0.0, (cycle_roc_val / 2.5) * 10.0))
+
+    nirvana_score = round(min(100.0, max(30.0, cushion_subscore + val_subscore + ms_subscore + sent_subscore + pos_subscore + roc_subscore)), 1)
 
     return {
         'bs_delta': float(bs_delta),
@@ -123,6 +206,10 @@ def compute_probability_and_amplitude(
         'empirical_pos_otm': float(empirical_pos_otm),
         'prob_of_touch': float(prob_of_touch),
         'prob_50_tp': float(prob_50_tp),
+        'nirvana_score': float(nirvana_score),
+        'valuation_boost': float(valuation_boost),
+        'microstructure_boost': float(microstructure_boost),
+        'sentiment_boost': float(sentiment_boost),
         'sigma_annual': float(sigma * 100.0),
         'implied_move_dollar': float(implied_move_dollar),
         'implied_move_pct': float(implied_move_pct),

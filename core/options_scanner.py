@@ -17,12 +17,16 @@ try:
     from core.dark_pool_engine import compute_dark_pool_telemetry
     from core.probability_amplitude import compute_probability_and_amplitude
     from core.regime_engine import compute_market_regime
+    from core.fair_value_engine import compute_lens1_fundamentals, compute_lens2_microstructure
+    from core.sentiment_engine import compute_multi_horizon_sentiment
     from config.settings import DEFAULTS
 except (ImportError, ModuleNotFoundError):
     from csp_nirvana.core.smc_engine import fetch_ohlcv, compute_smc_structure
     from csp_nirvana.core.dark_pool_engine import compute_dark_pool_telemetry
     from csp_nirvana.core.probability_amplitude import compute_probability_and_amplitude
     from csp_nirvana.core.regime_engine import compute_market_regime
+    from csp_nirvana.core.fair_value_engine import compute_lens1_fundamentals, compute_lens2_microstructure
+    from csp_nirvana.core.sentiment_engine import compute_multi_horizon_sentiment
     from csp_nirvana.config.settings import DEFAULTS
 
 def scan_single_ticker(
@@ -198,7 +202,21 @@ def run_screener(
                 dp_telemetry = compute_dark_pool_telemetry(sym, df)
                 best['dark_pool'] = dp_telemetry
 
-                # Compute Probability of Success and Move Amplitude with Dark Pool & Regime alignment
+                # Compute Lens 1 Fundamentals & Lens 2 Microstructure
+                lens1 = compute_lens1_fundamentals(sym, best['spot'])
+                lens2 = compute_lens2_microstructure(best['spot'], best['strike'], smc, dp_telemetry)
+                best['lens1'] = lens1
+                best['lens2'] = lens2
+
+                # Compute Multi-Horizon News Sentiment & Whale Absorption Divergence
+                sentiment = compute_multi_horizon_sentiment(
+                    sym,
+                    dark_pool_ratio_pct=lens2.get('dark_pool_index_pct', 40.0),
+                    is_accumulating=lens2.get('is_accumulating', False)
+                )
+                best['sentiment'] = sentiment
+
+                # Compute Probability of Success and Move Amplitude with Valuation & Sentiment in the model
                 prob_amp = compute_probability_and_amplitude(
                     spot=best['spot'],
                     strike=best['strike'],
@@ -208,12 +226,17 @@ def run_screener(
                     df=df,
                     smc=smc,
                     dp=dp_telemetry,
-                    regime=regime
+                    regime=regime,
+                    lens1=lens1,
+                    lens2=lens2,
+                    sentiment=sentiment
                 )
                 best['prob_amp'] = prob_amp
+                best['nirvana_score'] = prob_amp.get('nirvana_score', 80.0)
                 results.append(best)
         except Exception:
             continue
 
-    results.sort(key=lambda x: x['roc_cycle_pct'], reverse=True)
+    # Rank holistically by Nirvana Composite Score (Valuation + Sentiment + Microstructure + PoS + ROC)
+    results.sort(key=lambda x: (x.get('nirvana_score', 0.0), x['roc_cycle_pct']), reverse=True)
     return results, ohlcv_cache

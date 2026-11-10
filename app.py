@@ -262,6 +262,14 @@ def render_dark_table_html(df: pd.DataFrame) -> str:
                 html.append(f'<td><span style="background:{bg}; color:{c}; padding:3px 8px; border-radius:4px; font-weight:700;">{val}</span></td>')
             elif "Midpoint" in col or "Entry" in col or "Current" in col or "Strike" in col:
                 html.append(f'<td style="color: #E2E8F0; font-weight: 600;">{val}</td>')
+            elif "Nirvana Score" in col:
+                html.append(f'<td><span style="background: rgba(16, 185, 129, 0.25); color: #10B981; padding: 4px 10px; border-radius: 4px; font-weight: 800; font-size: 0.85rem; border: 1px solid rgba(16, 185, 129, 0.4);">{val}</span></td>')
+            elif "Whale Shield" in col:
+                html.append(f'<td><span style="background: rgba(168, 85, 247, 0.2); color: #C084FC; padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.78rem;">{val}</span></td>')
+            elif "News Sentiment" in col:
+                html.append(f'<td><span style="background: rgba(6, 182, 212, 0.2); color: #22D3EE; padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.78rem;">{val}</span></td>')
+            elif "FCF Yield" in col:
+                html.append(f'<td style="color: #38BDF8; font-weight: 700; white-space: nowrap;">{val}</td>')
             elif "Polarity" in col:
                 if "Bullish" in val:
                     bg = "rgba(16, 185, 129, 0.2)"; c = "#10B981"
@@ -478,11 +486,22 @@ def get_candidate_payload(ticker: str, results_list: list, cache: dict, dte: int
     best['regime_color'] = regime['regime_color']
     best['effective_cushion'] = effective_cushion
     best['dark_pool'] = dp
+
+    # Compute Valuation (Lens 1), Microstructure (Lens 2), and News Sentiment
+    lens1 = compute_lens1_fundamentals(ticker, best['spot'])
+    lens2 = compute_lens2_microstructure(best['spot'], best['strike'], smc, dp)
+    sent = compute_multi_horizon_sentiment(ticker, dark_pool_ratio_pct=lens2.get('dark_pool_index_pct', 40.0), is_accumulating=lens2.get('is_accumulating', False))
+    best['lens1'] = lens1
+    best['lens2'] = lens2
+    best['sentiment'] = sent
+
     try:
         best['prob_amp'] = compute_probability_and_amplitude(
             spot=best['spot'], strike=best['strike'], bid=best.get('bid', 1.50), dte=best['dte'],
-            iv=best.get('iv', 0.35), df=df, smc=smc, dp=dp, regime=regime
+            iv=best.get('iv', 0.35), df=df, smc=smc, dp=dp, regime=regime,
+            lens1=lens1, lens2=lens2, sentiment=sent
         )
+        best['nirvana_score'] = best['prob_amp'].get('nirvana_score', 80.0)
     except Exception:
         best['prob_amp'] = {}
     return best
@@ -710,15 +729,31 @@ with tab_terminal:
             
             # Midpoint explicitly computed (not bid)
             midpoint = r.get('midpoint', round((r['bid'] + r.get('ask', r['bid'])) / 2.0, 2))
+            
+            # Lens 1 FCF Yield
+            fcf_val = r.get('lens1', {}).get('fcf_yield_pct', 0.0)
+            fcf_str = f"{fcf_val:.1f}%" if fcf_val is not None else "-"
+            
+            # Lens 2 Whale Shield
+            shield_badge = r.get('lens2', {}).get('shield_badge', 'None')
+            
+            # Sentiment Divergence / Signal
+            sent_badge = r.get('sentiment', {}).get('divergence_badge', '⚖️ Balanced')
+            
+            # Nirvana Composite Score
+            nirv_score = r.get('nirvana_score', 80.0)
 
-            # Strictly: Ticker, Spot, day%, Regime, Cushion, Expiry, Midpoint, PoS, PoS 50TP, ROC %, Ann. Yield
             latest_table_rows.append({
                 "Ticker": r['ticker'],
+                "Nirvana Score": f"{nirv_score:.1f}",
                 "Spot": f"${r['spot']:.2f}",
                 "Day %": f"{r['day_change_pct']:+.2f}%",
                 "Regime": r.get('regime_badge', '🟡 Neutral'),
                 "Strike": f"${r['strike']:.2f}",
                 "Cushion": f"{r['cushion_pct']:.1f}% OTM",
+                "Whale Shield": shield_badge,
+                "FCF Yield": fcf_str,
+                "News Sentiment": sent_badge,
                 "Expiry": r['expiry'],
                 "Midpoint": f"${midpoint:.2f}",
                 "Trade PoS %": pos_trade_str,
@@ -1023,17 +1058,15 @@ with tab_creed:
         """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("#### 3. Feature Dictionary, Definitions & Relative Weights")
+    st.markdown("#### 3. Feature Dictionary, Definitions & Relative Weights (Nirvana Score Engine)")
     
     feature_dict_rows = [
-        {"Feature": "Cushion %", "Definition": "Percentage distance from spot to strike: (Spot - Strike) / Spot", "Weight": "25%", "Significance": "Primary safety barrier; must sit 12% to 20% below spot."},
-        {"Feature": "SMC Dealing Range %", "Definition": "Position in 60-day high-low range: 0% = Low, 100% = High", "Weight": "20%", "Significance": "Validates entry in deep discount territory (< 40%)."},
-        {"Feature": "ICT OTE Confluence", "Definition": "Net cost basis sits inside the 61.8% to 78.6% discount zone", "Weight": "15%", "Significance": "Optimal institutional discount accumulation zone."},
-        {"Feature": "50 SMA / 200 SMA Shield", "Definition": "Strike sits beneath both the 50-day and 200-day moving averages", "Weight": "15%", "Significance": "Dual moving-average support shelves defending the strike."},
-        {"Feature": "Dark Pool Shelf (DPI)", "Definition": "Strike sits beneath the off-exchange institutional volume shelf", "Weight": "10%", "Significance": "Ensures whale block accumulation sits above the strike."},
-        {"Feature": "1-Sigma Multiplier", "Definition": "Strike cushion divided by the 35-day implied volatility move", "Weight": "5%", "Significance": "Ensures strike sits > 1.25x beyond the statistical 1-sigma move."},
-        {"Feature": "Volume Ratio", "Definition": "Today's volume compared to the 20-day moving average volume", "Weight": "5%", "Significance": "Identifies capitulation exhaustion dips on pullback days."},
-        {"Feature": "Cycle ROC %", "Definition": "Gross option credit divided by strike collateral required", "Weight": "5%", "Significance": "Must meet or exceed the 1.20% minimum hurdle rate."}
+        {"Feature": "Cushion %", "Definition": "Percentage distance from spot to strike: (Spot - Strike) / Spot", "Weight": "25%", "Significance": "Primary downside margin of safety; protects against standard drawdowns."},
+        {"Feature": "Lens 1: Valuation", "Definition": "Normalized FCF Yield & Reverse DCF growth hurdle vs industry benchmarks", "Weight": "20%", "Significance": "Eliminates value traps; rewards high cash-flow compounders (> 3.5% FCF Yield)."},
+        {"Feature": "Lens 2: Microstructure", "Definition": "Strike anchored beneath Anchored VWAP and Dark Pool buy shelves", "Weight": "20%", "Significance": "Ensures smart-money institutional whale accumulation walls defend the strike."},
+        {"Feature": "News Sentiment & Flow", "Definition": "5D/10D/21D sentiment polarity contrasted against off-exchange Dark Pool DPI", "Weight": "15%", "Significance": "Captures high-alpha 'Whale Absorption of FUD' setups; penalizes retail FOMO tops."},
+        {"Feature": "Statistical PoS %", "Definition": "Continuous Parkinson extreme-value volatility and Black-Scholes Delta", "Weight": "10%", "Significance": "Ensures statistical probability of expiring OTM strictly exceeds 80% to 90%+."},
+        {"Feature": "Cycle ROC %", "Definition": "Option midpoint credit divided by strike cash collateral required", "Weight": "10%", "Significance": "Capital efficiency hurdle; guarantees annualized returns of 14% to 26%+."}
     ]
     st.markdown(render_dark_table_html(pd.DataFrame(feature_dict_rows)), unsafe_allow_html=True)
 
@@ -1044,24 +1077,28 @@ with tab_creed:
         <div style="color: #38BDF8; font-weight: 700;">[108 Institutional Quality Population]</div>
         &nbsp;&nbsp;│ (Mega-Cap Tech, Semis, Software, Internet, Fintech, Healthcare, Consumer, Industrials, ETFs)<br>
         &nbsp;&nbsp;▼<br>
-        <div style="color: #10B981; font-weight: 700;">[Stage 1: Pullback & SMC Discount Filter]</div>
-        &nbsp;&nbsp;├─ Condition 1: Red Day Pullback (Close &lt; Open OR Close &lt; Prev Close)<br>
-        &nbsp;&nbsp;└─ Condition 2: Deep Discount (Close &le; 20 SMA OR Day Dip &le; -0.8%)<br>
+        <div style="color: #10B981; font-weight: 700;">[Stage 1: Pullback & SMC Dealing Range Filter]</div>
+        &nbsp;&nbsp;├─ Condition 1: Red Day Pullback or consolidation dip<br>
+        &nbsp;&nbsp;└─ Condition 2: Deep Discount (Dealing Range &le; 50% Equilibrium OR Day Dip &le; -0.8%)<br>
         &nbsp;&nbsp;▼<br>
         <div style="color: #F59E0B; font-weight: 700;">[Stage 2: Strike Anchoring & Cushion Gate]</div>
-        &nbsp;&nbsp;├─ Condition 3: Strike Cushion strictly between <strong>12.0% and 20.0% OTM</strong><br>
+        &nbsp;&nbsp;├─ Condition 3: Strike Cushion strictly between <strong>8.0% and 20.0% OTM</strong> (≥12% in Bear/Breakdown)<br>
         &nbsp;&nbsp;└─ Condition 4: Strike sits safely behind 20-day Swing Low and 50 SMA / 200 SMA<br>
         &nbsp;&nbsp;▼<br>
-        <div style="color: #A855F7; font-weight: 700;">[Stage 3: Dark Pool Flow & Institutional Shelf]</div>
-        &nbsp;&nbsp;├─ Condition 5: Dark Pool Ratio &ge; 40% (Off-Exchange accumulation verified)<br>
-        &nbsp;&nbsp;└─ Condition 6: Strike sits below the Dark Pool Volume-Weighted POC Shelf<br>
+        <div style="color: #A855F7; font-weight: 700;">[Stage 3: Lens 1 & Lens 2 Fair Value Confluence]</div>
+        &nbsp;&nbsp;├─ Condition 5: Lens 1 Valuation (Normalized FCF Yield &ge; 2.0% OR conservative Reverse DCF growth)<br>
+        &nbsp;&nbsp;└─ Condition 6: Lens 2 Microstructure (Strike anchored behind AVWAP and/or Dark Pool buy shelf)<br>
         &nbsp;&nbsp;▼<br>
-        <div style="color: #EC4899; font-weight: 700;">[Stage 4: Return on Capital (ROC) & Tenor Optimization]</div>
-        &nbsp;&nbsp;├─ Condition 7: Target Tenor ~35 DTE (Window: 28–42 DTE for peak theta decay)<br>
-        &nbsp;&nbsp;├─ Condition 8: Minimum Bid Premium &ge; $1.50 ($150 per contract)<br>
-        &nbsp;&nbsp;└─ Condition 9: Minimum Cycle ROC &ge; 1.20% (~14% to 26% Annualized Yield)<br>
+        <div style="color: #06B6D4; font-weight: 700;">[Stage 4: Multi-Horizon News Sentiment & Whale Absorption]</div>
+        &nbsp;&nbsp;├─ Condition 7: 5D/10D/21D windowed news analysis reveals no unhedged catastrophic insolvencies<br>
+        &nbsp;&nbsp;└─ Condition 8: Whale Absorption Signal activated when negative news meets heavy off-exchange buying (DPI &ge; 45%)<br>
         &nbsp;&nbsp;▼<br>
-        <div style="color: #10B981; font-weight: 700;">[Qualified Output: Ranked by Cycle ROC & 50% Take-Profit Velocity]</div>
+        <div style="color: #EC4899; font-weight: 700;">[Stage 5: Return on Capital (ROC) & Tenor Optimization]</div>
+        &nbsp;&nbsp;├─ Condition 9: Target Tenor ~35 DTE (Window: 21–60 DTE for peak theta decay)<br>
+        &nbsp;&nbsp;├─ Condition 10: Minimum Midpoint Premium &ge; $0.50 (Target &ge; $1.50 per contract)<br>
+        &nbsp;&nbsp;└─ Condition 11: Minimum Cycle ROC &ge; 1.00% (~12% to 25%+ Annualized Yield)<br>
+        &nbsp;&nbsp;▼<br>
+        <div style="color: #10B981; font-weight: 700;">[Final Nirvana Output: Ranked by 0–100 Nirvana Composite Score (PoS + Valuation + Microstructure + Sentiment + ROC)]</div>
     </div>
     """, unsafe_allow_html=True)
 

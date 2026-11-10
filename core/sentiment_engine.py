@@ -51,13 +51,16 @@ FIN_POS_WORDS = {
 
 FIN_NEG_WORDS = {
     'subpoena', 'subpoenas', 'probe', 'probes', 'investigate', 'investigates',
-    'investigation', 'delay', 'delays', 'delayed', 'plunge', 'plunges', 'plunging',
-    'drop', 'drops', 'dropping', 'fall', 'falls', 'falling', 'sell-off', 'selloff',
-    'bust', 'crash', 'crashes', 'downgrade', 'downgrades', 'downgraded',
-    'loss', 'losses', 'warns', 'warned', 'warning', 'warnings', 'lawsuit',
-    'antitrust', 'bearish', 'cut', 'cuts', 'cutting', 'recession', 'headwind',
-    'headwinds', 'slump', 'slumps', 'miss', 'misses', 'missed', 'default',
-    'fraud', 'layoff', 'layoffs', 'downside', 'weak', 'weakness', 'decline'
+    'investigation', 'investigations', 'delay', 'delays', 'delayed', 'plunge',
+    'plunges', 'plunging', 'drop', 'drops', 'dropping', 'fall', 'falls', 'falling',
+    'sell-off', 'selloff', 'bust', 'crash', 'crashes', 'downgrade', 'downgrades',
+    'downgraded', 'loss', 'losses', 'warns', 'warned', 'warning', 'warnings',
+    'lawsuit', 'lawsuits', 'antitrust', 'bearish', 'cut', 'cuts', 'cutting',
+    'recession', 'headwind', 'headwinds', 'slump', 'slumps', 'miss', 'misses',
+    'missed', 'default', 'fraud', 'layoff', 'layoffs', 'downside', 'weak',
+    'weakness', 'decline', 'spy', 'scandal', 'scandals', 'affair', 'affairs',
+    'allegation', 'allegations', 'scrutiny', 'sued', 'misleading', 'oversold',
+    'sanction', 'sanctions', 'ban', 'banned', 'breach'
 }
 
 _SENTIMENT_CACHE: Dict[str, Dict[str, Any]] = {}
@@ -81,8 +84,13 @@ def score_financial_text(text: str) -> float:
         return 0.0
     return (pos_count - neg_count) / float(denom)
 
-def fetch_articles_alpaca(ticker: str, lookback_days: int = 21, limit: int = 50) -> List[Dict[str, Any]]:
-    """Fetches articles for a symbol from Alpaca News API."""
+def fetch_articles_alpaca(
+    ticker: str,
+    start_days_ago: float = 21.0,
+    end_days_ago: float = 0.0,
+    limit: int = 50
+) -> List[Dict[str, Any]]:
+    """Fetches articles for a symbol from Alpaca News API within a specific chronological window."""
     key = os.getenv("ALPACA_API_KEY") or os.getenv("APCA_API_KEY_ID")
     sec = os.getenv("ALPACA_SECRET_KEY") or os.getenv("APCA_API_SECRET_KEY")
     if not key or not sec:
@@ -93,8 +101,9 @@ def fetch_articles_alpaca(ticker: str, lookback_days: int = 21, limit: int = 50)
         from alpaca.data.requests import NewsRequest
 
         client = NewsClient(api_key=key, secret_key=sec)
-        end_dt = datetime.now()
-        start_dt = end_dt - timedelta(days=lookback_days)
+        now = datetime.now()
+        start_dt = now - timedelta(days=start_days_ago)
+        end_dt = now - timedelta(days=end_days_ago) if end_days_ago > 0 else now
 
         req = NewsRequest(symbols=ticker.upper(), start=start_dt, end=end_dt, limit=limit)
         news_set = client.get_news(req)
@@ -106,6 +115,8 @@ def fetch_articles_alpaca(ticker: str, lookback_days: int = 21, limit: int = 50)
                 articles_raw = news_set['news']
             except Exception:
                 pass
+        elif hasattr(news_set, 'news'):
+            articles_raw = getattr(news_set, 'news', [])
 
         cleaned = []
         for a in articles_raw:
@@ -213,6 +224,7 @@ def compute_multi_horizon_sentiment(
     """
     Computes 5-Day, 10-Day, and 21-Day news sentiment scores (-100 to +100),
     identifies headline catalysts, and evaluates the Sentiment vs. Dark Pool Divergence.
+    Queries distinct chronological windows to prevent single-batch flooding on high-volume symbols.
     """
     sym = ticker.strip().upper()
     now = datetime.now()
@@ -225,50 +237,44 @@ def compute_multi_horizon_sentiment(
             if cached_res.get("recent_headlines"):
                 return cached_res
 
-    articles = fetch_articles_alpaca(sym, lookback_days=21, limit=50)
-    if len(articles) < 5:
-        # High-reliability institutional RSS wire fallback
-        rss_articles = fetch_articles_rss(sym, limit=50)
-        if rss_articles:
-            articles = rss_articles
+    # 1. Fetch Window 1 (Acute Recent: 0 to 5 days ago)
+    w1_articles = fetch_articles_alpaca(sym, start_days_ago=5.0, end_days_ago=0.0, limit=50)
+    # 2. Fetch Window 2 (Intermediate Horizon: 5 to 10 days ago)
+    w2_articles = fetch_articles_alpaca(sym, start_days_ago=10.0, end_days_ago=5.0, limit=50)
+    # 3. Fetch Window 3 (Baseline Horizon: 10 to 21 days ago)
+    w3_articles = fetch_articles_alpaca(sym, start_days_ago=21.0, end_days_ago=10.0, limit=50)
 
-    if not articles:
-        articles = fetch_articles_yfinance(sym)
+    # If Alpaca has sparse or no data, fallback to RSS / YFinance
+    if (len(w1_articles) + len(w2_articles) + len(w3_articles)) < 5:
+        fallback_articles = fetch_articles_rss(sym, limit=60)
+        if not fallback_articles:
+            fallback_articles = fetch_articles_yfinance(sym)
+        for a in fallback_articles:
+            dt = a.get("created_at", now)
+            days_ago = (now - dt).total_seconds() / 86400.0
+            if days_ago <= 5.0:
+                w1_articles.append(a)
+            elif days_ago <= 10.0:
+                w2_articles.append(a)
+            elif days_ago <= 21.0:
+                w3_articles.append(a)
 
-    s5_scores, s10_scores, s21_scores = [], [], []
-    recent_headlines = []
-
-    for a in articles:
-        dt = a["created_at"]
-        days_ago = (now - dt).total_seconds() / 86400.0
-        text = f"{a['headline']} {a['summary']}"
-        score = score_financial_text(text)
-
-        if days_ago <= 5.0:
-            s5_scores.append(score)
-            if len(recent_headlines) < 4:
-                recent_headlines.append({
-                    "date": dt.strftime("%b %d, %H:%M"),
-                    "headline": a["headline"],
-                    "polarity": "Bullish" if score > 0.1 else ("Bearish" if score < -0.1 else "Neutral"),
-                    "color": "#10B981" if score > 0.1 else ("#EF4444" if score < -0.1 else "#94A3B8")
-                })
-        if days_ago <= 10.0:
-            s10_scores.append(score)
-        if days_ago <= 21.0:
-            s21_scores.append(score)
+    s1_scores = [score_financial_text(f"{a['headline']} {a.get('summary', '')}") for a in w1_articles]
+    s2_scores = [score_financial_text(f"{a['headline']} {a.get('summary', '')}") for a in w2_articles]
+    s3_scores = [score_financial_text(f"{a['headline']} {a.get('summary', '')}") for a in w3_articles]
 
     def calc_horizon_score(scores: List[float]) -> float:
         if not scores:
             return 0.0
-        # Normalize to -100 to +100
         mean_score = sum(scores) / len(scores)
         scaled = mean_score * 100.0
         return max(-100.0, min(100.0, round(scaled, 1)))
 
-    score_5d = calc_horizon_score(s5_scores)
-    score_10d = calc_horizon_score(s10_scores)
-    score_21d = calc_horizon_score(s21_scores)
+    score_5d = calc_horizon_score(s1_scores)
+    # 10D rolling horizon includes window 1 (0-5d) + window 2 (5-10d)
+    score_10d = calc_horizon_score(s1_scores + s2_scores)
+    # 21D rolling horizon includes window 1 + 2 + 3
+    score_21d = calc_horizon_score(s1_scores + s2_scores + s3_scores)
 
     # Narrative Inflection Delta (5D vs 21D)
     momentum_delta = round(score_5d - score_21d, 1)
@@ -278,6 +284,50 @@ def compute_multi_horizon_sentiment(
         trend_desc = f"Sharp Deterioration ({momentum_delta:.1f} pts)"
     else:
         trend_desc = "Stable Narrative Drift"
+
+    # Headline catalyst selection: prioritize high-impact breaking catalysts
+    CATALYST_KEYS = {
+        'probe', 'spy', 'scandal', 'investig', 'affair', 'alleg', 'lawsuit',
+        'sec', 'doj', 'fbi', 'jensen', 'huang', 'drop', 'fall', 'plunge',
+        'slump', 'crash', 'downgrade', 'antitrust', 'subpoena', 'fraud',
+        'tariff', 'ban', 'sanction', 'ai', 'blackwell', 'surge', 'rally', 'beat'
+    }
+
+    all_recent = w1_articles if w1_articles else (w2_articles + w3_articles)
+    scored_headlines = []
+    seen_titles = set()
+
+    for a in all_recent:
+        title = a.get("headline", "").strip()
+        if not title or title.lower() in seen_titles:
+            continue
+        seen_titles.add(title.lower())
+        score = score_financial_text(f"{title} {a.get('summary', '')}")
+        # Count catalyst keyword occurrences
+        title_lower = title.lower()
+        cat_matches = sum(1 for k in CATALYST_KEYS if k in title_lower)
+        scored_headlines.append({
+            "dt": a.get("created_at", now),
+            "headline": title,
+            "score": score,
+            "cat_matches": cat_matches
+        })
+
+    # Sort so that catalyst matches are at the top, then by absolute sentiment impact
+    scored_headlines.sort(key=lambda x: (x["cat_matches"] > 0, x["cat_matches"], abs(x["score"])), reverse=True)
+
+    recent_headlines = []
+    for item in scored_headlines[:4]:
+        dt = item["dt"]
+        sc = item["score"]
+        pol = "Bullish" if sc > 0.1 else ("Bearish" if sc < -0.1 else "Neutral")
+        col = "#10B981" if sc > 0.1 else ("#EF4444" if sc < -0.1 else "#94A3B8")
+        recent_headlines.append({
+            "date": dt.strftime("%b %d, %H:%M") if hasattr(dt, "strftime") else str(dt),
+            "headline": item["headline"],
+            "polarity": pol,
+            "color": col
+        })
 
     # Sentiment vs. Dark Pool Divergence Evaluation
     # This is the core quantitative alpha signal
@@ -321,8 +371,8 @@ def compute_multi_horizon_sentiment(
         "score_21d": score_21d,
         "momentum_delta": momentum_delta,
         "trend_desc": trend_desc,
-        "article_count_5d": len(s5_scores),
-        "article_count_21d": len(articles),
+        "article_count_5d": len(s1_scores),
+        "article_count_21d": len(s1_scores + s2_scores + s3_scores),
         "divergence_signal": divergence_signal,
         "divergence_badge": divergence_badge,
         "divergence_color": divergence_color,
