@@ -372,17 +372,18 @@ def get_active_previous_signals(
             "rolls": sig.get('rolls', 0)
         })
 
-    # If filter was too restrictive and returned nothing, fallback to all active
-    if not results and filter_set:
-        return get_active_previous_signals(ohlcv_cache=ohlcv_cache, symbols_filter=None)
-
     results.sort(key=lambda x: x['profit_pct'], reverse=True)
     return results
 
-def get_candle_simulated_closed_trades(limit: int = 50) -> List[Dict[str, Any]]:
-    """Returns the most recent historical closed trades audited candle-by-candle."""
+def get_candle_simulated_closed_trades(
+    limit: int = 100,
+    ticker_filter: Optional[str] = None
+) -> List[Dict[str, Any]]:
+    """Returns historical closed trades audited candle-by-candle, optionally filtered by ticker."""
     sim_data = get_simulated_data()
     raw_closed = sim_data.get("closed_trades", [])
+    if ticker_filter:
+        raw_closed = [t for t in raw_closed if t['ticker'].upper() == str(ticker_filter).upper()]
     
     formatted = []
     for t in raw_closed[:limit]:
