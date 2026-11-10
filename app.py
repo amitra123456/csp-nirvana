@@ -408,13 +408,24 @@ with tab_terminal:
             <div class="box-title">
                 ⏳ Previous Open Signals (Active Position Tracking & Live Progress)
             </div>
-            <div style="font-size: 0.82rem; color: #94A3B8;">Tracking live theta decay, current option mark, and progress toward Kirsten's 50% Take-Profit Target.</div>
+            <div style="font-size: 0.82rem; color: #94A3B8;">Determined candle-by-candle across the population: tracking live theta decay, option mark, and progress to Kirsten's 50% Take-Profit Target.</div>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    active_signals = get_active_previous_signals(ohlcv_cache)
+    col_sig_toggle, _ = st.columns([3, 1])
+    with col_sig_toggle:
+        scope_choice = st.radio(
+            "Signal Scope",
+            ["All 108 Population Active Positions", "Selected Watchlist Only"],
+            index=0,
+            horizontal=True,
+            key="prev_signal_scope"
+        )
+
+    filter_symbols = symbols_to_run if scope_choice == "Selected Watchlist Only" else None
+    active_signals = get_active_previous_signals(ohlcv_cache, symbols_filter=filter_symbols)
     prev_table_rows = []
     
     for s in active_signals:
@@ -449,9 +460,9 @@ with tab_terminal:
         """
         <div class="dashboard-box">
             <div class="box-title">
-                📜 Historical Closed Trades (Audited 2026 Live Execution Track Record)
+                📜 Historical Closed Trades (Audited Candle-by-Candle Simulation)
             </div>
-            <div style="font-size: 0.82rem; color: #94A3B8;">Full chronological record of 100% win-rate CSP positions closed at 50%-75% profit targets.</div>
+            <div style="font-size: 0.82rem; color: #94A3B8;">Rigorous causal ledger across all 108 institutional stocks: 50% TP buybacks, net-credit rolls, and full assignments.</div>
         </div>
         """,
         unsafe_allow_html=True
@@ -459,12 +470,14 @@ with tab_terminal:
 
     h_col1, h_col2, h_col3, h_col4, h_col5 = st.columns(5)
     total_closed = len(HISTORICAL_CLOSED_TRADES)
-    avg_closed_profit = np.mean([h['profit_pct'] for h in HISTORICAL_CLOSED_TRADES])
-    avg_days_held = np.mean([h['days_held'] for h in HISTORICAL_CLOSED_TRADES])
-    total_net_gain = sum([h['realized_gain'] * 100.0 for h in HISTORICAL_CLOSED_TRADES])
+    win_count = sum(1 for h in HISTORICAL_CLOSED_TRADES if "WIN" in str(h.get("result", "")))
+    win_rate = (win_count / total_closed * 100.0) if total_closed > 0 else 100.0
+    avg_closed_profit = np.mean([h['profit_pct'] for h in HISTORICAL_CLOSED_TRADES]) if total_closed > 0 else 0.0
+    avg_days_held = np.mean([h['days_held'] for h in HISTORICAL_CLOSED_TRADES]) if total_closed > 0 else 0.0
+    total_net_gain = sum([h['realized_gain'] * 100.0 for h in HISTORICAL_CLOSED_TRADES]) if total_closed > 0 else 0.0
 
-    with h_col1: st.markdown(render_kpi("Closed Trades", str(total_closed), "2026 Verified Ledger"), unsafe_allow_html=True)
-    with h_col2: st.markdown(render_kpi("Win Rate", "100.0%", "Zero realized losses", "#10B981"), unsafe_allow_html=True)
+    with h_col1: st.markdown(render_kpi("Closed Trades", str(total_closed), "Candle-by-Candle Ledger"), unsafe_allow_html=True)
+    with h_col2: st.markdown(render_kpi("Win Rate", f"{win_rate:.1f}%", f"{win_count}/{total_closed} profitable exits", "#10B981"), unsafe_allow_html=True)
     with h_col3: st.markdown(render_kpi("Avg Profit / Trade", f"+{avg_closed_profit:.1f}%", "Standard 50%-75% target", "#10B981"), unsafe_allow_html=True)
     with h_col4: st.markdown(render_kpi("Avg Days Held", f"{avg_days_held:.1f} Days", "Fast theta capture", "#38BDF8"), unsafe_allow_html=True)
     with h_col5: st.markdown(render_kpi("Total Realized Gain", f"${total_net_gain:,.0f}", "1 con per setup baseline", "#F59E0B"), unsafe_allow_html=True)
@@ -473,6 +486,7 @@ with tab_terminal:
 
     closed_table_rows = []
     for h in HISTORICAL_CLOSED_TRADES:
+        res_badge = "✅ WIN" if "WIN" in str(h.get('result', '')) else "📦 ASSIGNED"
         closed_table_rows.append({
             "Open Date": h['open_date'],
             "Close Date": h['close_date'],
@@ -485,7 +499,7 @@ with tab_terminal:
             "Profit %": f"+{h['profit_pct']:.1f}%",
             "Days Held": f"{h['days_held']}d",
             "Exit Reason": h['exit_type'],
-            "Result": "✅ WIN"
+            "Result": res_badge
         })
 
     df_closed = pd.DataFrame(closed_table_rows)
