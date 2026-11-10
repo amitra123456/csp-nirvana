@@ -346,6 +346,17 @@ with st.sidebar:
 
     if clear_btn:
         st.cache_data.clear()
+        try:
+            from core.sentiment_engine import _SENTIMENT_CACHE, _CACHE_TIMESTAMP
+            _SENTIMENT_CACHE.clear()
+            _CACHE_TIMESTAMP.clear()
+        except Exception:
+            pass
+        try:
+            from core.fair_value_engine import _FUNDAMENTALS_CACHE
+            _FUNDAMENTALS_CACHE.clear()
+        except Exception:
+            pass
         if "csp_results" in st.session_state:
             del st.session_state["csp_results"]
         if "last_params" in st.session_state:
@@ -487,6 +498,12 @@ if not candidate_tickers:
 if "selected_ticker" not in st.session_state or st.session_state["selected_ticker"] not in candidate_tickers:
     st.session_state["selected_ticker"] = candidate_tickers[0]
 
+# Ensure widget keys are synchronized with selected_ticker
+if st.session_state.get("sb_active_ticker") != st.session_state["selected_ticker"]:
+    st.session_state["sb_active_ticker"] = st.session_state["selected_ticker"]
+if st.session_state.get("tab3_active_ticker") != st.session_state["selected_ticker"]:
+    st.session_state["tab3_active_ticker"] = st.session_state["selected_ticker"]
+
 # Sidebar Synchronized Selector
 with st.sidebar:
     st.markdown("---")
@@ -494,7 +511,9 @@ with st.sidebar:
     st.caption("Selecting a stock updates telemetry, active positions, closed ledger, rulebook audit, and deep-dive charts across all tabs.")
     
     def on_sb_ticker_change():
-        st.session_state["selected_ticker"] = st.session_state["sb_active_ticker"]
+        val = st.session_state["sb_active_ticker"]
+        st.session_state["selected_ticker"] = val
+        st.session_state["tab3_active_ticker"] = val
     
     sb_idx = candidate_tickers.index(st.session_state["selected_ticker"]) if st.session_state["selected_ticker"] in candidate_tickers else 0
     st.selectbox(
@@ -1088,17 +1107,19 @@ with tab_deepdive:
     st.markdown("<br>", unsafe_allow_html=True)
 
     def on_tab3_ticker_change():
-        st.session_state["selected_ticker"] = st.session_state["tab3_active_ticker"]
+        val = st.session_state["tab3_active_ticker"]
+        st.session_state["selected_ticker"] = val
+        st.session_state["sb_active_ticker"] = val
 
     tab3_idx = candidate_tickers.index(st.session_state["selected_ticker"]) if st.session_state["selected_ticker"] in candidate_tickers else 0
-    selected_ticker = st.selectbox(
+    st.selectbox(
         "Select Candidate for Deep-Dive Analysis:",
         candidate_tickers,
         index=tab3_idx,
         key="tab3_active_ticker",
         on_change=on_tab3_ticker_change
     )
-    st.session_state["selected_ticker"] = selected_ticker
+    selected_ticker = st.session_state["selected_ticker"]
 
     cand = get_candidate_payload(
         selected_ticker, results, ohlcv_cache, target_dte, cushion_pct, min_premium, min_roc_pct
