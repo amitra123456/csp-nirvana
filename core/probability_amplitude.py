@@ -34,10 +34,11 @@ def compute_probability_and_amplitude(
     iv: float,
     df: pd.DataFrame,
     smc: Dict[str, Any],
+    dp: Dict[str, Any] = None,
     r: float = 0.045
 ) -> Dict[str, Any]:
     """
-    Computes analytical & empirical PoS and projected move amplitude.
+    Computes analytical & empirical PoS, dark pool alignment, and projected move amplitude.
     """
     T = max(1, dte) / 365.0
     sigma = iv if iv > 0.10 else calculate_parkinson_volatility(df)
@@ -59,6 +60,13 @@ def compute_probability_and_amplitude(
         structural_boost += 3.5
     if smc['ote_786'] <= cost_basis <= smc['ote_618'] or cost_basis < smc['ote_786']:
         structural_boost += 4.5
+
+    # Dark Pool Telemetry Boost
+    if dp:
+        if dp.get('is_accumulating', False):
+            structural_boost += 3.5
+        if strike <= dp.get('dark_pool_shelf_price', spot):
+            structural_boost += 2.5
 
     # Volume spike check (capitulation wash)
     if len(df) >= 20:

@@ -13,6 +13,7 @@ import pandas as pd
 import yfinance as yf
 
 from core.smc_engine import fetch_ohlcv, compute_smc_structure
+from core.dark_pool_engine import compute_dark_pool_telemetry
 from core.probability_amplitude import compute_probability_and_amplitude
 from config.settings import DEFAULTS
 
@@ -165,7 +166,11 @@ def run_screener(
             best = primary[0] if primary else cands[0]
             best['all_ladder_strikes'] = cands[:8]
 
-            # Compute Probability of Success and Move Amplitude
+            # Compute Dark Pool & Microstructure Telemetry
+            dp_telemetry = compute_dark_pool_telemetry(sym, df)
+            best['dark_pool'] = dp_telemetry
+
+            # Compute Probability of Success and Move Amplitude with Dark Pool boost
             prob_amp = compute_probability_and_amplitude(
                 spot=best['spot'],
                 strike=best['strike'],
@@ -173,7 +178,8 @@ def run_screener(
                 dte=best['dte'],
                 iv=best['iv'],
                 df=df,
-                smc=smc
+                smc=smc,
+                dp=dp_telemetry
             )
             best['prob_amp'] = prob_amp
             results.append(best)

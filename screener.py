@@ -47,17 +47,19 @@ def main():
         print("\nNo candidates passed the strict filters with current parameters.")
         return
 
-    print("\n" + "=" * 128)
-    print(f"{'TICKER':<7} {'SPOT':<8} {'DAY %':<7} {'STRIKE':<8} {'CUSHION':<9} {'EXPIRY':<12} {'BID':<7} {'BASIS':<8} {'ROC %':<7} {'ANN %':<7} {'PoS(SMC)':<9} {'PoS(50TP)':<10} {'MOVE(1s)':<9} {'SMC OTE'}")
-    print("=" * 128)
+    print("\n" + "=" * 138)
+    print(f"{'TICKER':<7} {'SPOT':<8} {'DAY %':<7} {'STRIKE':<8} {'CUSHION':<9} {'EXPIRY':<12} {'BID':<7} {'BASIS':<8} {'ROC %':<7} {'ANN %':<7} {'PoS(SMC)':<9} {'PoS(50TP)':<10} {'MOVE(1s)':<9} {'DP INDEX':<10} {'SMC OTE'}")
+    print("=" * 138)
     for r in results:
         ote_tag = "YES (OTE)" if r['ote_in_range'] else "Below 50%"
         pa = r.get('prob_amp', {})
+        dp = r.get('dark_pool', {})
         pos_smc = f"{pa.get('empirical_pos_otm', 0.0):.1f}%" if pa else "-"
         pos_50 = f"{pa.get('prob_50_tp', 0.0):.1f}%" if pa else "-"
         move_1s = f"+/-{pa.get('implied_move_pct', 0.0):.1f}%" if pa else "-"
-        print(f"{r['ticker']:<7} ${r['spot']:<7.2f} {r['day_change_pct']:>+5.2f}% ${r['strike']:<7.2f} {r['cushion_pct']:>5.1f}% OTM {r['expiry']:<12} ${r['bid']:<6.2f} ${r['cost_basis']:<7.2f} {r['roc_cycle_pct']:>5.2f}% {r['annualized_roc_pct']:>5.1f}% {pos_smc:>9} {pos_50:>10} {move_1s:>9}  {ote_tag}")
-    print("=" * 128 + "\n")
+        dp_str = f"{dp.get('dark_pool_ratio_pct', 0.0):.1f}% {'[BUY]' if dp.get('is_accumulating', False) else ''}" if dp else "-"
+        print(f"{r['ticker']:<7} ${r['spot']:<7.2f} {r['day_change_pct']:>+5.2f}% ${r['strike']:<7.2f} {r['cushion_pct']:>5.1f}% OTM {r['expiry']:<12} ${r['bid']:<6.2f} ${r['cost_basis']:<7.2f} {r['roc_cycle_pct']:>5.2f}% {r['annualized_roc_pct']:>5.1f}% {pos_smc:>9} {pos_50:>10} {move_1s:>9} {dp_str:<10}  {ote_tag}")
+    print("=" * 138 + "\n")
 
 if __name__ == '__main__':
     main()
