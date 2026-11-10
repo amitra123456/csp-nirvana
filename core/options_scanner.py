@@ -12,10 +12,16 @@ from typing import Dict, Any, List, Tuple
 import pandas as pd
 import yfinance as yf
 
-from core.smc_engine import fetch_ohlcv, compute_smc_structure
-from core.dark_pool_engine import compute_dark_pool_telemetry
-from core.probability_amplitude import compute_probability_and_amplitude
-from config.settings import DEFAULTS
+try:
+    from core.smc_engine import fetch_ohlcv, compute_smc_structure
+    from core.dark_pool_engine import compute_dark_pool_telemetry
+    from core.probability_amplitude import compute_probability_and_amplitude
+    from config.settings import DEFAULTS
+except (ImportError, ModuleNotFoundError):
+    from csp_nirvana.core.smc_engine import fetch_ohlcv, compute_smc_structure
+    from csp_nirvana.core.dark_pool_engine import compute_dark_pool_telemetry
+    from csp_nirvana.core.probability_amplitude import compute_probability_and_amplitude
+    from csp_nirvana.config.settings import DEFAULTS
 
 def scan_single_ticker(
     ticker: str,
@@ -142,47 +148,50 @@ def run_screener(
         sym = sym.strip().upper()
         if not sym:
             continue
-        df = fetch_ohlcv(sym)
-        if df is None:
-            continue
-        ohlcv_cache[sym] = df
+        try:
+            df = fetch_ohlcv(sym)
+            if df is None:
+                continue
+            ohlcv_cache[sym] = df
 
-        smc = compute_smc_structure(df)
-        if red_only and not smc['is_red_day']:
-            continue
+            smc = compute_smc_structure(df)
+            if red_only and not smc['is_red_day']:
+                continue
 
-        cands = scan_single_ticker(
-            ticker=sym,
-            target_dte=target_dte,
-            cushion_pct=cushion_pct,
-            min_premium=min_premium,
-            min_roc_pct=min_roc_pct,
-            df_ohlcv=df,
-            smc=smc
-        )
-
-        if cands:
-            primary = [c for c in cands if c['is_primary_pick']]
-            best = primary[0] if primary else cands[0]
-            best['all_ladder_strikes'] = cands[:8]
-
-            # Compute Dark Pool & Microstructure Telemetry
-            dp_telemetry = compute_dark_pool_telemetry(sym, df)
-            best['dark_pool'] = dp_telemetry
-
-            # Compute Probability of Success and Move Amplitude with Dark Pool boost
-            prob_amp = compute_probability_and_amplitude(
-                spot=best['spot'],
-                strike=best['strike'],
-                bid=best['bid'],
-                dte=best['dte'],
-                iv=best['iv'],
-                df=df,
-                smc=smc,
-                dp=dp_telemetry
+            cands = scan_single_ticker(
+                ticker=sym,
+                target_dte=target_dte,
+                cushion_pct=cushion_pct,
+                min_premium=min_premium,
+                min_roc_pct=min_roc_pct,
+                df_ohlcv=df,
+                smc=smc
             )
-            best['prob_amp'] = prob_amp
-            results.append(best)
+
+            if cands:
+                primary = [c for c in cands if c['is_primary_pick']]
+                best = primary[0] if primary else cands[0]
+                best['all_ladder_strikes'] = cands[:8]
+
+                # Compute Dark Pool & Microstructure Telemetry safely
+                dp_telemetry = compute_dark_pool_telemetry(sym, df)
+                best['dark_pool'] = dp_telemetry
+
+                # Compute Probability of Success and Move Amplitude with Dark Pool boost
+                prob_amp = compute_probability_and_amplitude(
+                    spot=best['spot'],
+                    strike=best['strike'],
+                    bid=best['bid'],
+                    dte=best['dte'],
+                    iv=best['iv'],
+                    df=df,
+                    smc=smc,
+                    dp=dp_telemetry
+                )
+                best['prob_amp'] = prob_amp
+                results.append(best)
+        except Exception:
+            continue
 
     results.sort(key=lambda x: x['roc_cycle_pct'], reverse=True)
     return results, ohlcv_cache

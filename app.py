@@ -137,15 +137,27 @@ with st.sidebar:
     red_only = st.checkbox("Only Red Days (Pullbacks)", value=False)
     
     st.markdown("---")
-    run_btn = st.button("⚡ Run Live Scan", type="primary", use_container_width=True)
+    col_btn1, col_btn2 = st.columns(2)
+    with col_btn1:
+        run_btn = st.button("⚡ Run Live Scan", type="primary", use_container_width=True)
+    with col_btn2:
+        clear_btn = st.button("🔄 Clear Cache", use_container_width=True)
+
+    if clear_btn:
+        st.cache_data.clear()
+        if "csp_results" in st.session_state:
+            del st.session_state["csp_results"]
+        if "last_params" in st.session_state:
+            del st.session_state["last_params"]
+        st.rerun()
 
 # ---------------------------------------------------------
 # Execution & Caching
 # ---------------------------------------------------------
-@st.cache_data(ttl=900, show_spinner=False)
-def execute_scan(tickers_list, dte, cushion, min_prem, min_roc, red_flg):
+@st.cache_data(ttl=600, show_spinner=False)
+def execute_scan(tickers_tuple, dte, cushion, min_prem, min_roc, red_flg):
     return run_screener(
-        tickers=tickers_list,
+        tickers=list(tickers_tuple),
         target_dte=dte,
         cushion_pct=cushion,
         min_premium=min_prem,
@@ -153,13 +165,16 @@ def execute_scan(tickers_list, dte, cushion, min_prem, min_roc, red_flg):
         red_only=red_flg
     )
 
-if "csp_results" not in st.session_state or run_btn:
-    with st.spinner(f"Scanning {len(symbols_to_run)} high-conviction tickers..."):
+current_params = (tuple(symbols_to_run), target_dte, cushion_pct, min_premium, min_roc_pct, red_only)
+
+if run_btn or st.session_state.get("last_params") != current_params or "csp_results" not in st.session_state:
+    with st.spinner(f"Scanning {len(symbols_to_run)} high-conviction tickers & off-exchange dark pools..."):
         results, ohlcv_cache = execute_scan(
-            symbols_to_run, target_dte, cushion_pct, min_premium, min_roc_pct, red_only
+            tuple(symbols_to_run), target_dte, cushion_pct, min_premium, min_roc_pct, red_only
         )
         st.session_state["csp_results"] = results
         st.session_state["csp_cache"] = ohlcv_cache
+        st.session_state["last_params"] = current_params
 else:
     results = st.session_state.get("csp_results", [])
     ohlcv_cache = st.session_state.get("csp_cache", {})
@@ -195,15 +210,18 @@ st.markdown("<br>", unsafe_allow_html=True)
 # Primary Results Table
 # ---------------------------------------------------------
 if not results:
-    st.warning("No candidates currently pass the strict screening filters. Try loosening the cushion % or minimum premium.")
+    st.warning("No candidates currently pass the screening filters with your chosen parameters. Try lowering the Strike Cushion % (e.g. 10%) or lowering Min Bid Premium, then click '⚡ Run Live Scan'.")
 else:
     st.markdown("### 📋 Screened Candidates Ranked by ROC & Probability")
     table_rows = []
     for r in results:
         pa = r.get('prob_amp', {})
+        dp = r.get('dark_pool', {})
         pos_smc_str = f"{pa.get('empirical_pos_otm', 0.0):.1f}%" if pa else "-"
         pos_50_str = f"{pa.get('prob_50_tp', 0.0):.1f}%" if pa else "-"
         move_str = f"±{pa.get('implied_move_pct', 0.0):.1f}%" if pa else "-"
+        dp_ratio_str = f"{dp.get('dark_pool_ratio_pct', 42.0):.1f}%" if dp else "-"
+        whale_flow_str = "🐋 Accumulating" if dp and dp.get('is_accumulating', False) else "⚖️ Balanced"
 
         table_rows.append({
             "Ticker": r['ticker'],
@@ -218,6 +236,8 @@ else:
             "Net Cost Basis": f"${r['cost_basis']:.2f}",
             "ROC %": f"{r['roc_cycle_pct']:.2f}%",
             "Ann. Yield": f"{r['annualized_roc_pct']:.1f}%",
+            "Dark Pool DPI": dp_ratio_str,
+            "Whale Flow": whale_flow_str,
             "PoS (SMC)": pos_smc_str,
             "PoS (50% TP)": pos_50_str,
             "1σ Move": move_str,
@@ -230,7 +250,7 @@ else:
     # Candidate Deep Dive
     # ---------------------------------------------------------
     st.markdown("---")
-    st.markdown("### 🔍 Technical Chart, Probability & Strike Ladder Deep-Dive")
+    st.markdown("### 🔍 Technical Chart, Dark Pool Telemetry & Probability Deep-Dive")
     selected_ticker = st.selectbox(
         "Select Candidate for Deep-Dive Analysis:",
         [r['ticker'] for r in results],
@@ -240,6 +260,7 @@ else:
     cand = next(r for r in results if r['ticker'] == selected_ticker)
     df_ohlcv = ohlcv_cache.get(selected_ticker)
     pa = cand.get('prob_amp', {})
+    dp = cand.get('dark_pool', {})
 
     if pa:
         g1, g2, g3, g4, g5 = st.columns(5)
@@ -250,11 +271,21 @@ else:
             ema20 = pa.get('upside_targets', {}).get('ema20', {})
             st.markdown(render_kpi("Bounce to 20 EMA", f"+{ema20.get('amp_pct', 0.0):.1f}%", f"Target: ${ema20.get('price', 0.0):.2f}", "#A855F7"), unsafe_allow_html=True)
         with g5: st.markdown(render_kpi("Est. Days to 50% TP", f"~{pa.get('est_days_to_50tp', 0)} Days", f"Limit: ${cand['tp_50_price']:.2f}", "#38BDF8"), unsafe_allow_html=True)
+
+    if dp:
+        dp1, dp2, dp3, dp4 = st.columns(4)
+        with dp1: st.markdown(render_kpi("Dark Pool Index (DPI)", f"{dp.get('dark_pool_ratio_pct', 0.0):.1f}%", "Off-Exchange Volume Ratio", "#38BDF8"), unsafe_allow_html=True)
+        with dp2: st.markdown(render_kpi("Dark Pool Support Shelf", f"${dp.get('dark_pool_shelf_price', 0.0):.2f}", "Whale Volume POC Floor", "#10B981"), unsafe_allow_html=True)
+        with dp3: st.markdown(render_kpi("Whale Volume Share", f"{dp.get('whale_volume_share_pct', 0.0):.1f}%", f"{dp.get('whale_count', 0)} Block Trade Signatures", "#F59E0B"), unsafe_allow_html=True)
+        with dp4:
+            accum_color = "#10B981" if dp.get('is_accumulating', False) else "#94A3B8"
+            accum_label = "INSTITUTIONAL ACCUMULATION" if dp.get('is_accumulating', False) else "BALANCED / ROTATION"
+            st.markdown(render_kpi("Microstructure Flow", accum_label, f"ISO Net Buy: {dp.get('iso_net_buy_pct', 50.0):.1f}%", accum_color), unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
 
     col_chart, col_ladder = st.columns([7, 5])
     with col_chart:
-        st.markdown(f"#### {selected_ticker} Daily Candlesticks · Anchored VWAP · SMC OTE")
+        st.markdown(f"#### {selected_ticker} Daily Candlesticks · Anchored VWAP · Dark Pool Shelf")
         if df_ohlcv is not None and not df_ohlcv.empty:
             chart_df = df_ohlcv.iloc[-100:].copy()
             chart_df['SMA50'] = chart_df['Close'].rolling(50).mean()
@@ -282,6 +313,15 @@ else:
                 annotation_text="ICT OTE Discount Pocket (0.618 - 0.786)",
                 annotation_position="bottom right"
             )
+            if dp and dp.get('dark_pool_shelf_price', 0.0) > 0:
+                fig.add_hline(
+                    y=dp['dark_pool_shelf_price'],
+                    line_dash="dot",
+                    line_color="#06B6D4",
+                    line_width=2,
+                    annotation_text=f"Dark Pool Shelf: ${dp['dark_pool_shelf_price']:.2f}",
+                    annotation_position="top right"
+                )
             fig.add_hline(
                 y=cand['strike'],
                 line_dash="dash",
