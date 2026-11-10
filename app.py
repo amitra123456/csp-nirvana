@@ -33,6 +33,7 @@ try:
     from core.portfolio_tracker import get_active_previous_signals, HISTORICAL_CLOSED_TRADES
     from core.smc_engine import compute_smc_structure
     from core.regime_engine import compute_market_regime
+    from core.fair_value_engine import compute_lens1_fundamentals, compute_lens2_microstructure
 except (ImportError, ModuleNotFoundError):
     from csp_nirvana.config.settings import (
         CORE_TRIO,
@@ -45,6 +46,7 @@ except (ImportError, ModuleNotFoundError):
     from csp_nirvana.core.portfolio_tracker import get_active_previous_signals, HISTORICAL_CLOSED_TRADES
     from csp_nirvana.core.smc_engine import compute_smc_structure
     from csp_nirvana.core.regime_engine import compute_market_regime
+    from csp_nirvana.core.fair_value_engine import compute_lens1_fundamentals, compute_lens2_microstructure
 
 st.set_page_config(
     page_title="CSP-Nirvana // Institutional Options Terminal",
@@ -765,6 +767,15 @@ with tab_creed:
     ]
     st.markdown(render_dark_table_html(pd.DataFrame(regime_matrix_rows)), unsafe_allow_html=True)
 
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("#### 6. Fair Value Triangulation Architecture (Lens 1 & Lens 2)")
+    
+    fv_matrix_rows = [
+        {"Valuation Lens": "💎 Lens 1: Fundamental Intrinsic", "Methodology": "Reverse DCF + Normalized Free Cash Flow (FCF) Yield", "Institutional Application": "Inverts the DCF to determine what annual growth rate the market is pricing in; guarantees only selling puts on high cash-flow compounders.", "Safety Hurdle": "FCF Yield > 2.5% OR Market-implied growth within conservative industry consensus."},
+        {"Valuation Lens": "🏛️ Lens 2: Institutional Microstructure", "Methodology": "Anchored VWAP (AVWAP) + Dark Pool Volume-Weighted POC Shelves", "Institutional Application": "Pinpoints the volume-weighted average price of institutional whale blocks; anchors short put strikes below smart money cost bases.", "Safety Hurdle": "Strike strictly anchored beneath Anchored VWAP and/or Dark Pool buy shelves."}
+    ]
+    st.markdown(render_dark_table_html(pd.DataFrame(fv_matrix_rows)), unsafe_allow_html=True)
+
 
 # =========================================================
 # TAB 3: TECHNICAL & DARK POOL DEEP-DIVE
@@ -976,5 +987,66 @@ with tab_deepdive:
                 • <strong>ADX Trend Strength (14)</strong>: {regime_rec.get('adx_14', 20.0)} ({regime_rec.get('trend_strength_desc', 'Moderate')}) · +DI: {regime_rec.get('plus_di', 20.0)} / -DI: {regime_rec.get('minus_di', 20.0)}<br>
                 • <strong>Choppiness Index (14)</strong>: {ci_val} ({chop_desc})<br>
                 • <strong>Defensive Cushion Gate</strong>: {cushion_gate_desc}
+            </div>
+            """, unsafe_allow_html=True)
+
+        # -----------------------------------------------------
+        # Deep Dive: Fair Value Triangulation (Lens 1 & Lens 2)
+        # -----------------------------------------------------
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div class="dashboard-box">
+                <div class="box-title">
+                    ⚖️ Fair Value Triangulation: Fundamental Intrinsic (Lens 1) & Microstructure (Lens 2)
+                </div>
+                <div style="font-size: 0.84rem; color: #94A3B8;">
+                    Dual-lens institutional valuation proving whether <strong>{selected_ticker}</strong> is fundamentally undervalued and where smart money's collective cost basis sits relative to our short put strike.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        lens1 = compute_lens1_fundamentals(selected_ticker, cand['spot'])
+        lens2 = compute_lens2_microstructure(cand['spot'], cand['strike'], smc_rec, dp)
+
+        # Quick Fair Value KPI Summary Row
+        fv_kpi1, fv_kpi2, fv_kpi3, fv_kpi4 = st.columns(4)
+        with fv_kpi1:
+            st.markdown(render_kpi("Lens 1: FCF Yield", f"{lens1['fcf_yield_pct']:.2f}%", f"FCF: {lens1['fcf_str']} · MCap: {lens1['market_cap_str']}", "#38BDF8"), unsafe_allow_html=True)
+        with fv_kpi2:
+            st.markdown(render_kpi("Wall St Consensus Target", lens1['analyst_target_str'].split(' ')[0], f"{lens1['analyst_upside_pct']:+.1f}% Upside Potential", "#10B981"), unsafe_allow_html=True)
+        with fv_kpi3:
+            st.markdown(render_kpi("Lens 2: Anchored VWAP", f"${lens2['anchored_vwap']:.2f}", f"Spot sits {lens2['avwap_diff_pct']:+.1f}% vs AVWAP", "#F59E0B"), unsafe_allow_html=True)
+        with fv_kpi4:
+            st.markdown(render_kpi("Dark Pool Whale Shelf", f"${lens2['dark_pool_shelf']:.2f}", f"DPI: {lens2['dark_pool_index_pct']:.1f}% off-exchange", "#A855F7"), unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        fv_c1, fv_c2 = st.columns(2)
+        with fv_c1:
+            rev_growth_str = f"{lens1['reverse_dcf_growth_pct']:.1f}% annual FCF CAGR" if lens1['reverse_dcf_growth_pct'] is not None else "N/A"
+            st.markdown(f"""
+            <div class="rule-card" style="border-left-color: #38BDF8;">
+                <h5 style="color: #38BDF8; margin-top: 0; margin-bottom: 4px;">💎 Lens 1: Fundamental Intrinsic Fair Value (Reverse DCF & FCF)</h5>
+                <div style="font-size: 0.82rem; color: #38BDF8; font-weight: 600; margin-bottom: 8px;">💡 Why it is useful: Verifies the business's real cash-generation power, proving you only sell puts on high-quality compounders trading with an intrinsic margin of safety.</div>
+                • <strong>Normalized Free Cash Flow Yield</strong>: {lens1['fcf_yield_pct']:.2f}% ({lens1['fcf_str']} FCF on {lens1['market_cap_str']} market cap)<br>
+                • <strong>Reverse DCF Implied Growth Rate</strong>: {rev_growth_str} (market-implied 5-year hurdle)<br>
+                • <strong>Consensus Analyst Fair Value Target</strong>: {lens1['analyst_target_str']}<br>
+                • <strong>Valuation Multiples</strong>: Forward P/E: {lens1['pe_forward']}x · Trailing P/E: {lens1['pe_trailing']}x<br>
+                • <strong>Intrinsic Assessment</strong>: {lens1['assessment']}
+            </div>
+            """, unsafe_allow_html=True)
+
+        with fv_c2:
+            st.markdown(f"""
+            <div class="rule-card" style="border-left-color: #10B981;">
+                <h5 style="color: #10B981; margin-top: 0; margin-bottom: 4px;">🏛️ Lens 2: Institutional Microstructure Fair Value (AVWAP & Dark Pool)</h5>
+                <div style="font-size: 0.82rem; color: #10B981; font-weight: 600; margin-bottom: 8px;">💡 Why it is useful: Pinpoints the volume-weighted cost basis of institutional whales, ensuring your short put strike is anchored behind their break-even buy walls.</div>
+                • <strong>Anchored VWAP (Demand Anchor)</strong>: ${lens2['anchored_vwap']:.2f} (Spot is {lens2['avwap_diff_pct']:+.1f}% vs AVWAP cost basis)<br>
+                • <strong>Strike Shield vs. AVWAP</strong>: Strike (${cand['strike']:.2f}) sits {lens2['strike_vs_avwap_pct']:.1f}% below institutional AVWAP<br>
+                • <strong>Dark Pool Whale Shelf (POC)</strong>: ${lens2['dark_pool_shelf']:.2f} (Spot is {lens2['dp_diff_pct']:+.1f}% vs block trade cluster)<br>
+                • <strong>Dark Pool Index (DPI)</strong>: {lens2['dark_pool_index_pct']:.1f}% ({'Whale Accumulation Active (>40% DPI)' if lens2['is_accumulating'] else 'Balanced Institutional Flow'})<br>
+                • <strong>Microstructure Shield Confluence</strong>: {lens2['protection_badge']} — {lens2['protection_desc']}
             </div>
             """, unsafe_allow_html=True)
