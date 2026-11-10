@@ -12,12 +12,32 @@ from typing import Dict, Any, Optional, List
 import pandas as pd
 import yfinance as yf
 
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+ALPACA_DATA_DIR = PROJECT_ROOT / "data" / "daily"
+
 logging.getLogger("yfinance").setLevel(logging.CRITICAL)
 
 def fetch_ohlcv(ticker: str, lookback_days: int = 250) -> Optional[pd.DataFrame]:
-    """Fetches clean daily OHLCV bars from yfinance."""
+    """
+    Fetches clean daily OHLCV bars.
+    Prioritizes local Alpaca data warehouse for instantaneous execution,
+    falling back to yfinance if not locally cached.
+    """
+    sym = ticker.strip().upper()
+    csv_path = ALPACA_DATA_DIR / f"{sym}.csv"
+    if csv_path.exists():
+        try:
+            df = pd.read_csv(csv_path, index_col=0, parse_dates=True)
+            if not df.empty and len(df) >= 50:
+                df.dropna(subset=['Close', 'High', 'Low', 'Volume'], inplace=True)
+                return df
+        except Exception:
+            pass
+
     try:
-        df = yf.download(ticker, period=f"{lookback_days}d", interval="1d", progress=False)
+        df = yf.download(sym, period=f"{lookback_days}d", interval="1d", progress=False)
         if df.empty or len(df) < 50:
             return None
         if isinstance(df.columns, pd.MultiIndex):

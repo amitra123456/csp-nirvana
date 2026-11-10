@@ -1,22 +1,44 @@
 try:
     from config.settings import (
         CORE_TRIO,
-        TIER_1_BLUE_CHIPS,
-        TIER_2_HIGH_BETA,
+        MEGA_CAP_TECH,
+        SEMIS_AI_INFRA,
+        SOFTWARE_CLOUD,
+        INTERNET_CONSUMER_TECH,
+        FINTECH_FINANCIALS,
+        HEALTHCARE,
+        CONSUMER,
+        INDUSTRIALS_ENERGY_UTILITIES,
+        COMMUNICATIONS,
+        BROAD_MARKET_ETFS,
+        ALL_108_CANDIDATES,
+        SECTOR_MAP,
         DEFAULT_UNIVERSE,
         DEFAULTS,
         BANNER_CREED,
         PROJECT_ROOT,
-        TICKERS_FILE
+        TICKERS_FILE,
+        DATA_DIR
     )
 except (ImportError, ModuleNotFoundError):
     from csp_nirvana.config.settings import (
         CORE_TRIO,
-        TIER_1_BLUE_CHIPS,
-        TIER_2_HIGH_BETA,
+        MEGA_CAP_TECH,
+        SEMIS_AI_INFRA,
+        SOFTWARE_CLOUD,
+        INTERNET_CONSUMER_TECH,
+        FINTECH_FINANCIALS,
+        HEALTHCARE,
+        CONSUMER,
+        INDUSTRIALS_ENERGY_UTILITIES,
+        COMMUNICATIONS,
+        BROAD_MARKET_ETFS,
+        ALL_108_CANDIDATES,
+        SECTOR_MAP,
         DEFAULT_UNIVERSE,
         DEFAULTS,
         BANNER_CREED,
         PROJECT_ROOT,
-        TICKERS_FILE
+        TICKERS_FILE,
+        DATA_DIR
     )

@@ -1,0 +1,650 @@
+{
+  "AAPL": {
+    "latest_date": "2026-11-10",
+    "close": 347.635,
+    "volume": 10063386.0,
+    "bars_count": 501
+  },
+  "MSFT": {
+    "latest_date": "2026-11-10",
+    "close": 542.88,
+    "volume": 4529758.0,
+    "bars_count": 501
+  },
+  "GOOGL": {
+    "latest_date": "2026-11-10",
+    "close": 288.235,
+    "volume": 10640185.0,
+    "bars_count": 501
+  },
+  "AMZN": {
+    "latest_date": "2026-11-10",
+    "close": 269.97,
+    "volume": 13103061.0,
+    "bars_count": 501
+  },
+  "META": {
+    "latest_date": "2026-11-10",
+    "close": 643.02,
+    "volume": 3452826.0,
+    "bars_count": 501
+  },
+  "NVDA": {
+    "latest_date": "2026-11-10",
+    "close": 169.68,
+    "volume": 172705919.0,
+    "bars_count": 501
+  },
+  "AVGO": {
+    "latest_date": "2026-11-10",
+    "close": 328.58,
+    "volume": 10987799.0,
+    "bars_count": 501
+  },
+  "TSLA": {
+    "latest_date": "2026-11-10",
+    "close": 377.31,
+    "volume": 9528537.0,
+    "bars_count": 501
+  },
+  "AMD": {
+    "latest_date": "2026-11-10",
+    "close": 528.9021,
+    "volume": 21669908.0,
+    "bars_count": 501
+  },
+  "MU": {
+    "latest_date": "2026-11-10",
+    "close": 713.54,
+    "volume": 12266308.0,
+    "bars_count": 501
+  },
+  "MRVL": {
+    "latest_date": "2026-11-10",
+    "close": 154.59,
+    "volume": 11339224.0,
+    "bars_count": 501
+  },
+  "QCOM": {
+    "latest_date": "2026-11-10",
+    "close": 170.08,
+    "volume": 2065846.0,
+    "bars_count": 501
+  },
+  "TXN": {
+    "latest_date": "2026-11-10",
+    "close": 295.23,
+    "volume": 1507838.0,
+    "bars_count": 501
+  },
+  "ADI": {
+    "latest_date": "2026-11-10",
+    "close": 388.67,
+    "volume": 1431989.0,
+    "bars_count": 501
+  },
+  "LRCX": {
+    "latest_date": "2026-11-10",
+    "close": 223.49,
+    "volume": 2953277.0,
+    "bars_count": 501
+  },
+  "AMAT": {
+    "latest_date": "2026-11-10",
+    "close": 372.68,
+    "volume": 1636579.0,
+    "bars_count": 501
+  },
+  "KLAC": {
+    "latest_date": "2026-11-10",
+    "close": 152.24,
+    "volume": 3331328.0,
+    "bars_count": 501
+  },
+  "ARM": {
+    "latest_date": "2026-11-10",
+    "close": 180.78,
+    "volume": 1341083.0,
+    "bars_count": 501
+  },
+  "TSM": {
+    "latest_date": "2026-11-10",
+    "close": 396.425,
+    "volume": 5325462.0,
+    "bars_count": 501
+  },
+  "ASML": {
+    "latest_date": "2026-11-10",
+    "close": 1517.43,
+    "volume": 648269.0,
+    "bars_count": 501
+  },
+  "INTC": {
+    "latest_date": "2026-11-10",
+    "close": 58.295,
+    "volume": 38660107.0,
+    "bars_count": 501
+  },
+  "ON": {
+    "latest_date": "2026-11-10",
+    "close": 68.59,
+    "volume": 2885509.0,
+    "bars_count": 501
+  },
+  "MPWR": {
+    "latest_date": "2026-11-10",
+    "close": 1351.75,
+    "volume": 250032.0,
+    "bars_count": 501
+  },
+  "NXPI": {
+    "latest_date": "2026-11-10",
+    "close": 259.53,
+    "volume": 742861.0,
+    "bars_count": 501
+  },
+  "NOW": {
+    "latest_date": "2026-11-10",
+    "close": 100.65,
+    "volume": 5252510.0,
+    "bars_count": 501
+  },
+  "CRM": {
+    "latest_date": "2026-11-10",
+    "close": 212.695,
+    "volume": 1015776.0,
+    "bars_count": 501
+  },
+  "ORCL": {
+    "latest_date": "2026-11-10",
+    "close": 118.58,
+    "volume": 7751231.0,
+    "bars_count": 501
+  },
+  "ADBE": {
+    "latest_date": "2026-11-10",
+    "close": 234.0,
+    "volume": 645190.0,
+    "bars_count": 501
+  },
+  "PANW": {
+    "latest_date": "2026-11-10",
+    "close": 327.06,
+    "volume": 1266348.0,
+    "bars_count": 501
+  },
+  "CRWD": {
+    "latest_date": "2026-11-10",
+    "close": 226.705,
+    "volume": 2008963.0,
+    "bars_count": 501
+  },
+  "DDOG": {
+    "latest_date": "2026-11-10",
+    "close": 180.43,
+    "volume": 1010967.0,
+    "bars_count": 501
+  },
+  "SNOW": {
+    "latest_date": "2026-11-10",
+    "close": 296.265,
+    "volume": 895663.0,
+    "bars_count": 501
+  },
+  "MDB": {
+    "latest_date": "2026-11-10",
+    "close": 332.295,
+    "volume": 352961.0,
+    "bars_count": 501
+  },
+  "NET": {
+    "latest_date": "2026-11-10",
+    "close": 303.495,
+    "volume": 1440618.0,
+    "bars_count": 501
+  },
+  "ZS": {
+    "latest_date": "2026-11-10",
+    "close": 195.72,
+    "volume": 445763.0,
+    "bars_count": 501
+  },
+  "TEAM": {
+    "latest_date": "2026-11-10",
+    "close": 152.55,
+    "volume": 984512.0,
+    "bars_count": 501
+  },
+  "WDAY": {
+    "latest_date": "2026-11-10",
+    "close": 189.63,
+    "volume": 260504.0,
+    "bars_count": 501
+  },
+  "INTU": {
+    "latest_date": "2026-11-10",
+    "close": 337.94,
+    "volume": 415677.0,
+    "bars_count": 501
+  },
+  "PLTR": {
+    "latest_date": "2026-11-10",
+    "close": 167.7285,
+    "volume": 6083928.0,
+    "bars_count": 501
+  },
+  "NFLX": {
+    "latest_date": "2026-11-10",
+    "close": 62.7802,
+    "volume": 8190140.0,
+    "bars_count": 501
+  },
+  "UBER": {
+    "latest_date": "2026-11-10",
+    "close": 69.965,
+    "volume": 3266062.0,
+    "bars_count": 501
+  },
+  "ABNB": {
+    "latest_date": "2026-11-10",
+    "close": 187.75,
+    "volume": 927296.0,
+    "bars_count": 501
+  },
+  "DASH": {
+    "latest_date": "2026-11-10",
+    "close": 176.2,
+    "volume": 1410333.0,
+    "bars_count": 501
+  },
+  "SPOT": {
+    "latest_date": "2026-11-10",
+    "close": 597.89,
+    "volume": 314420.0,
+    "bars_count": 501
+  },
+  "BKNG": {
+    "latest_date": "2026-11-10",
+    "close": 163.18,
+    "volume": 679194.0,
+    "bars_count": 501
+  },
+  "PYPL": {
+    "latest_date": "2026-11-10",
+    "close": 58.68,
+    "volume": 1581488.0,
+    "bars_count": 501
+  },
+  "SHOP": {
+    "latest_date": "2026-11-10",
+    "close": 148.745,
+    "volume": 1202659.0,
+    "bars_count": 501
+  },
+  "RBLX": {
+    "latest_date": "2026-11-10",
+    "close": 50.87,
+    "volume": 2620579.0,
+    "bars_count": 501
+  },
+  "PINS": {
+    "latest_date": "2026-11-10",
+    "close": 18.805,
+    "volume": 2300512.0,
+    "bars_count": 501
+  },
+  "SNAP": {
+    "latest_date": "2026-11-10",
+    "close": 4.89,
+    "volume": 11279569.0,
+    "bars_count": 501
+  },
+  "EA": {
+    "latest_date": "2026-08-04",
+    "close": 209.7,
+    "volume": 48701983.0,
+    "bars_count": 432
+  },
+  "V": {
+    "latest_date": "2026-11-10",
+    "close": 421.145,
+    "volume": 1533923.0,
+    "bars_count": 501
+  },
+  "MA": {
+    "latest_date": "2026-11-10",
+    "close": 655.8,
+    "volume": 396016.0,
+    "bars_count": 501
+  },
+  "JPM": {
+    "latest_date": "2026-11-10",
+    "close": 341.9875,
+    "volume": 1181428.0,
+    "bars_count": 501
+  },
+  "GS": {
+    "latest_date": "2026-11-10",
+    "close": 907.6,
+    "volume": 371577.0,
+    "bars_count": 501
+  },
+  "MS": {
+    "latest_date": "2026-11-10",
+    "close": 187.36,
+    "volume": 744241.0,
+    "bars_count": 501
+  },
+  "BAC": {
+    "latest_date": "2026-11-10",
+    "close": 50.595,
+    "volume": 6764077.0,
+    "bars_count": 501
+  },
+  "SCHW": {
+    "latest_date": "2026-11-10",
+    "close": 93.28,
+    "volume": 1151291.0,
+    "bars_count": 501
+  },
+  "AXP": {
+    "latest_date": "2026-11-10",
+    "close": 323.78,
+    "volume": 572424.0,
+    "bars_count": 501
+  },
+  "BLK": {
+    "latest_date": "2026-11-10",
+    "close": 1215.72,
+    "volume": 113055.0,
+    "bars_count": 501
+  },
+  "SPGI": {
+    "latest_date": "2026-11-10",
+    "close": 469.95,
+    "volume": 238088.0,
+    "bars_count": 501
+  },
+  "HOOD": {
+    "latest_date": "2026-11-10",
+    "close": 81.22,
+    "volume": 5030499.0,
+    "bars_count": 501
+  },
+  "LLY": {
+    "latest_date": "2026-11-10",
+    "close": 1417.255,
+    "volume": 619196.0,
+    "bars_count": 501
+  },
+  "UNH": {
+    "latest_date": "2026-11-10",
+    "close": 399.48,
+    "volume": 1045728.0,
+    "bars_count": 501
+  },
+  "JNJ": {
+    "latest_date": "2026-11-10",
+    "close": 280.93,
+    "volume": 1568160.0,
+    "bars_count": 501
+  },
+  "ABBV": {
+    "latest_date": "2026-11-10",
+    "close": 293.31,
+    "volume": 997031.0,
+    "bars_count": 501
+  },
+  "MRK": {
+    "latest_date": "2026-11-10",
+    "close": 146.2505,
+    "volume": 1581458.0,
+    "bars_count": 501
+  },
+  "PFE": {
+    "latest_date": "2026-11-10",
+    "close": 29.0779,
+    "volume": 8382028.0,
+    "bars_count": 501
+  },
+  "TMO": {
+    "latest_date": "2026-11-10",
+    "close": 715.8,
+    "volume": 417010.0,
+    "bars_count": 501
+  },
+  "ISRG": {
+    "latest_date": "2026-11-10",
+    "close": 447.6323,
+    "volume": 363655.0,
+    "bars_count": 501
+  },
+  "VRTX": {
+    "latest_date": "2026-11-10",
+    "close": 546.8,
+    "volume": 209244.0,
+    "bars_count": 501
+  },
+  "AMGN": {
+    "latest_date": "2026-11-10",
+    "close": 462.35,
+    "volume": 294239.0,
+    "bars_count": 501
+  },
+  "BMY": {
+    "latest_date": "2026-11-10",
+    "close": 61.755,
+    "volume": 1566377.0,
+    "bars_count": 501
+  },
+  "GILD": {
+    "latest_date": "2026-11-10",
+    "close": 169.44,
+    "volume": 744752.0,
+    "bars_count": 501
+  },
+  "COST": {
+    "latest_date": "2026-11-10",
+    "close": 1062.265,
+    "volume": 321969.0,
+    "bars_count": 501
+  },
+  "WMT": {
+    "latest_date": "2026-11-10",
+    "close": 125.332,
+    "volume": 4278237.0,
+    "bars_count": 501
+  },
+  "HD": {
+    "latest_date": "2026-11-10",
+    "close": 350.33,
+    "volume": 1068669.0,
+    "bars_count": 501
+  },
+  "NKE": {
+    "latest_date": "2026-11-10",
+    "close": 38.6201,
+    "volume": 5952106.0,
+    "bars_count": 501
+  },
+  "SBUX": {
+    "latest_date": "2026-11-10",
+    "close": 108.97,
+    "volume": 975776.0,
+    "bars_count": 501
+  },
+  "MCD": {
+    "latest_date": "2026-11-10",
+    "close": 281.36,
+    "volume": 1012807.0,
+    "bars_count": 501
+  },
+  "PG": {
+    "latest_date": "2026-11-10",
+    "close": 169.01,
+    "volume": 2162312.0,
+    "bars_count": 501
+  },
+  "KO": {
+    "latest_date": "2026-11-10",
+    "close": 96.25,
+    "volume": 5073988.0,
+    "bars_count": 501
+  },
+  "PEP": {
+    "latest_date": "2026-11-10",
+    "close": 141.66,
+    "volume": 1220314.0,
+    "bars_count": 501
+  },
+  "TGT": {
+    "latest_date": "2026-11-10",
+    "close": 159.59,
+    "volume": 1260267.0,
+    "bars_count": 501
+  },
+  "LOW": {
+    "latest_date": "2026-11-10",
+    "close": 230.165,
+    "volume": 532288.0,
+    "bars_count": 501
+  },
+  "DIS": {
+    "latest_date": "2026-11-10",
+    "close": 118.19,
+    "volume": 1286388.0,
+    "bars_count": 501
+  },
+  "CMG": {
+    "latest_date": "2026-11-10",
+    "close": 36.1099,
+    "volume": 2686324.0,
+    "bars_count": 501
+  },
+  "CAT": {
+    "latest_date": "2026-11-10",
+    "close": 576.4201,
+    "volume": 1426648.0,
+    "bars_count": 501
+  },
+  "DE": {
+    "latest_date": "2026-11-10",
+    "close": 677.695,
+    "volume": 197397.0,
+    "bars_count": 501
+  },
+  "HON": {
+    "latest_date": "2026-11-10",
+    "close": 227.6,
+    "volume": 259503.0,
+    "bars_count": 501
+  },
+  "GE": {
+    "latest_date": "2026-11-10",
+    "close": 333.53,
+    "volume": 885722.0,
+    "bars_count": 501
+  },
+  "BA": {
+    "latest_date": "2026-11-10",
+    "close": 172.08,
+    "volume": 1809721.0,
+    "bars_count": 501
+  },
+  "LMT": {
+    "latest_date": "2026-11-10",
+    "close": 596.99,
+    "volume": 206006.0,
+    "bars_count": 501
+  },
+  "RTX": {
+    "latest_date": "2026-11-10",
+    "close": 198.11,
+    "volume": 751375.0,
+    "bars_count": 501
+  },
+  "XOM": {
+    "latest_date": "2026-11-10",
+    "close": 162.8598,
+    "volume": 3018837.0,
+    "bars_count": 501
+  },
+  "CVX": {
+    "latest_date": "2026-11-10",
+    "close": 208.585,
+    "volume": 1825975.0,
+    "bars_count": 501
+  },
+  "COP": {
+    "latest_date": "2026-11-10",
+    "close": 133.985,
+    "volume": 2328673.0,
+    "bars_count": 501
+  },
+  "SLB": {
+    "latest_date": "2026-11-10",
+    "close": 49.575,
+    "volume": 2630233.0,
+    "bars_count": 501
+  },
+  "NEE": {
+    "latest_date": "2026-11-10",
+    "close": 86.32,
+    "volume": 2903995.0,
+    "bars_count": 501
+  },
+  "UNP": {
+    "latest_date": "2026-11-10",
+    "close": 296.87,
+    "volume": 327971.0,
+    "bars_count": 501
+  },
+  "UPS": {
+    "latest_date": "2026-11-10",
+    "close": 109.66,
+    "volume": 765791.0,
+    "bars_count": 501
+  },
+  "TMUS": {
+    "latest_date": "2026-11-10",
+    "close": 166.42,
+    "volume": 1150950.0,
+    "bars_count": 501
+  },
+  "CMCSA": {
+    "latest_date": "2026-11-10",
+    "close": 24.4,
+    "volume": 4429160.0,
+    "bars_count": 501
+  },
+  "T": {
+    "latest_date": "2026-11-10",
+    "close": 21.66,
+    "volume": 7544028.0,
+    "bars_count": 501
+  },
+  "VZ": {
+    "latest_date": "2026-11-10",
+    "close": 45.795,
+    "volume": 4055085.0,
+    "bars_count": 501
+  },
+  "SPY": {
+    "latest_date": "2026-11-10",
+    "close": 748.03,
+    "volume": 12924629.0,
+    "bars_count": 501
+  },
+  "QQQ": {
+    "latest_date": "2026-11-10",
+    "close": 674.21,
+    "volume": 15469635.0,
+    "bars_count": 501
+  },
+  "IWM": {
+    "latest_date": "2026-11-10",
+    "close": 278.65,
+    "volume": 9030883.0,
+    "bars_count": 501
+  }
+}

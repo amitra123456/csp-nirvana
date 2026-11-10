@@ -7,12 +7,75 @@ from pathlib import Path
 CONFIG_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = CONFIG_DIR.parent
 TICKERS_FILE = CONFIG_DIR / "tickers.txt"
+DATA_DIR = PROJECT_ROOT / "data" / "daily"
 
-# Default Watchlists
+# Sector Breakdown (108 Quality Large Caps & Core Anchors)
 CORE_TRIO = ["MRVL", "NVDA", "HOOD"]
-TIER_1_BLUE_CHIPS = ["AAPL", "MSFT", "AMZN", "GOOGL", "META", "NVDA", "TSLA", "QQQ"]
-TIER_2_HIGH_BETA = ["HOOD", "NOW", "PLTR", "NFLX", "COIN", "MU", "MRVL", "SOXL", "APP", "INTC", "CRWV", "AVGO"]
-DEFAULT_UNIVERSE = TIER_1_BLUE_CHIPS + TIER_2_HIGH_BETA
+
+MEGA_CAP_TECH = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "AVGO", "TSLA"]
+
+SEMIS_AI_INFRA = [
+    "AMD", "MU", "MRVL", "QCOM", "TXN", "ADI", "LRCX", "AMAT",
+    "KLAC", "ARM", "TSM", "ASML", "INTC", "ON", "MPWR", "NXPI"
+]
+
+SOFTWARE_CLOUD = [
+    "NOW", "CRM", "ORCL", "ADBE", "PANW", "CRWD", "DDOG", "SNOW",
+    "MDB", "NET", "ZS", "TEAM", "WDAY", "INTU", "PLTR"
+]
+
+INTERNET_CONSUMER_TECH = [
+    "NFLX", "UBER", "ABNB", "DASH", "SPOT", "BKNG", "PYPL", "SHOP",
+    "RBLX", "PINS", "SNAP", "EA"
+]
+
+FINTECH_FINANCIALS = [
+    "V", "MA", "JPM", "GS", "MS", "BAC", "SCHW", "AXP", "BLK", "SPGI", "HOOD"
+]
+
+HEALTHCARE = [
+    "LLY", "UNH", "JNJ", "ABBV", "MRK", "PFE", "TMO", "ISRG", "VRTX", "AMGN", "BMY", "GILD"
+]
+
+CONSUMER = [
+    "COST", "WMT", "HD", "NKE", "SBUX", "MCD", "PG", "KO", "PEP", "TGT", "LOW", "DIS", "CMG"
+]
+
+INDUSTRIALS_ENERGY_UTILITIES = [
+    "CAT", "DE", "HON", "GE", "BA", "LMT", "RTX", "XOM", "CVX", "COP", "SLB", "NEE", "UNP", "UPS"
+]
+
+COMMUNICATIONS = ["TMUS", "CMCSA", "T", "VZ"]
+
+BROAD_MARKET_ETFS = ["SPY", "QQQ", "IWM"]
+
+# Combined 108 Quality Large Caps Universe
+ALL_108_CANDIDATES = []
+for _sec in [
+    MEGA_CAP_TECH, SEMIS_AI_INFRA, SOFTWARE_CLOUD, INTERNET_CONSUMER_TECH,
+    FINTECH_FINANCIALS, HEALTHCARE, CONSUMER, INDUSTRIALS_ENERGY_UTILITIES,
+    COMMUNICATIONS, BROAD_MARKET_ETFS
+]:
+    for _t in _sec:
+        if _t not in ALL_108_CANDIDATES:
+            ALL_108_CANDIDATES.append(_t)
+
+SECTOR_MAP = {
+    "Core High-Conviction Trio (NVDA, HOOD, MRVL)": CORE_TRIO,
+    "Mega-Cap Tech (AAPL, MSFT, NVDA...)": MEGA_CAP_TECH,
+    "Semis & AI Infrastructure (AMD, MU, MRVL, TSM...)": SEMIS_AI_INFRA,
+    "Software & Cloud (NOW, CRM, ORCL, PLTR...)": SOFTWARE_CLOUD,
+    "Internet & Consumer Tech (NFLX, UBER, SHOP...)": INTERNET_CONSUMER_TECH,
+    "Fintech & Financials (V, MA, JPM, HOOD...)": FINTECH_FINANCIALS,
+    "Healthcare (LLY, UNH, JNJ, ISRG...)": HEALTHCARE,
+    "Consumer & Retail (COST, WMT, HD, MCD...)": CONSUMER,
+    "Industrials, Energy & Utilities (CAT, BA, XOM...)": INDUSTRIALS_ENERGY_UTILITIES,
+    "Communications (TMUS, CMCSA, T, VZ)": COMMUNICATIONS,
+    "Broad-Market ETFs (SPY, QQQ, IWM)": BROAD_MARKET_ETFS,
+    "All 108 Institutional Quality Candidates": ALL_108_CANDIDATES
+}
+
+DEFAULT_UNIVERSE = ALL_108_CANDIDATES
 
 # Core Strategy Defaults (Calibrated from Kirsten's 2024-2026 Live Execution Logs)
 DEFAULTS = {

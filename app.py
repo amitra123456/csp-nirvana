@@ -24,8 +24,8 @@ if str(PROJECT_ROOT) not in sys.path:
 try:
     from config.settings import (
         CORE_TRIO,
-        TIER_1_BLUE_CHIPS,
-        TIER_2_HIGH_BETA,
+        SECTOR_MAP,
+        ALL_108_CANDIDATES,
         DEFAULT_UNIVERSE,
         DEFAULTS
     )
@@ -34,8 +34,8 @@ try:
 except (ImportError, ModuleNotFoundError):
     from csp_nirvana.config.settings import (
         CORE_TRIO,
-        TIER_1_BLUE_CHIPS,
-        TIER_2_HIGH_BETA,
+        SECTOR_MAP,
+        ALL_108_CANDIDATES,
         DEFAULT_UNIVERSE,
         DEFAULTS
     )
@@ -217,24 +217,12 @@ with st.sidebar:
     
     preset_choice = st.selectbox(
         "Watchlist Universe",
-        [
-            "Core High-Conviction Trio (NVDA, HOOD, MRVL)",
-            "Combined Full Universe (20 Names)",
-            "Tier 1: Core Blue Chips (AAPL, MSFT, NVDA...)",
-            "Tier 2: High-Beta Growth (HOOD, NOW, PLTR...)",
-            "Custom Watchlist"
-        ],
+        list(SECTOR_MAP.keys()) + ["Custom Watchlist"],
         index=0
     )
     
-    if preset_choice == "Core High-Conviction Trio (NVDA, HOOD, MRVL)":
-        symbols_to_run = CORE_TRIO
-    elif preset_choice == "Tier 1: Core Blue Chips (AAPL, MSFT, NVDA...)":
-        symbols_to_run = TIER_1_BLUE_CHIPS
-    elif preset_choice == "Tier 2: High-Beta Growth (HOOD, NOW, PLTR...)":
-        symbols_to_run = TIER_2_HIGH_BETA
-    elif preset_choice == "Combined Full Universe (20 Names)":
-        symbols_to_run = DEFAULT_UNIVERSE
+    if preset_choice in SECTOR_MAP:
+        symbols_to_run = SECTOR_MAP[preset_choice]
     else:
         custom_input = st.text_area("Custom Tickers (comma separated)", "HOOD, NVDA, MRVL, PLTR, AMZN, NOW")
         symbols_to_run = [s.strip().upper() for s in custom_input.split(",") if s.strip()]

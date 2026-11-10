@@ -1,24 +1,131 @@
-# Kirsten + Erin Institutional Watchlist
-# Tier 1: Core Blue-Chip Compounders (High balance sheet safety, deep liquidity)
+# ==============================================================================
+# 108 Quality Large Caps Worth Owning (SMC & Cash-Secured Put Candidates)
+# ==============================================================================
+
+# Mega-cap tech
 AAPL
 MSFT
-AMZN
 GOOGL
+AMZN
 META
 NVDA
+AVGO
 TSLA
-QQQ
 
-# Tier 2: High-Conviction High-Beta Growth (Juicy premium, clear SMC structures)
-HOOD
-NOW
-PLTR
-NFLX
-COIN
+# Semis and AI infrastructure
+AMD
 MU
 MRVL
-SOXL
-APP
+QCOM
+TXN
+ADI
+LRCX
+AMAT
+KLAC
+ARM
+TSM
+ASML
 INTC
-CRWV
-AVGO
+ON
+MPWR
+NXPI
+
+# Software and cloud
+NOW
+CRM
+ORCL
+ADBE
+PANW
+CRWD
+DDOG
+SNOW
+MDB
+NET
+ZS
+TEAM
+WDAY
+INTU
+PLTR
+
+# Internet and consumer tech
+NFLX
+UBER
+ABNB
+DASH
+SPOT
+BKNG
+PYPL
+SHOP
+RBLX
+PINS
+SNAP
+EA
+
+# Fintech and financials
+V
+MA
+JPM
+GS
+MS
+BAC
+SCHW
+AXP
+BLK
+SPGI
+HOOD
+
+# Healthcare
+LLY
+UNH
+JNJ
+ABBV
+MRK
+PFE
+TMO
+ISRG
+VRTX
+AMGN
+BMY
+GILD
+
+# Consumer
+COST
+WMT
+HD
+NKE
+SBUX
+MCD
+PG
+KO
+PEP
+TGT
+LOW
+DIS
+CMG
+
+# Industrials, energy, utilities
+CAT
+DE
+HON
+GE
+BA
+LMT
+RTX
+XOM
+CVX
+COP
+SLB
+NEE
+UNP
+UPS
+
+# Communications
+TMUS
+CMCSA
+T
+VZ
+
+# Broad-market ETFs
+SPY
+QQQ
+IWM
