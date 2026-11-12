@@ -27,6 +27,7 @@ for env_path in [PROJECT_ROOT.parent / ".env", PROJECT_ROOT / ".env"]:
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
+from alpaca.data.enums import Adjustment, DataFeed
 
 # 108 Quality Large Caps by Sector
 SECTOR_UNIVERSES = {
@@ -63,6 +64,10 @@ def main():
     client = StockHistoricalDataClient(api_key=key, secret_key=sec)
     start_date = datetime.now() - timedelta(days=730)  # 2 years
 
+    feed_name = os.getenv("ALPACA_FEED", "iex").lower()
+    feed = DataFeed.SIP if feed_name == "sip" else DataFeed.IEX
+    print(f"Using Alpaca feed: {feed_name.upper()} (split-adjusted: ALL)")
+
     batch_size = 35
     total_saved = 0
     metadata = {}
@@ -75,7 +80,9 @@ def main():
             req = StockBarsRequest(
                 symbol_or_symbols=batch,
                 timeframe=TimeFrame.Day,
-                start=start_date
+                start=start_date,
+                adjustment=Adjustment.ALL,
+                feed=feed
             )
             bars = client.get_stock_bars(req)
             df_all = bars.df

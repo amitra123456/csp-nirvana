@@ -20,9 +20,12 @@ import logging
 from typing import Dict, Any, Optional
 import yfinance as yf
 
+from datetime import datetime
+
 logging.getLogger("yfinance").setLevel(logging.CRITICAL)
 
 _FUNDAMENTALS_CACHE: Dict[str, Dict[str, Any]] = {}
+_FUNDAMENTALS_CACHE_DATE: str = ""
 
 def solve_reverse_dcf(fcf: float, mcap: float, r: float = 0.095, g_term: float = 0.03, years: int = 5) -> Optional[float]:
     """
@@ -45,11 +48,17 @@ def solve_reverse_dcf(fcf: float, mcap: float, r: float = 0.095, g_term: float =
             high = mid
     return round(mid * 100.0, 1)
 
-def compute_lens1_fundamentals(ticker: str, spot: float) -> Dict[str, Any]:
+def compute_lens1_fundamentals(ticker: str, spot: float, as_of_date: Optional[str] = None) -> Dict[str, Any]:
     """
     Computes Lens 1: Fundamental Intrinsic Fair Value and Reverse DCF metrics.
-    Uses in-memory caching to avoid repeat network overhead.
+    Uses daily cached values with as_of timestamp.
     """
+    global _FUNDAMENTALS_CACHE, _FUNDAMENTALS_CACHE_DATE
+    today_str = as_of_date or datetime.now().strftime("%Y-%m-%d")
+    if _FUNDAMENTALS_CACHE_DATE != today_str:
+        _FUNDAMENTALS_CACHE.clear()
+        _FUNDAMENTALS_CACHE_DATE = today_str
+
     sym = ticker.strip().upper()
     if sym in _FUNDAMENTALS_CACHE:
         return _FUNDAMENTALS_CACHE[sym]
@@ -108,7 +117,8 @@ def compute_lens1_fundamentals(ticker: str, spot: float) -> Dict[str, Any]:
         "analyst_upside_pct": round(target_upside, 1),
         "pe_trailing": round(pe_trail, 1) if pe_trail else "N/A",
         "pe_forward": round(pe_fwd, 1) if pe_fwd else "N/A",
-        "assessment": assessment
+        "assessment": assessment,
+        "as_of": today_str
     }
     _FUNDAMENTALS_CACHE[sym] = res
     return res

@@ -58,7 +58,7 @@ FIN_NEG_WORDS = {
     'lawsuit', 'lawsuits', 'antitrust', 'bearish', 'cut', 'cuts', 'cutting',
     'recession', 'headwind', 'headwinds', 'slump', 'slumps', 'miss', 'misses',
     'missed', 'default', 'fraud', 'layoff', 'layoffs', 'downside', 'weak',
-    'weakness', 'decline', 'spy', 'scandal', 'scandals', 'affair', 'affairs',
+    'weakness', 'decline', 'scandal', 'scandals', 'affair', 'affairs',
     'allegation', 'allegations', 'scrutiny', 'sued', 'misleading', 'oversold',
     'sanction', 'sanctions', 'ban', 'banned', 'breach'
 }
@@ -330,8 +330,8 @@ def compute_multi_horizon_sentiment(
         })
 
     # Sentiment vs. Dark Pool Divergence Evaluation
-    # This is the core quantitative alpha signal
-    if score_5d <= -10.0 and dark_pool_ratio_pct >= 45.0:
+    # This is the core quantitative alpha signal: strictly requires net dark pool accumulation
+    if score_5d <= -10.0 and dark_pool_ratio_pct >= 45.0 and is_accumulating is True:
         divergence_signal = "💎 Whale Absorption of FUD"
         divergence_badge = "💎 Whale Absorption"
         divergence_color = "#06B6D4"

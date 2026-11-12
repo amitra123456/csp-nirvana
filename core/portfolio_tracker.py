@@ -76,18 +76,8 @@ def run_candle_by_candle_population_sim(data_dir: Path = DATA_DIR) -> Dict[str, 
     Iterates candle-by-candle through historical market data for all 108 stocks:
     - Zero look-ahead: strictly causal day-by-day evaluation.
     - Accurately tracks active open signals and historical closed trades.
+    - Caching belongs to the reader, not the engine.
     """
-    sim_cache_file = PROJECT_ROOT / "data" / "daily_sim_results.json"
-    if sim_cache_file.exists():
-        try:
-            import json
-            with open(sim_cache_file, "r", encoding="utf-8") as f:
-                cached_data = json.load(f)
-                if cached_data and "active_signals" in cached_data and len(cached_data["active_signals"]) > 0:
-                    return cached_data
-        except Exception:
-            pass
-
     csv_files = sorted(glob.glob(str(data_dir / "*.csv")))
     if not csv_files:
         return {"latest_date": "2026-11-10", "active_signals": [], "closed_trades": []}
@@ -402,6 +392,49 @@ def get_candle_simulated_closed_trades(
             "result": t['result']
         })
     return formatted
+
+def load_real_positions_ledger(positions_csv: Path = PROJECT_ROOT / "data" / "positions.csv") -> List[Dict[str, Any]]:
+    """
+    Loads real portfolio positions from data/positions.csv (or Alpaca trading account if ALPACA_TRADING=1).
+    Strictly separates real positions ledger from candle-by-candle simulation.
+    """
+    import os
+    if os.getenv("ALPACA_TRADING") == "1":
+        try:
+            from alpaca.trading.client import TradingClient
+            key = os.getenv("ALPACA_API_KEY") or os.getenv("APCA_API_KEY_ID")
+            sec = os.getenv("ALPACA_SECRET_KEY") or os.getenv("APCA_API_SECRET_KEY")
+            if key and sec:
+                tc = TradingClient(key, sec, paper=True)
+                positions = tc.get_all_positions()
+                rows = []
+                for p in positions:
+                    if p.asset_class == "us_option" or "P" in p.symbol:
+                        rows.append({
+                            "ticker": p.symbol[:4].strip(),
+                            "right": "put",
+                            "strike": float(p.strike_price) if hasattr(p, 'strike_price') else 100.0,
+                            "expiry": str(p.expiration_date) if hasattr(p, 'expiration_date') else "2026-12-18",
+                            "contracts": abs(int(p.qty)),
+                            "open_credit": float(p.avg_entry_price),
+                            "open_date": "2026-11-01",
+                            "rolls": 0,
+                            "rolls_max": 2,
+                            "notes": "Alpaca Live Trading Position"
+                        })
+                if rows:
+                    return rows
+        except Exception:
+            pass
+
+    if not positions_csv.exists():
+        return []
+
+    try:
+        df = pd.read_csv(positions_csv)
+        return df.to_dict('records')
+    except Exception:
+        return []
 
 # Backwards compatibility export
 HISTORICAL_CLOSED_TRADES: List[Dict[str, Any]] = get_candle_simulated_closed_trades(100)

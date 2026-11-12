@@ -209,8 +209,34 @@ st.markdown(
 
 import json
 
-def load_daily_metadata() -> dict:
-    """Loads 3:35 PM daily pipeline metadata if present."""
+def load_latest_snapshot() -> Optional[dict]:
+    """Loads latest snapshot from data/snapshots/latest.json."""
+    snap_path = PROJECT_ROOT / "data" / "snapshots" / "latest.json"
+    if snap_path.exists():
+        try:
+            with open(snap_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return None
+
+def load_daily_metadata() -> Optional[dict]:
+    """Loads 3:35 PM daily pipeline metadata. Never fabricates data if missing."""
+    snap = load_latest_snapshot()
+    if snap and "run" in snap:
+        run_data = snap["run"]
+        as_of = run_data.get("as_of_et", "")
+        return {
+            "last_updated": as_of.replace("T", " ")[:19] + " ET" if as_of else "—",
+            "as_of_raw": as_of,
+            "status": run_data.get("status", "ok").upper(),
+            "total_population": len(snap.get("setups", [])) + len(snap.get("held_back", [])),
+            "qualified_setups_count": len(snap.get("setups", [])),
+            "active_positions_count": len(snap.get("positions", [])),
+            "closed_trades_count": snap.get("backtest", {}).get("trades", 0),
+            "next_scheduled_run": "3:35 PM ET on open market days"
+        }
+
     meta_file = PROJECT_ROOT / "data" / "last_update.json"
     if meta_file.exists():
         try:
@@ -218,15 +244,7 @@ def load_daily_metadata() -> dict:
                 return json.load(f)
         except Exception:
             pass
-    return {
-        "last_updated": datetime.now().strftime("%Y-%m-%d 15:35:00 EST"),
-        "status": "SUCCESS",
-        "total_population": 108,
-        "qualified_setups_count": 48,
-        "active_positions_count": 30,
-        "closed_trades_count": 815,
-        "next_scheduled_run": (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d 15:35:00 EST")
-    }
+    return None
 
 def render_dark_table_html(df: pd.DataFrame) -> str:
     """Renders a fully responsive dark table with color-coded badges and red loss progress bars."""
@@ -348,20 +366,53 @@ st.markdown(
 )
 
 daily_meta = load_daily_metadata()
-st.markdown(
-    f"""
-    <div style="background-color: #1E293B; border: 1px solid #334155; border-left: 4px solid #38BDF8; border-radius: 6px; padding: 10px 16px; margin-top: 10px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; font-size: 0.84rem;">
-        <div>
-            <span style="color: #94A3B8;">🕒 <strong>Automated Cron Pipeline:</strong> Runs Monday–Friday at <strong>3:35 PM EST</strong> after downloading full daily market bars from Alpaca.</span><br>
-            <span style="color: #F8FAFC;">Last Calculated: <strong style="color: #10B981;">{daily_meta.get('last_updated', '2026-11-10 15:35:00 EST')}</strong> · Status: <span style="color: #10B981; font-weight: 600;">✅ {daily_meta.get('status', 'VERIFIED')} ({daily_meta.get('total_population', 108)} Population / {daily_meta.get('active_positions_count', 30)} Active / {daily_meta.get('closed_trades_count', 815)} Closed)</span></span>
+
+if daily_meta is None:
+    st.markdown(
+        """
+        <div style="background-color: #121821; border: 1px solid #253041; border-radius: 8px; padding: 16px 20px; margin-top: 12px; margin-bottom: 20px;">
+            <div style="font-weight: 700; color: #E8ECF1; font-size: 1rem;">No data yet</div>
+            <div style="color: #A3AEBC; font-size: 0.85rem; margin-top: 4px;">
+                No snapshot has been published yet. The automated pipeline executes Monday–Friday at 3:35 PM ET.
+            </div>
         </div>
-        <div style="text-align: right; color: #94A3B8;">
-            Next Scheduled Run: <span style="color: #38BDF8; font-weight: 600;">{daily_meta.get('next_scheduled_run', 'Tomorrow at 3:35 PM EST')}</span>
+        """,
+        unsafe_allow_html=True
+    )
+else:
+    # Check staleness based on as_of_raw timestamp
+    stale_color = "#10B981"
+    stale_label = f"✅ {daily_meta.get('status', 'OK')}"
+    raw_ts = daily_meta.get('as_of_raw')
+    if raw_ts:
+        try:
+            from zoneinfo import ZoneInfo
+            snap_time = datetime.fromisoformat(raw_ts)
+            now_ny = datetime.now(ZoneInfo("America/New_York"))
+            age_days = (now_ny.date() - snap_time.date()).days
+            if age_days > 2:
+                stale_color = "#FF8B5C" # orange
+                stale_label = f"⚠️ STALE ({age_days} days old)"
+            elif age_days > 1:
+                stale_color = "#F2B24C" # amber
+                stale_label = f"⚠️ STALE ({age_days} day old)"
+        except Exception:
+            pass
+
+    st.markdown(
+        f"""
+        <div style="background-color: #1E293B; border: 1px solid #334155; border-left: 4px solid {stale_color}; border-radius: 6px; padding: 10px 16px; margin-top: 10px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; font-size: 0.84rem;">
+            <div>
+                <span style="color: #94A3B8;">🕒 <strong>Snapshot Pipeline:</strong> Runs Monday–Friday at <strong>3:35 PM ET</strong> after downloading completed market bars.</span><br>
+                <span style="color: #F8FAFC;">Data as of: <strong style="color: {stale_color};">{daily_meta.get('last_updated', '—')}</strong> · Status: <span style="color: {stale_color}; font-weight: 600;">{stale_label} ({daily_meta.get('total_population', 108)} Population / {daily_meta.get('active_positions_count', 0)} Active / {daily_meta.get('closed_trades_count', 0)} Closed)</span></span>
+            </div>
+            <div style="text-align: right; color: #94A3B8;">
+                Next Run: <span style="color: #38BDF8; font-weight: 600;">{daily_meta.get('next_scheduled_run', '3:35 PM ET')}</span>
+            </div>
         </div>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+        """,
+        unsafe_allow_html=True
+    )
 
 # ---------------------------------------------------------
 # Sidebar Controls

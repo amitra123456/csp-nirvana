@@ -1,0 +1,103 @@
+name: Daily 3:35 PM ET Snapshot Pipeline
+
+on:
+  schedule:
+    # 19:35 UTC (during EDT) and 20:35 UTC (during EST)
+    - cron: '35 19,20 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      force_run:
+        description: 'Force run pipeline ignoring market calendar guard'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pydantic
+
+      - name: Market Calendar & 15:35 ET Guard
+        id: market_guard
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          FORCE_RUN: ${{ inputs.force_run }}
+        run: |
+          python - << 'EOF'
+          import os, sys
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+          import requests
+
+          if os.getenv("FORCE_RUN") == "true":
+              print("Force run requested; bypassing calendar guard.")
+              sys.exit(0)
+
+          now_et = datetime.now(ZoneInfo("America/New_York"))
+          print(f"Current ET time: {now_et.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+
+          # Guard 1: Must be weekday
+          if now_et.weekday() >= 5:
+              print("Today is weekend. Exiting.")
+              sys.exit(1)
+
+          # Guard 2: Hour must be 15 (3 PM hour)
+          if now_et.hour != 15:
+              print(f"Current hour {now_et.hour} is not 15:00-15:59 ET. Exiting.")
+              sys.exit(1)
+
+          # Guard 3: Alpaca Market Calendar check
+          key = os.getenv("ALPACA_API_KEY")
+          sec = os.getenv("ALPACA_SECRET_KEY")
+          if key and sec:
+              headers = {"APCA-API-KEY-ID": key, "APCA-API-SECRET-KEY": sec}
+              today_str = now_et.strftime("%Y-%m-%d")
+              try:
+                  res = requests.get(f"https://api.alpaca.markets/v2/calendar?start={today_str}&end={today_str}", headers=headers, timeout=10)
+                  if res.status_code == 200:
+                      cal = res.json()
+                      if not cal:
+                          print("Market is closed today per Alpaca Calendar. Exiting.")
+                          sys.exit(1)
+                      print(f"Market is open today: {cal[0].get('open')} - {cal[0].get('close')}")
+              except Exception as e:
+                  print(f"Calendar check warning: {e}. Proceeding.")
+          EOF
+
+      - name: Execute Snapshot Pipeline
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+        run: |
+          python scripts/daily_335pm_update.py
+
+      - name: Run Test Suite & Snapshot Reconciliation
+        run: |
+          pytest tests/ -v
+
+      - name: Commit & Push Verified Snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/snapshots/ data/last_update.json data/daily_sim_results.json data/positions.csv
+          if git diff --staged --quiet; then
+            print "No snapshot changes to commit."
+          else
+            git commit -m "chore(data): publish verified 3:35 PM ET snapshot [skip ci]"
+            git push origin main
+          fi

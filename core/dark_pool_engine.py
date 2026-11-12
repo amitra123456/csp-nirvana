@@ -88,13 +88,13 @@ def compute_dark_pool_telemetry(ticker: str, df_ohlcv: pd.DataFrame) -> Dict[str
             'dark_pool_shelf_price': float(dp_shelf)
         }
     except Exception:
-        # Failsafe fallback
+        # Failsafe fallback: unknown (no boost, never assume accumulating)
         last_px = float(df_ohlcv['Close'].iloc[-1]) if (df_ohlcv is not None and len(df_ohlcv) > 0) else 100.0
         return {
-            'dark_pool_ratio_pct': 42.0,
-            'is_accumulating': True,
-            'whale_count': 2,
-            'whale_volume_share_pct': 9.0,
-            'iso_net_buy_pct': 51.0,
+            'dark_pool_ratio_pct': 40.0,
+            'is_accumulating': False,
+            'whale_count': 0,
+            'whale_volume_share_pct': 0.0,
+            'iso_net_buy_pct': 50.0,
             'dark_pool_shelf_price': last_px
         }

@@ -100,19 +100,24 @@ def scan_single_ticker(
         except Exception:
             live_px = signal_price
         current_price = round(live_px, 2)
+        # Spot is unified with the live quote pulled alongside the option chain
+        spot = current_price if current_price > 0 else smc['current_price']
+        strike_ceiling = spot * (1.0 - (cushion_pct / 100.0))
 
         candidates = []
         eligible_puts = puts[puts['strike'] <= spot].sort_values(by='strike', ascending=False)
 
         for _, row in eligible_puts.iterrows():
             strike = float(row['strike'])
-            bid = float(row['bid']) if not math.isnan(row['bid']) and row['bid'] > 0 else float(row['lastPrice'])
-            ask = float(row['ask']) if not math.isnan(row['ask']) and row['ask'] > 0 else bid
+            # Strictly use quoted bid; never substitute last price for bid
+            bid = float(row['bid']) if ('bid' in row and not math.isnan(row['bid']) and row['bid'] > 0) else 0.0
+            ask = float(row['ask']) if ('ask' in row and not math.isnan(row['ask']) and row['ask'] > 0) else bid
             volume = int(row['volume']) if not math.isnan(row['volume']) else 0
             open_interest = int(row['openInterest']) if not math.isnan(row['openInterest']) else 0
             iv = float(row['impliedVolatility']) if 'impliedVolatility' in row and not math.isnan(row['impliedVolatility']) else 0.0
 
-            if bid < min_premium:
+            # Reject unquoted bid or below minimum threshold
+            if bid <= 0 or bid < min_premium:
                 continue
 
             collateral = strike * 100.0
