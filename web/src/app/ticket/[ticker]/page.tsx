@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getSnapshot } from "@/lib/server-data";
 import { formatCurrency, formatPercent } from "@/lib/data";
+import { TicketActionButtons } from "@/components/TicketActionButtons";
 
 interface PageProps {
   params: { ticker: string };
@@ -136,33 +137,16 @@ export default async function TradeTicketPage({ params }: PageProps) {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <button
-                onClick={() => {
-                  if (typeof navigator !== "undefined") {
-                    navigator.clipboard.writeText(
-                      `SELL TO OPEN 1 ${setup?.ticker} ${setup?.expiry} $${setup?.strike} PUT @ $${setup?.bid}`
-                    );
-                    alert("Order copied to clipboard!");
-                  }
-                }}
-                className="min-h-[44px] rounded-control bg-desk-accent px-4 py-2 text-xs font-bold text-desk-bg hover:opacity-90 transition-opacity"
-              >
-                Copy order
-              </button>
-              <button
-                onClick={() => alert(`Staging exit orders: GTC limit buy at $${setup?.plan.tp50.toFixed(2)} (50% TP) and $${setup?.plan.tp60.toFixed(2)} (60% TP)`)}
-                className="min-h-[44px] rounded-control bg-desk-raised px-4 py-2 text-xs font-semibold text-desk-text border border-desk-border hover:bg-desk-border transition-colors"
-              >
-                Stage exits at TP50 / TP60
-              </button>
-              <Link
-                href="/"
-                className="min-h-[44px] flex items-center rounded-control bg-transparent px-4 py-2 text-xs font-semibold text-desk-secondary hover:text-desk-text transition-colors"
-              >
-                Compare strikes →
-              </Link>
-            </div>
+            {setup && (
+              <TicketActionButtons
+                ticker={setup.ticker}
+                expiry={setup.expiry}
+                strike={setup.strike}
+                bid={setup.bid}
+                tp50={setup.plan.tp50}
+                tp60={setup.plan.tp60}
+              />
+            )}
           </div>
 
           {/* Price Ladder Card */}
