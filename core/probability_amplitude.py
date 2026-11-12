@@ -39,11 +39,14 @@ def compute_probability_and_amplitude(
     lens1: Dict[str, Any] = None,
     lens2: Dict[str, Any] = None,
     sentiment: Dict[str, Any] = None,
+    candlestick: Dict[str, Any] = None,
+    earnings: Dict[str, Any] = None,
     r: float = 0.045
 ) -> Dict[str, Any]:
     """
     Computes analytical & empirical PoS, dark pool alignment, projected move amplitude,
-    and integrates Valuation (Lens 1) and Multi-Horizon News Sentiment into the core model.
+    and integrates Valuation (Lens 1), Microstructure (Lens 2), News Sentiment,
+    Candlestick Reversal Analysis (Hammer/Doji), and Earnings Blackout rules into the core model.
     """
     T = max(1, dte) / 365.0
     sigma = iv if iv > 0.10 else calculate_parkinson_volatility(df)
@@ -143,8 +146,23 @@ def compute_probability_and_amplitude(
             elif s5 <= -20.0:
                 sentiment_boost -= 2.0
 
-    total_boost = structural_boost + valuation_boost + microstructure_boost + sentiment_boost
-    empirical_pos_otm = min(99.0, max(45.0, bs_pos_otm + total_boost))
+    # 6. Candlestick Reversal Edge (Hammer & Doji Price Action Boost)
+    candlestick_boost = 0.0
+    if candlestick:
+        candlestick_boost = candlestick.get('pos_boost', 0.0)
+
+    # 7. Earnings Blackout Event Risk Adjustment
+    earnings_boost = 0.0
+    if earnings:
+        if earnings.get('is_critical_blackout', False):
+            # Rule 1 Violation: within 1 week of earnings -> acute jump risk
+            earnings_boost -= 6.0
+        elif earnings.get('is_in_blackout', False):
+            # Within 2-week to 1-week window or post-earnings digestion
+            earnings_boost -= 2.5
+
+    total_boost = structural_boost + valuation_boost + microstructure_boost + sentiment_boost + candlestick_boost + earnings_boost
+    empirical_pos_otm = min(99.0, max(40.0, bs_pos_otm + total_boost))
 
     # 6. Probability of Hitting 50% Take-Profit Early
     prob_50_tp = min(96.0, empirical_pos_otm * 1.08)
@@ -173,8 +191,12 @@ def compute_probability_and_amplitude(
     est_days_to_50tp = max(3, int(dte * 0.38))
 
     # 11. Holistic Nirvana Composite Score (0 - 100 Scale)
-    # Weights: Cushion Safety (25%), Fundamentals (20%), Microstructure (20%), Sentiment (15%), PoS (10%), ROC (10%)
-    cushion_subscore = min(25.0, (abs(downside_to_strike) / 18.0) * 25.0)
+    # Calibrated Weights:
+    # Cushion Safety (20%), Valuation Lens 1 (20%), Microstructure Lens 2 (20%),
+    # News Sentiment & Divergence (15%), Candlestick Reversal Confirmation (10%),
+    # Statistical PoS (8%), Cycle ROC (7%).
+    # Binary Risk Deductions: Critical Earnings Blackout (-25 pts), Pre-Earnings Blackout (-8 pts).
+    cushion_subscore = min(20.0, (abs(downside_to_strike) / 18.0) * 20.0)
 
     val_yield = lens1.get('fcf_yield_pct', 2.0) if lens1 else 2.0
     val_subscore = min(20.0, max(0.0, (val_yield / 4.0) * 20.0))
@@ -193,12 +215,30 @@ def compute_probability_and_amplitude(
     else:
         sent_subscore = 6.0
 
-    pos_subscore = min(10.0, max(0.0, ((empirical_pos_otm - 60.0) / 38.0) * 10.0))
+    # Candlestick Confirmation Subscore (10% model weight)
+    candle_subscore = 5.0
+    if candlestick:
+        c_score = candlestick.get('candlestick_score', 50.0)
+        candle_subscore = (c_score / 100.0) * 10.0
+
+    pos_subscore = min(8.0, max(0.0, ((empirical_pos_otm - 60.0) / 38.0) * 8.0))
 
     cycle_roc_val = (bid / strike) * 100.0 if strike > 0 else 1.0
-    roc_subscore = min(10.0, max(0.0, (cycle_roc_val / 2.5) * 10.0))
+    roc_subscore = min(7.0, max(0.0, (cycle_roc_val / 2.5) * 7.0))
 
-    nirvana_score = round(min(100.0, max(30.0, cushion_subscore + val_subscore + ms_subscore + sent_subscore + pos_subscore + roc_subscore)), 1)
+    # Event risk deductions
+    earnings_penalty = 0.0
+    if earnings:
+        if earnings.get('is_critical_blackout', False):
+            earnings_penalty = 25.0  # Rule 1 violation: do not sell options within 1 wk of earnings
+        elif earnings.get('is_in_blackout', False):
+            earnings_penalty = 8.0   # Pre-earnings blackout window (2w to 1w)
+
+    raw_composite = (
+        cushion_subscore + val_subscore + ms_subscore +
+        sent_subscore + candle_subscore + pos_subscore + roc_subscore - earnings_penalty
+    )
+    nirvana_score = round(min(100.0, max(15.0, raw_composite)), 1)
 
     return {
         'bs_delta': float(bs_delta),
@@ -210,6 +250,8 @@ def compute_probability_and_amplitude(
         'valuation_boost': float(valuation_boost),
         'microstructure_boost': float(microstructure_boost),
         'sentiment_boost': float(sentiment_boost),
+        'candlestick_boost': float(candlestick_boost),
+        'earnings_boost': float(earnings_boost),
         'sigma_annual': float(sigma * 100.0),
         'implied_move_dollar': float(implied_move_dollar),
         'implied_move_pct': float(implied_move_pct),

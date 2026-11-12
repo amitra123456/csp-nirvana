@@ -19,6 +19,8 @@ try:
     from core.regime_engine import compute_market_regime
     from core.fair_value_engine import compute_lens1_fundamentals, compute_lens2_microstructure
     from core.sentiment_engine import compute_multi_horizon_sentiment
+    from core.earnings_engine import compute_earnings_blackout
+    from core.candlestick_engine import analyze_candlestick_patterns
     from config.settings import DEFAULTS
 except (ImportError, ModuleNotFoundError):
     from csp_nirvana.core.smc_engine import fetch_ohlcv, compute_smc_structure
@@ -27,6 +29,8 @@ except (ImportError, ModuleNotFoundError):
     from csp_nirvana.core.regime_engine import compute_market_regime
     from csp_nirvana.core.fair_value_engine import compute_lens1_fundamentals, compute_lens2_microstructure
     from csp_nirvana.core.sentiment_engine import compute_multi_horizon_sentiment
+    from csp_nirvana.core.earnings_engine import compute_earnings_blackout
+    from csp_nirvana.core.candlestick_engine import analyze_candlestick_patterns
     from csp_nirvana.config.settings import DEFAULTS
 
 def scan_single_ticker(
@@ -147,7 +151,8 @@ def run_screener(
     min_premium: float = DEFAULTS["min_premium"],
     min_roc_pct: float = DEFAULTS["min_roc_pct"],
     red_only: bool = False,
-    enforce_bear_cushion: bool = True
+    enforce_bear_cushion: bool = True,
+    exclude_critical_blackout: bool = False
 ) -> Tuple[List[Dict[str, Any]], Dict[str, pd.DataFrame]]:
     """Runs the complete institutional screener across the watchlist."""
     results = []
@@ -198,6 +203,22 @@ def run_screener(
                 best['effective_cushion'] = effective_cushion
                 best['is_bear_regime'] = regime.get('is_bear_or_breakdown', False)
 
+                # Compute Earnings Blackout Status
+                earnings = compute_earnings_blackout(sym, best.get('expiry'))
+                best['earnings'] = earnings
+                best['is_in_blackout'] = earnings.get('is_in_blackout', False)
+                best['is_critical_blackout'] = earnings.get('is_critical_blackout', False)
+                best['earnings_badge'] = earnings.get('badge', '✅ Clear')
+
+                # Rule 1 filter: exclude if within 1 week of earnings and filter is requested
+                if exclude_critical_blackout and earnings.get('is_critical_blackout', False):
+                    continue
+
+                # Compute Candlestick Reversal Analysis (Hammer / Doji / Engulfing)
+                candlestick = analyze_candlestick_patterns(df)
+                best['candlestick'] = candlestick
+                best['candlestick_badge'] = candlestick.get('pattern_badge', '⚪ Neutral')
+
                 # Compute Dark Pool & Microstructure Telemetry safely
                 dp_telemetry = compute_dark_pool_telemetry(sym, df)
                 best['dark_pool'] = dp_telemetry
@@ -216,7 +237,7 @@ def run_screener(
                 )
                 best['sentiment'] = sentiment
 
-                # Compute Probability of Success and Move Amplitude with Valuation & Sentiment in the model
+                # Compute Probability of Success and Move Amplitude with Valuation, Sentiment, Candlesticks, & Earnings in model
                 prob_amp = compute_probability_and_amplitude(
                     spot=best['spot'],
                     strike=best['strike'],
@@ -229,7 +250,9 @@ def run_screener(
                     regime=regime,
                     lens1=lens1,
                     lens2=lens2,
-                    sentiment=sentiment
+                    sentiment=sentiment,
+                    candlestick=candlestick,
+                    earnings=earnings
                 )
                 best['prob_amp'] = prob_amp
                 best['nirvana_score'] = prob_amp.get('nirvana_score', 80.0)
@@ -237,6 +260,6 @@ def run_screener(
         except Exception:
             continue
 
-    # Rank holistically by Nirvana Composite Score (Valuation + Sentiment + Microstructure + PoS + ROC)
+    # Rank holistically by Nirvana Composite Score (Valuation + Sentiment + Microstructure + Candlestick - Blackout + PoS + ROC)
     results.sort(key=lambda x: (x.get('nirvana_score', 0.0), x['roc_cycle_pct']), reverse=True)
     return results, ohlcv_cache

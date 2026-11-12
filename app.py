@@ -37,6 +37,8 @@ try:
     from core.regime_engine import compute_market_regime
     from core.fair_value_engine import compute_lens1_fundamentals, compute_lens2_microstructure
     from core.sentiment_engine import compute_multi_horizon_sentiment
+    from core.earnings_engine import compute_earnings_blackout
+    from core.candlestick_engine import analyze_candlestick_patterns
 except (ImportError, ModuleNotFoundError):
     from csp_nirvana.config.settings import (
         CORE_TRIO,
@@ -53,6 +55,8 @@ except (ImportError, ModuleNotFoundError):
     from csp_nirvana.core.regime_engine import compute_market_regime
     from csp_nirvana.core.fair_value_engine import compute_lens1_fundamentals, compute_lens2_microstructure
     from csp_nirvana.core.sentiment_engine import compute_multi_horizon_sentiment
+    from csp_nirvana.core.earnings_engine import compute_earnings_blackout
+    from csp_nirvana.core.candlestick_engine import analyze_candlestick_patterns
 
 st.set_page_config(
     page_title="CSP-Nirvana // Institutional Options Terminal",
@@ -264,6 +268,26 @@ def render_dark_table_html(df: pd.DataFrame) -> str:
                 html.append(f'<td style="color: #E2E8F0; font-weight: 600;">{val}</td>')
             elif "Nirvana Score" in col:
                 html.append(f'<td><span style="background: rgba(16, 185, 129, 0.25); color: #10B981; padding: 4px 10px; border-radius: 4px; font-weight: 800; font-size: 0.85rem; border: 1px solid rgba(16, 185, 129, 0.4);">{val}</span></td>')
+            elif "Earnings" in col:
+                if "DO NOT SELL" in val or "🚫" in val:
+                    bg = "rgba(239, 68, 68, 0.25)"; c = "#EF4444"; border = "1px solid rgba(239, 68, 68, 0.4)"
+                elif "Blackout" in val or "⚠️" in val:
+                    bg = "rgba(245, 158, 11, 0.25)"; c = "#F59E0B"; border = "1px solid rgba(245, 158, 11, 0.4)"
+                else:
+                    bg = "rgba(16, 185, 129, 0.15)"; c = "#10B981"; border = "1px solid rgba(16, 185, 129, 0.3)"
+                html.append(f'<td><span style="background:{bg}; color:{c}; border:{border}; padding:3px 8px; border-radius:4px; font-weight:700; font-size:0.78rem; white-space:nowrap;">{val}</span></td>')
+            elif "Candle" in col:
+                if "Hammer" in val or "🔨" in val:
+                    bg = "rgba(168, 85, 247, 0.25)"; c = "#C084FC"; border = "1px solid rgba(168, 85, 247, 0.4)"
+                elif "Dragonfly" in val or "🐉" in val:
+                    bg = "rgba(16, 185, 129, 0.25)"; c = "#10B981"; border = "1px solid rgba(16, 185, 129, 0.4)"
+                elif "Doji" in val or "⚖️" in val or "🕯️" in val:
+                    bg = "rgba(56, 189, 248, 0.2)"; c = "#38BDF8"; border = "1px solid rgba(56, 189, 248, 0.3)"
+                elif "Engulfing" in val or "🟢" in val:
+                    bg = "rgba(16, 185, 129, 0.25)"; c = "#34D399"; border = "1px solid rgba(16, 185, 129, 0.4)"
+                else:
+                    bg = "rgba(148, 163, 184, 0.15)"; c = "#94A3B8"; border = "none"
+                html.append(f'<td><span style="background:{bg}; color:{c}; border:{border}; padding:3px 8px; border-radius:4px; font-weight:600; font-size:0.78rem; white-space:nowrap;">{val}</span></td>')
             elif "Whale Shield" in col:
                 html.append(f'<td><span style="background: rgba(168, 85, 247, 0.2); color: #C084FC; padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 0.78rem;">{val}</span></td>')
             elif "News Sentiment" in col:
@@ -344,6 +368,11 @@ with st.sidebar:
         value=True,
         help="Automatically requires at least a 12% strike cushion for any stock in Secular Bear or High Volatility Breakdown to defend cash collateral."
     )
+    exclude_critical_blackout = st.checkbox(
+        "🚫 Filter Out Critical Blackout (<1 Wk of Earnings)",
+        value=False,
+        help="Strictly excludes candidates whose earnings report is scheduled within 1 week (Rule 1). When unchecked, signals are generated and displayed with a prominent '🚫 DO NOT SELL' blackout badge."
+    )
     
     st.markdown("---")
     col_btn1, col_btn2 = st.columns(2)
@@ -365,6 +394,11 @@ with st.sidebar:
             _FUNDAMENTALS_CACHE.clear()
         except Exception:
             pass
+        try:
+            from core.earnings_engine import _MEMORY_EARNINGS_CACHE
+            _MEMORY_EARNINGS_CACHE.clear()
+        except Exception:
+            pass
         if "csp_results" in st.session_state:
             del st.session_state["csp_results"]
         if "last_params" in st.session_state:
@@ -375,7 +409,7 @@ with st.sidebar:
 # Execution & Caching
 # ---------------------------------------------------------
 @st.cache_data(ttl=600, show_spinner=False)
-def execute_scan(tickers_tuple, dte, cushion, min_prem, min_roc, red_flg, bear_cushion_flg):
+def execute_scan(tickers_tuple, dte, cushion, min_prem, min_roc, red_flg, bear_cushion_flg, exclude_blackout_flg):
     return run_screener(
         tickers=list(tickers_tuple),
         target_dte=dte,
@@ -383,15 +417,16 @@ def execute_scan(tickers_tuple, dte, cushion, min_prem, min_roc, red_flg, bear_c
         min_premium=min_prem,
         min_roc_pct=min_roc,
         red_only=red_flg,
-        enforce_bear_cushion=bear_cushion_flg
+        enforce_bear_cushion=bear_cushion_flg,
+        exclude_critical_blackout=exclude_blackout_flg
     )
 
-current_params = (tuple(symbols_to_run), target_dte, cushion_pct, min_premium, min_roc_pct, red_only, enforce_bear_cushion)
+current_params = (tuple(symbols_to_run), target_dte, cushion_pct, min_premium, min_roc_pct, red_only, enforce_bear_cushion, exclude_critical_blackout)
 
 if run_btn or st.session_state.get("last_params") != current_params or "csp_results" not in st.session_state:
     with st.spinner(f"Scanning {len(symbols_to_run)} high-conviction assets & live options chains..."):
         raw_results, ohlcv_cache = execute_scan(
-            tuple(symbols_to_run), target_dte, cushion_pct, min_premium, min_roc_pct, red_only, enforce_bear_cushion
+            tuple(symbols_to_run), target_dte, cushion_pct, min_premium, min_roc_pct, red_only, enforce_bear_cushion, exclude_critical_blackout
         )
         # Strictly enforce that only candidates passing their effective cushion requirement are selected
         results = [
@@ -495,11 +530,22 @@ def get_candidate_payload(ticker: str, results_list: list, cache: dict, dte: int
     best['lens2'] = lens2
     best['sentiment'] = sent
 
+    # Compute Earnings Blackout & Candlestick Analysis
+    earnings = compute_earnings_blackout(ticker, best.get('expiry'))
+    candlestick = analyze_candlestick_patterns(df)
+    best['earnings'] = earnings
+    best['candlestick'] = candlestick
+    best['is_in_blackout'] = earnings.get('is_in_blackout', False)
+    best['is_critical_blackout'] = earnings.get('is_critical_blackout', False)
+    best['earnings_badge'] = earnings.get('badge', '✅ Clear')
+    best['candlestick_badge'] = candlestick.get('pattern_badge', '⚪ Neutral')
+
     try:
         best['prob_amp'] = compute_probability_and_amplitude(
             spot=best['spot'], strike=best['strike'], bid=best.get('bid', 1.50), dte=best['dte'],
             iv=best.get('iv', 0.35), df=df, smc=smc, dp=dp, regime=regime,
-            lens1=lens1, lens2=lens2, sentiment=sent
+            lens1=lens1, lens2=lens2, sentiment=sent,
+            candlestick=candlestick, earnings=earnings
         )
         best['nirvana_score'] = best['prob_amp'].get('nirvana_score', 80.0)
     except Exception:
@@ -641,7 +687,7 @@ with tab_terminal:
         unsafe_allow_html=True
     )
 
-    f_c1, f_c2, f_c3 = st.columns(3)
+    f_c1, f_c2, f_c3, f_c4 = st.columns(4)
     is_qualified = any(r['ticker'] == selected_ticker for r in results)
 
     with f_c1:
@@ -661,6 +707,17 @@ with tab_terminal:
             ), unsafe_allow_html=True)
 
     with f_c2:
+        earn_obj = cand.get('earnings', {})
+        c_obj = cand.get('candlestick', {})
+        earn_color = earn_obj.get('badge_color', '#10B981')
+        st.markdown(render_kpi(
+            f"{selected_ticker} Earnings & Candle",
+            earn_obj.get('badge', '✅ Clear'),
+            f"Pattern: {c_obj.get('pattern_name', 'Neutral')} ({c_obj.get('pos_boost', 0.0):+.1f}% PoS)",
+            earn_color
+        ), unsafe_allow_html=True)
+
+    with f_c3:
         stock_active = get_active_previous_signals(ohlcv_cache, symbols_filter=[selected_ticker])
         if stock_active:
             sa = stock_active[0]
@@ -678,7 +735,7 @@ with tab_terminal:
                 "#38BDF8"
             ), unsafe_allow_html=True)
 
-    with f_c3:
+    with f_c4:
         stock_closed = get_candle_simulated_closed_trades(limit=100, ticker_filter=selected_ticker)
         if stock_closed:
             sc_wins = sum(1 for c in stock_closed if "WIN" in str(c.get('result', '')))
@@ -740,12 +797,20 @@ with tab_terminal:
             # Sentiment Divergence / Signal
             sent_badge = r.get('sentiment', {}).get('divergence_badge', '⚖️ Balanced')
             
+            # Earnings Status Badge
+            earn_badge = r.get('earnings_badge', '✅ Clear')
+
+            # Candlestick Pattern Badge
+            candle_badge = r.get('candlestick_badge', '⚪ Neutral')
+
             # Nirvana Composite Score
             nirv_score = r.get('nirvana_score', 80.0)
 
             latest_table_rows.append({
                 "Ticker": r['ticker'],
                 "Nirvana Score": f"{nirv_score:.1f}",
+                "Earnings Status": earn_badge,
+                "Candlestick": candle_badge,
                 "Spot": f"${r['spot']:.2f}",
                 "Day %": f"{r['day_change_pct']:+.2f}%",
                 "Regime": r.get('regime_badge', '🟡 Neutral'),
@@ -1013,6 +1078,27 @@ with tab_creed:
         """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("##### Additional Model Rules: Earnings Blackout & Candlestick Confirmation")
+    r_col1, r_col2 = st.columns(2)
+    with r_col1:
+        st.markdown("""
+        <div class="rule-card" style="border-left-color: #EF4444;">
+            <h4 style="color: #EF4444; margin-top: 0px;">7. THE EARNINGS BLACKOUT PROTOCOL</h4>
+            <strong>Core Principle</strong>: <strong>Rule 1</strong>: Strictly ZERO option selling within 1 week (&le; 7 days) of an upcoming earnings release. <strong>Rule 2</strong>: Signals generated within 2 weeks before to 1 week after earnings are classified as <code>Within Blackout Period</code>.<br>
+            <strong>Why</strong>: Earnings are binary volatility events where gap openings and IV collapse can overrun even 15% OTM cushions. A systematic blackout eliminates unhedged jump risk entirely.
+        </div>
+        """, unsafe_allow_html=True)
+
+    with r_col2:
+        st.markdown("""
+        <div class="rule-card" style="border-left-color: #C084FC;">
+            <h4 style="color: #C084FC; margin-top: 0px;">8. CANDLESTICK REVERSAL CONFLUENCE</h4>
+            <strong>Core Principle</strong>: Short put strikes gain higher statistical conviction when daily candles confirm institutional rejection wicks: <strong>Bullish Hammer (+3.0% PoS)</strong>, <strong>Dragonfly Doji (+3.5% PoS)</strong>, or <strong>Long-Legged Doji (+1.5% PoS)</strong>.<br>
+            <strong>Why</strong>: Extended lower shadows (&ge; 2x body) prove in real time that institutional buyers stepped in to soak up selling volume and defend structural support floors.
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("#### 2. Quantitative Model Architecture & Formulations (Plain English)")
     
     m_col1, m_col2 = st.columns(2)
@@ -1061,12 +1147,14 @@ with tab_creed:
     st.markdown("#### 3. Feature Dictionary, Definitions & Relative Weights (Nirvana Score Engine)")
     
     feature_dict_rows = [
-        {"Feature": "Cushion %", "Definition": "Percentage distance from spot to strike: (Spot - Strike) / Spot", "Weight": "25%", "Significance": "Primary downside margin of safety; protects against standard drawdowns."},
+        {"Feature": "Cushion %", "Definition": "Percentage distance from spot to strike: (Spot - Strike) / Spot", "Weight": "20%", "Significance": "Primary downside margin of safety; protects against standard drawdowns."},
         {"Feature": "Lens 1: Valuation", "Definition": "Normalized FCF Yield & Reverse DCF growth hurdle vs industry benchmarks", "Weight": "20%", "Significance": "Eliminates value traps; rewards high cash-flow compounders (> 3.5% FCF Yield)."},
         {"Feature": "Lens 2: Microstructure", "Definition": "Strike anchored beneath Anchored VWAP and Dark Pool buy shelves", "Weight": "20%", "Significance": "Ensures smart-money institutional whale accumulation walls defend the strike."},
         {"Feature": "News Sentiment & Flow", "Definition": "5D/10D/21D sentiment polarity contrasted against off-exchange Dark Pool DPI", "Weight": "15%", "Significance": "Captures high-alpha 'Whale Absorption of FUD' setups; penalizes retail FOMO tops."},
-        {"Feature": "Statistical PoS %", "Definition": "Continuous Parkinson extreme-value volatility and Black-Scholes Delta", "Weight": "10%", "Significance": "Ensures statistical probability of expiring OTM strictly exceeds 80% to 90%+."},
-        {"Feature": "Cycle ROC %", "Definition": "Option midpoint credit divided by strike cash collateral required", "Weight": "10%", "Significance": "Capital efficiency hurdle; guarantees annualized returns of 14% to 26%+."}
+        {"Feature": "Candlestick Confirmation", "Definition": "Hammer rejection wicks and Doji family bottoming physics at support", "Weight": "10%", "Significance": "Bullish Hammer (+3% PoS), Dragonfly Doji (+3.5% PoS), Long-Legged Doji (+1.5% PoS)."},
+        {"Feature": "Statistical PoS %", "Definition": "Continuous Parkinson extreme-value volatility and Black-Scholes Delta", "Weight": "8%", "Significance": "Ensures statistical probability of expiring OTM strictly exceeds 80% to 90%+."},
+        {"Feature": "Cycle ROC %", "Definition": "Option midpoint credit divided by strike cash collateral required", "Weight": "7%", "Significance": "Capital efficiency hurdle; guarantees annualized returns of 14% to 26%+."},
+        {"Feature": "Earnings Blackout Gate", "Definition": "Strict Rule 1: Zero options sold within 1 week of earnings; 2w pre- to 1w post-earnings blackout", "Weight": "-25 pt Rule 1 Gate", "Significance": "Strictly blocks or heavily penalizes unhedged binary earnings gap risk."}
     ]
     st.markdown(render_dark_table_html(pd.DataFrame(feature_dict_rows)), unsafe_allow_html=True)
 
@@ -1093,12 +1181,20 @@ with tab_creed:
         &nbsp;&nbsp;├─ Condition 7: 5D/10D/21D windowed news analysis reveals no unhedged catastrophic insolvencies<br>
         &nbsp;&nbsp;└─ Condition 8: Whale Absorption Signal activated when negative news meets heavy off-exchange buying (DPI &ge; 45%)<br>
         &nbsp;&nbsp;▼<br>
-        <div style="color: #EC4899; font-weight: 700;">[Stage 5: Return on Capital (ROC) & Tenor Optimization]</div>
-        &nbsp;&nbsp;├─ Condition 9: Target Tenor ~35 DTE (Window: 21–60 DTE for peak theta decay)<br>
-        &nbsp;&nbsp;├─ Condition 10: Minimum Midpoint Premium &ge; $0.50 (Target &ge; $1.50 per contract)<br>
-        &nbsp;&nbsp;└─ Condition 11: Minimum Cycle ROC &ge; 1.00% (~12% to 25%+ Annualized Yield)<br>
+        <div style="color: #C084FC; font-weight: 700;">[Stage 5: Candlestick Reversal Confirmation (Hammer / Doji)]</div>
+        &nbsp;&nbsp;├─ Condition 9: Candlestick pattern audit confirms lower wick rejection (Hammer/Dragonfly Doji/Long-Legged Doji)<br>
+        &nbsp;&nbsp;└─ Condition 10: PoS boost (+1.5% to +3.5%) applied to reward bottoming price action<br>
         &nbsp;&nbsp;▼<br>
-        <div style="color: #10B981; font-weight: 700;">[Final Nirvana Output: Ranked by 0–100 Nirvana Composite Score (PoS + Valuation + Microstructure + Sentiment + ROC)]</div>
+        <div style="color: #EF4444; font-weight: 700;">[Stage 6: Earnings Blackout Gate (Rule 1 & Rule 2)]</div>
+        &nbsp;&nbsp;├─ Condition 11: RULE 1 ENFORCEMENT: Zero option selling within 1 week of earnings (0 to 7 days)<br>
+        &nbsp;&nbsp;└─ Condition 12: Setups within 2 weeks before to 1 week after earnings classified as 'Within Blackout Period'<br>
+        &nbsp;&nbsp;▼<br>
+        <div style="color: #EC4899; font-weight: 700;">[Stage 7: Return on Capital (ROC) & Tenor Optimization]</div>
+        &nbsp;&nbsp;├─ Condition 13: Target Tenor ~35 DTE (Window: 21–60 DTE for peak theta decay)<br>
+        &nbsp;&nbsp;├─ Condition 14: Minimum Midpoint Premium &ge; $0.50 (Target &ge; $1.50 per contract)<br>
+        &nbsp;&nbsp;└─ Condition 15: Minimum Cycle ROC &ge; 1.00% (~12% to 25%+ Annualized Yield)<br>
+        &nbsp;&nbsp;▼<br>
+        <div style="color: #10B981; font-weight: 700;">[Final Nirvana Output: Ranked by 0–100 Nirvana Composite Score (PoS + Valuation + Microstructure + Sentiment + Candle - Blackout + ROC)]</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1133,6 +1229,18 @@ with tab_creed:
         {"Sentiment Horizon": "Whale Divergence Signal", "Timescale": "Confluence Indicator", "Market Psychology": "Contrasts retail headline panic against off-exchange Dark Pool whale accumulation.", "Quantitative Rule": "Golden Setup: 'Whale Absorption of FUD' (Negative 5D Sentiment + High DPI) delivers highest statistical win rates."}
     ]
     st.markdown(render_dark_table_html(pd.DataFrame(sent_theory_rows)), unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("#### 8. Earnings Blackout & Candlestick Reversal Protocols")
+    
+    blackout_candle_rows = [
+        {"Protocol": "🚫 Critical Blackout (Rule 1)", "Timescale": "0 to 7 Days Before Earnings", "Operational Rule": "STRICT ZERO OPTION SELLING. Binary earnings moves create unhedged tail gap risk.", "Model Treatment": "Violators receive -25 pt deduction & are filtered out of actionable recommendations."},
+        {"Protocol": "⚠️ Blackout Period Window (Rule 2)", "Timescale": "14d Pre- to 7d Post-Earnings", "Operational Rule": "Signals can generate but MUST appear on UI badged as 'Within Blackout Period'.", "Model Treatment": "Flagged with amber alert badge; caution adjustment applied to expected move."},
+        {"Protocol": "🔨 Bullish Hammer Reversal", "Timescale": "Daily Candlestick", "Operational Rule": "Lower shadow >= 2x body with small upper wick at structural discount support.", "Model Treatment": "+3.0% Empirical PoS Boost; confirms institutional order flow absorption."},
+        {"Protocol": "🐉 Dragonfly Doji", "Timescale": "Daily Candlestick", "Operational Rule": "Ultra-narrow body at high of day with dominant lower shadow (>= 60% of range).", "Model Treatment": "+3.5% Empirical PoS Boost; maximum institutional rejection of lower prices."},
+        {"Protocol": "⚖️ Long-Legged Doji", "Timescale": "Daily Candlestick", "Operational Rule": "Symmetrical upper & lower wicks with tiny body; signals severe selling exhaustion.", "Model Treatment": "+1.5% Empirical PoS Boost; ideal volatility contraction for theta harvest."}
+    ]
+    st.markdown(render_dark_table_html(pd.DataFrame(blackout_candle_rows)), unsafe_allow_html=True)
 
 
 # =========================================================
@@ -1494,3 +1602,123 @@ with tab_deepdive:
                 st.markdown(render_dark_table_html(df_news), unsafe_allow_html=True)
             else:
                 st.info("No high-impact news articles detected in the past 5 sessions. News narrative is quiescent.")
+
+        # -------------------------------------------------------------
+        # 4. Earnings Blackout & Event Risk Radar (Rule 1 & Rule 2)
+        # -------------------------------------------------------------
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div class="dashboard-box" style="margin-top: 15px; margin-bottom: 12px; border-left: 4px solid #EF4444;">
+                <h4 style="margin: 0; color: #EF4444; font-size: 1.08rem;">📅 Earnings Blackout & Event Risk Radar (Rule 1 & Rule 2 Protocol)</h4>
+                <div style="font-size: 0.84rem; color: #EF4444; font-weight: 600; margin-top: 4px;">
+                    💡 Why it is useful: Strictly eliminates unhedged binary earnings gap risk. Enforces Kirsten's Rule 1 (Zero option selling within 1 week of earnings) and flags setups within the 2-week pre-earnings to 1-week post-earnings blackout window.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        earn_info = cand.get('earnings', {})
+        earn_kpi1, earn_kpi2, earn_kpi3, earn_kpi4 = st.columns(4)
+        with earn_kpi1:
+            st.markdown(render_kpi("Next Earnings Date", earn_info.get('earnings_date_str', 'N/A'), "Official corporate reporting release", "#38BDF8"), unsafe_allow_html=True)
+        with earn_kpi2:
+            days_num = earn_info.get('days_to_earnings')
+            days_str = f"{days_num} Days" if days_num is not None else "N/A"
+            sub_lbl = "Critical < 1 Wk (Rule 1 Violation)" if earn_info.get('is_critical_blackout') else ("Within Blackout Window" if earn_info.get('is_in_blackout') else "Clear of Blackout")
+            st.markdown(render_kpi("Days to Earnings", days_str, sub_lbl, earn_info.get('badge_color', '#10B981')), unsafe_allow_html=True)
+        with earn_kpi3:
+            st.markdown(render_kpi("Blackout Classification", earn_info.get('badge', '✅ Clear'), earn_info.get('status_title', 'Clear'), earn_info.get('badge_color', '#10B981')), unsafe_allow_html=True)
+        with earn_kpi4:
+            span_text = "⚠️ Spans Earnings Event" if earn_info.get('spans_earnings') else "✅ Safe (Pre-Earnings Expiry)"
+            span_color = "#F59E0B" if earn_info.get('spans_earnings') else "#10B981"
+            st.markdown(render_kpi("Option Expiry Audit", span_text, f"Target Expiry: {cand.get('expiry', 'N/A')}", span_color), unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        earn_c1, earn_c2 = st.columns(2)
+        with earn_c1:
+            st.markdown("""
+            <div class="rule-card" style="border-left-color: #EF4444; margin-bottom: 8px;">
+                <h5 style="color: #EF4444; margin-top: 0; margin-bottom: 4px;">🛡️ Earnings Event Risk Assessment</h5>
+                <div style="font-size: 0.84rem; color: #EF4444; font-weight: 600;">💡 Why it is useful: Translates corporate reporting proximity into actionable execution rules.</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            df_earn_audit = pd.DataFrame([
+                {"Metric": "Reporting Schedule", "Value": earn_info.get('earnings_date_str', 'N/A'), "Operational Implication": "Next quarterly earnings release date verified from institutional corporate calendar."},
+                {"Metric": "Calendar Distance", "Value": f"{earn_info.get('days_to_earnings', 'N/A')} calendar days", "Operational Implication": "Time buffer between trade entry and corporate announcement."},
+                {"Metric": "Rule 1 Compliance", "Value": "VIOLATION (DO NOT SELL)" if earn_info.get('is_critical_blackout') else "COMPLIANT (Clear)", "Operational Implication": "Strictly forbids selling options when earnings is within 7 days."},
+                {"Metric": "Blackout Period State", "Value": "INSIDE BLACKOUT WINDOW" if earn_info.get('is_in_blackout') else "OUTSIDE BLACKOUT (Clear)", "Operational Implication": "2 weeks pre-earnings to 1 week post-earnings window flagged on UI."},
+                {"Metric": "Operational Directive", "Value": earn_info.get('status_title', 'Clear'), "Operational Implication": earn_info.get('summary', '')}
+            ])
+            st.markdown(render_dark_table_html(df_earn_audit), unsafe_allow_html=True)
+
+        with earn_c2:
+            st.markdown("""
+            <div class="rule-card" style="border-left-color: #F59E0B; margin-bottom: 8px;">
+                <h5 style="color: #F59E0B; margin-top: 0; margin-bottom: 4px;">📖 Kirsten's Earnings Blackout Protocol</h5>
+                <div style="font-size: 0.84rem; color: #F59E0B; font-weight: 600;">💡 Why it is useful: Eliminates the single largest source of catastrophic options drawdowns.</div>
+                • <strong>Rule 1 (Zero Selling &le; 1 Wk)</strong>: Under NO circumstances should CSPs be sold when an earnings date is within 7 days. Even 15% cushions can be breached by binary quarterly earnings surprises.<br>
+                • <strong>Rule 2 (Blackout Period Visibility)</strong>: Signals can generate between 14 days and 7 days prior to earnings, but they must be highlighted with an amber alert badge.<br>
+                • <strong>Post-Earnings Digestion</strong>: Wait 7 full days after an earnings announcement for post-release price discovery and IV crush to settle cleanly.
+            </div>
+            """, unsafe_allow_html=True)
+
+        # -------------------------------------------------------------
+        # 5. Candlestick Pattern Recognition & Price Action Engine
+        # -------------------------------------------------------------
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div class="dashboard-box" style="margin-top: 15px; margin-bottom: 12px; border-left: 4px solid #C084FC;">
+                <h4 style="margin: 0; color: #C084FC; font-size: 1.08rem;">🕯️ Candlestick Pattern Recognition & Price Action Engine (Hammer & Doji Physics)</h4>
+                <div style="font-size: 0.84rem; color: #C084FC; font-weight: 600; margin-top: 4px;">
+                    💡 Why it is useful: Audits physical candlestick geometries at structural support shelves. Identifies institutional liquidity absorption wicks (Hammer, Dragonfly Doji, Long-Legged Doji) to award empirical boosts to the Probability of Success.
+                </div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        candle_info = cand.get('candlestick', {})
+        c_kpi1, c_kpi2, c_kpi3, c_kpi4 = st.columns(4)
+        with c_kpi1:
+            st.markdown(render_kpi("Detected Candle Pattern", candle_info.get('pattern_badge', '⚪ Neutral'), candle_info.get('pattern_family', 'Neutral'), "#C084FC"), unsafe_allow_html=True)
+        with c_kpi2:
+            st.markdown(render_kpi("Reversal Bias", candle_info.get('reversal_bias', 'Neutral'), "Price action confirmation state", "#10B981" if candle_info.get('is_bullish_reversal') else "#38BDF8"), unsafe_allow_html=True)
+        with c_kpi3:
+            st.markdown(render_kpi("Rejection Wick Metric", f"{candle_info.get('lower_wick_pct', 0.0):.1f}% Lower Wick", f"Body: {candle_info.get('body_pct', 0.0):.1f}% · Upper: {candle_info.get('upper_wick_pct', 0.0):.1f}%", "#A855F7"), unsafe_allow_html=True)
+        with c_kpi4:
+            st.markdown(render_kpi("PoS Empirical Boost", f"{candle_info.get('pos_boost', 0.0):+.1f}% PoS", f"Candle Score: {candle_info.get('candlestick_score', 50.0):.0f}/100", "#10B981" if candle_info.get('pos_boost', 0.0) > 0 else "#94A3B8"), unsafe_allow_html=True)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        c_col1, c_col2 = st.columns(2)
+        with c_col1:
+            st.markdown("""
+            <div class="rule-card" style="border-left-color: #C084FC; margin-bottom: 8px;">
+                <h5 style="color: #C084FC; margin-top: 0; margin-bottom: 4px;">📐 Physical Candle Geometry & Order Flow Analysis</h5>
+                <div style="font-size: 0.84rem; color: #C084FC; font-weight: 600;">💡 Why it is useful: Deconstructs the daily OHLC bar into supply vs. demand wick proportions.</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            df_candle_metrics = pd.DataFrame([
+                {"Metric": "Identified Pattern", "Value": candle_info.get('pattern_name', 'Neutral'), "Order Flow Interpretation": candle_info.get('reversal_bias', 'Neutral')},
+                {"Metric": "Lower Shadow Proportion", "Value": f"{candle_info.get('lower_wick_pct', 0.0):.1f}% of total range", "Order Flow Interpretation": "Measures intensity of institutional buying rejection at intraday lows."},
+                {"Metric": "Real Body Proportion", "Value": f"{candle_info.get('body_pct', 0.0):.1f}% of total range", "Order Flow Interpretation": "Narrow bodies (< 10%) indicate Doji indecision / selling exhaustion."},
+                {"Metric": "Upper Shadow Proportion", "Value": f"{candle_info.get('upper_wick_pct', 0.0):.1f}% of total range", "Order Flow Interpretation": "Excessive upper shadows warn of intraday overhead supply resistance."},
+                {"Metric": "Pattern Order Flow Narrative", "Value": candle_info.get('pattern_family', 'Neutral'), "Order Flow Interpretation": candle_info.get('summary', '')}
+            ])
+            st.markdown(render_dark_table_html(df_candle_metrics), unsafe_allow_html=True)
+
+        with c_col2:
+            st.markdown("""
+            <div class="rule-card" style="border-left-color: #10B981; margin-bottom: 8px;">
+                <h5 style="color: #10B981; margin-top: 0; margin-bottom: 4px;">🏛️ Institutional Candlestick Physics for Cash-Secured Puts</h5>
+                <div style="font-size: 0.84rem; color: #10B981; font-weight: 600;">💡 Why it is useful: Understand how candlestick patterns anchor our short put strikes.</div>
+                • <strong>Bullish Hammer (+3.0% PoS)</strong>: Intraday breakdown was aggressively reversed by institutional buy programs, establishing a hardened floor at the hammer low.<br>
+                • <strong>Dragonfly Doji (+3.5% PoS)</strong>: The ultimate liquidity rejection candle. Price plunged to lows but finished at the absolute high of the day.<br>
+                • <strong>Long-Legged Doji (+1.5% PoS)</strong>: Highlights extreme volatility contraction and balance; prior selling wave has exhausted its momentum.<br>
+                • <strong>Strike Anchoring Rule</strong>: Always place the CSP strike beneath the low of the Hammer or Doji lower wick to ensure institutional buy orders cushion the position.
+            </div>
+            """, unsafe_allow_html=True)
