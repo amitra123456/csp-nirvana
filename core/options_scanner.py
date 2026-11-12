@@ -83,6 +83,24 @@ def scan_single_ticker(
         spot = smc['current_price']
         strike_ceiling = spot * (1.0 - (cushion_pct / 100.0))
 
+        # Determine signal date & signal price from daily warehouse bars
+        if df_ohlcv is not None and len(df_ohlcv) > 0:
+            last_idx = df_ohlcv.index[-1]
+            signal_date = last_idx.strftime('%Y-%m-%d') if hasattr(last_idx, 'strftime') else str(last_idx)[:10]
+            signal_price = round(float(df_ohlcv['Close'].iloc[-1]), 2)
+        else:
+            signal_date = datetime.now().strftime('%Y-%m-%d')
+            signal_price = round(spot, 2)
+
+        # Determine current live price (fast_info from yfinance if available)
+        try:
+            live_px = float(t.fast_info['lastPrice'])
+            if math.isnan(live_px) or live_px <= 0:
+                live_px = signal_price
+        except Exception:
+            live_px = signal_price
+        current_price = round(live_px, 2)
+
         candidates = []
         eligible_puts = puts[puts['strike'] <= spot].sort_values(by='strike', ascending=False)
 
@@ -113,6 +131,9 @@ def scan_single_ticker(
             candidates.append({
                 'ticker': ticker,
                 'spot': spot,
+                'signal_date': signal_date,
+                'signal_price': signal_price,
+                'current_price': current_price,
                 'day_change_pct': smc['day_pct_change'],
                 'expiry': chosen_expiry,
                 'dte': chosen_dte,
@@ -204,6 +225,14 @@ def run_screener(
                 best['regime_color'] = regime['regime_color']
                 best['effective_cushion'] = effective_cushion
                 best['is_bear_regime'] = regime.get('is_bear_or_breakdown', False)
+
+                # Ensure signal date, signal price, and current price are explicitly guaranteed
+                if 'signal_date' not in best:
+                    last_idx = df.index[-1]
+                    best['signal_date'] = last_idx.strftime('%Y-%m-%d') if hasattr(last_idx, 'strftime') else str(last_idx)[:10]
+                    best['signal_price'] = round(float(df['Close'].iloc[-1]), 2)
+                if 'current_price' not in best:
+                    best['current_price'] = best.get('signal_price', round(best['spot'], 2))
 
                 # Compute Earnings Blackout Status
                 earnings = compute_earnings_blackout(sym, best.get('expiry'))

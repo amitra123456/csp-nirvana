@@ -284,6 +284,12 @@ def render_dark_table_html(df: pd.DataFrame) -> str:
                 else:
                     bg = "rgba(16, 185, 129, 0.2)"; c = "#10B981"
                 html.append(f'<td><span style="background:{bg}; color:{c}; padding:3px 8px; border-radius:4px; font-weight:700;">{val}</span></td>')
+            elif "Signal Date" in col:
+                html.append(f'<td style="color: #94A3B8; font-family: monospace; font-size: 0.82rem; font-weight: 600;">{val}</td>')
+            elif "Signal Price" in col:
+                html.append(f'<td style="color: #F8FAFC; font-weight: 700;">{val}</td>')
+            elif "Current Price" in col:
+                html.append(f'<td style="color: #38BDF8; font-weight: 700;">{val}</td>')
             elif "Midpoint" in col or "Entry" in col or "Current" in col or "Strike" in col:
                 html.append(f'<td style="color: #E2E8F0; font-weight: 600;">{val}</td>')
             elif "Nirvana Score" in col:
@@ -528,11 +534,16 @@ def get_candidate_payload(ticker: str, results_list: list, cache: dict, dte: int
         best['all_ladder_strikes'] = [dict(c) for c in cands[:8]]
     else:
         spot = float(df['Close'].iloc[-1])
+        last_idx = df.index[-1]
+        sig_date = last_idx.strftime('%Y-%m-%d') if hasattr(last_idx, 'strftime') else str(last_idx)[:10]
         strike = round(spot * (1.0 - effective_cushion / 100.0), 2)
         day_chg = float(((df['Close'].iloc[-1] - df['Close'].iloc[-2]) / df['Close'].iloc[-2]) * 100.0) if len(df) >= 2 else 0.0
         best = {
             'ticker': ticker,
             'spot': spot,
+            'signal_date': sig_date,
+            'signal_price': round(spot, 2),
+            'current_price': round(spot, 2),
             'strike': strike,
             'cushion_pct': effective_cushion,
             'expiry': (datetime.now() + timedelta(days=dte)).strftime("%Y-%m-%d"),
@@ -723,18 +734,25 @@ with tab_terminal:
     is_qualified = any(r['ticker'] == selected_ticker for r in results)
 
     with f_c1:
+        cand_sig_date = cand.get('signal_date')
+        if not cand_sig_date:
+            sym_df = ohlcv_cache.get(selected_ticker)
+            cand_sig_date = sym_df.index[-1].strftime('%Y-%m-%d') if sym_df is not None and len(sym_df) > 0 and hasattr(sym_df.index[-1], 'strftime') else daily_meta.get('last_updated', '2026-11-10')[:10]
+        cand_sig_px = cand.get('signal_price', cand.get('spot', 0.0))
+        cand_cur_px = cand.get('current_price', cand_sig_px)
+
         if is_qualified:
             st.markdown(render_kpi(
                 f"{selected_ticker} Live Signal",
                 f"${cand['strike']:.2f} Put ({cand['cushion_pct']:.1f}% OTM)",
-                f"Credit: ${cand['midpoint']:.2f} · ROC: {cand['roc_cycle_pct']:.2f}% ({cand['annualized_roc_pct']:.1f}% Ann.)",
+                f"Signal: {cand_sig_date} @ ${cand_sig_px:.2f} ➔ Now: ${cand_cur_px:.2f} · Mid: ${cand['midpoint']:.2f}",
                 "#10B981"
             ), unsafe_allow_html=True)
         else:
             st.markdown(render_kpi(
                 f"{selected_ticker} Signal Status",
                 "Awaiting Setup",
-                f"Spot: ${cand['spot']:.2f} ({cand['day_change_pct']:+.2f}%) · Regime: {cand.get('regime_badge', '🟡 Neutral')}",
+                f"Signal Date: {cand_sig_date} @ ${cand_sig_px:.2f} ➔ Now: ${cand_cur_px:.2f} · Regime: {cand.get('regime_badge', '🟡 Neutral')}",
                 "#94A3B8"
             ), unsafe_allow_html=True)
 
@@ -838,13 +856,33 @@ with tab_terminal:
             # Nirvana Composite Score
             nirv_score = r.get('nirvana_score', 80.0)
 
+            # Signal Date resolution
+            sig_date = r.get('signal_date')
+            if not sig_date:
+                sym_df = ohlcv_cache.get(r['ticker'])
+                if sym_df is not None and len(sym_df) > 0:
+                    last_idx = sym_df.index[-1]
+                    sig_date = last_idx.strftime('%Y-%m-%d') if hasattr(last_idx, 'strftime') else str(last_idx)[:10]
+                else:
+                    sig_date = daily_meta.get('last_updated', '2026-11-10')[:10]
+
+            # Signal Price & Current Price resolution
+            sig_price = r.get('signal_price', r.get('spot', 0.0))
+            cur_price = r.get('current_price', sig_price)
+            if cur_price == sig_price and ohlcv_cache and r['ticker'] in ohlcv_cache:
+                sym_df = ohlcv_cache[r['ticker']]
+                if sym_df is not None and len(sym_df) > 0:
+                    cur_price = float(sym_df['Close'].iloc[-1])
+
             latest_table_rows.append({
                 "Ticker": r['ticker'],
                 "Nirvana Score": f"{nirv_score:.1f}",
+                "Signal Date": sig_date,
+                "Signal Price": f"${sig_price:.2f}",
+                "Current Price": f"${cur_price:.2f}",
+                "Day %": f"{r['day_change_pct']:+.2f}%",
                 "Earnings Status": earn_badge,
                 "Candlestick": candle_badge,
-                "Spot": f"${r['spot']:.2f}",
-                "Day %": f"{r['day_change_pct']:+.2f}%",
                 "Regime": r.get('regime_badge', '🟡 Neutral'),
                 "Strike": f"${r['strike']:.2f}",
                 "Cushion": f"{r['cushion_pct']:.1f}% OTM",
