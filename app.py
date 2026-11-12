@@ -459,6 +459,18 @@ def execute_scan(tickers_tuple, dte, cushion, min_prem, min_roc, red_flg, bear_c
             enforce_bear_cushion=bear_cushion_flg
         )
 
+@st.cache_data(ttl=60, show_spinner=False)
+def get_live_stock_price(ticker: str, fallback_price: float) -> float:
+    """Fetches real-time market price for display in Current Price column."""
+    try:
+        t = yf.Ticker(ticker)
+        p = float(t.fast_info['lastPrice'])
+        if not math.isnan(p) and p > 0:
+            return round(p, 2)
+    except Exception:
+        pass
+    return round(fallback_price, 2)
+
 current_params = (tuple(symbols_to_run), target_dte, cushion_pct, min_premium, min_roc_pct, red_only, enforce_bear_cushion, exclude_critical_blackout)
 
 if run_btn or st.session_state.get("last_params") != current_params or "csp_results" not in st.session_state:
@@ -739,7 +751,9 @@ with tab_terminal:
             sym_df = ohlcv_cache.get(selected_ticker)
             cand_sig_date = sym_df.index[-1].strftime('%Y-%m-%d') if sym_df is not None and len(sym_df) > 0 and hasattr(sym_df.index[-1], 'strftime') else daily_meta.get('last_updated', '2026-11-10')[:10]
         cand_sig_px = cand.get('signal_price', cand.get('spot', 0.0))
-        cand_cur_px = cand.get('current_price', cand_sig_px)
+        cand_cur_px = cand.get('current_price')
+        if not cand_cur_px or cand_cur_px == cand_sig_px:
+            cand_cur_px = get_live_stock_price(selected_ticker, cand_sig_px)
 
         if is_qualified:
             st.markdown(render_kpi(
@@ -866,13 +880,13 @@ with tab_terminal:
                 else:
                     sig_date = daily_meta.get('last_updated', '2026-11-10')[:10]
 
-            # Signal Price & Current Price resolution
+            # Signal Price is strictly the actual historical close on the signal issue date
             sig_price = r.get('signal_price', r.get('spot', 0.0))
-            cur_price = r.get('current_price', sig_price)
-            if cur_price == sig_price and ohlcv_cache and r['ticker'] in ohlcv_cache:
-                sym_df = ohlcv_cache[r['ticker']]
-                if sym_df is not None and len(sym_df) > 0:
-                    cur_price = float(sym_df['Close'].iloc[-1])
+
+            # Current Price is dynamically fetched real-time from live market quote
+            cur_price = r.get('current_price')
+            if not cur_price or cur_price == sig_price:
+                cur_price = get_live_stock_price(r['ticker'], sig_price)
 
             latest_table_rows.append({
                 "Ticker": r['ticker'],

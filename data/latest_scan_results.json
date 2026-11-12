@@ -399,7 +399,7 @@
     "nirvana_score": 95.0,
     "signal_date": "2026-11-10",
     "signal_price": 160.07,
-    "current_price": 160.07
+    "current_price": 164.34
   },
   {
     "ticker": "NOW",
@@ -801,7 +801,7 @@
     "nirvana_score": 91.7,
     "signal_date": "2026-11-10",
     "signal_price": 98.92,
-    "current_price": 98.92
+    "current_price": 101.21
   },
   {
     "ticker": "BLK",
@@ -1203,7 +1203,7 @@
     "nirvana_score": 90.2,
     "signal_date": "2026-11-10",
     "signal_price": 1216.88,
-    "current_price": 1216.88
+    "current_price": 1230.73
   },
   {
     "ticker": "NXPI",
@@ -1547,7 +1547,7 @@
     "nirvana_score": 88.2,
     "signal_date": "2026-11-10",
     "signal_price": 261.03,
-    "current_price": 261.03
+    "current_price": 265.54
   },
   {
     "ticker": "INTU",
@@ -1914,7 +1914,7 @@
     "nirvana_score": 88.0,
     "signal_date": "2026-11-10",
     "signal_price": 337.01,
-    "current_price": 337.01
+    "current_price": 343.27
   },
   {
     "ticker": "ON",
@@ -2142,7 +2142,7 @@
     "nirvana_score": 87.4,
     "signal_date": "2026-11-10",
     "signal_price": 69.36,
-    "current_price": 69.36
+    "current_price": 72.46
   },
   {
     "ticker": "TEAM",
@@ -2486,7 +2486,7 @@
     "nirvana_score": 87.1,
     "signal_date": "2026-11-10",
     "signal_price": 148.51,
-    "current_price": 148.51
+    "current_price": 150.0
   },
   {
     "ticker": "QCOM",
@@ -2859,7 +2859,7 @@
     "nirvana_score": 87.1,
     "signal_date": "2026-11-10",
     "signal_price": 173.21,
-    "current_price": 173.21
+    "current_price": 180.24
   },
   {
     "ticker": "CRM",
@@ -3232,7 +3232,7 @@
     "nirvana_score": 87.0,
     "signal_date": "2026-11-10",
     "signal_price": 212.74,
-    "current_price": 212.74
+    "current_price": 215.38
   },
   {
     "ticker": "HOOD",
@@ -3518,7 +3518,7 @@
     "nirvana_score": 86.8,
     "signal_date": "2026-11-10",
     "signal_price": 81.08,
-    "current_price": 81.08
+    "current_price": 82.27
   },
   {
     "ticker": "WDAY",
@@ -3891,7 +3891,7 @@
     "nirvana_score": 86.8,
     "signal_date": "2026-11-10",
     "signal_price": 188.78,
-    "current_price": 188.78
+    "current_price": 189.18
   },
   {
     "ticker": "AMGN",
@@ -4293,7 +4293,7 @@
     "nirvana_score": 86.6,
     "signal_date": "2026-11-10",
     "signal_price": 464.4,
-    "current_price": 464.4
+    "current_price": 470.92
   },
   {
     "ticker": "DE",
@@ -4695,7 +4695,7 @@
     "nirvana_score": 86.4,
     "signal_date": "2026-11-10",
     "signal_price": 687.18,
-    "current_price": 687.18
+    "current_price": 689.29
   },
   {
     "ticker": "SPGI",
@@ -4981,7 +4981,7 @@
     "nirvana_score": 86.1,
     "signal_date": "2026-11-10",
     "signal_price": 472.18,
-    "current_price": 472.18
+    "current_price": 473.94
   },
   {
     "ticker": "DASH",
@@ -5383,7 +5383,7 @@
     "nirvana_score": 85.5,
     "signal_date": "2026-11-10",
     "signal_price": 176.89,
-    "current_price": 176.89
+    "current_price": 176.11
   },
   {
     "ticker": "TSM",
@@ -5727,7 +5727,7 @@
     "nirvana_score": 84.8,
     "signal_date": "2026-11-10",
     "signal_price": 396.1,
-    "current_price": 396.1
+    "current_price": 406.68
   },
   {
     "ticker": "TMO",
@@ -6129,7 +6129,7 @@
     "nirvana_score": 84.3,
     "signal_date": "2026-11-10",
     "signal_price": 717.01,
-    "current_price": 717.01
+    "current_price": 700.97
   },
   {
     "ticker": "ADBE",
@@ -6531,7 +6531,7 @@
     "nirvana_score": 84.2,
     "signal_date": "2026-11-10",
     "signal_price": 235.41,
-    "current_price": 235.41
+    "current_price": 236.93
   },
   {
     "ticker": "TGT",
@@ -6846,7 +6846,7 @@
     "nirvana_score": 83.4,
     "signal_date": "2026-11-10",
     "signal_price": 161.04,
-    "current_price": 161.04
+    "current_price": 162.71
   },
   {
     "ticker": "ZS",
@@ -7242,7 +7242,7 @@
     "nirvana_score": 81.7,
     "signal_date": "2026-11-10",
     "signal_price": 194.38,
-    "current_price": 194.38
+    "current_price": 187.59
   },
   {
     "ticker": "VRTX",
@@ -7644,7 +7644,7 @@
     "nirvana_score": 79.0,
     "signal_date": "2026-11-10",
     "signal_price": 547.34,
-    "current_price": 547.34
+    "current_price": 547.83
   },
   {
     "ticker": "SNOW",
@@ -8046,7 +8046,7 @@
     "nirvana_score": 78.8,
     "signal_date": "2026-11-10",
     "signal_price": 294.67,
-    "current_price": 294.67
+    "current_price": 292.66
   },
   {
     "ticker": "NVDA",
@@ -8448,7 +8448,7 @@
     "nirvana_score": 78.0,
     "signal_date": "2026-11-10",
     "signal_price": 168.18,
-    "current_price": 168.18
+    "current_price": 164.75
   },
   {
     "ticker": "MU",
@@ -8850,7 +8850,7 @@
     "nirvana_score": 77.7,
     "signal_date": "2026-11-10",
     "signal_price": 717.14,
-    "current_price": 717.14
+    "current_price": 776.03
   },
   {
     "ticker": "ADI",
@@ -9240,7 +9240,7 @@
     "nirvana_score": 77.5,
     "signal_date": "2026-11-10",
     "signal_price": 392.19,
-    "current_price": 392.19
+    "current_price": 405.97
   },
   {
     "ticker": "SPOT",
@@ -9630,7 +9630,7 @@
     "nirvana_score": 76.7,
     "signal_date": "2026-11-10",
     "signal_price": 602.96,
-    "current_price": 602.96
+    "current_price": 604.64
   },
   {
     "ticker": "AVGO",
@@ -10032,7 +10032,7 @@
     "nirvana_score": 76.1,
     "signal_date": "2026-11-10",
     "signal_price": 332.48,
-    "current_price": 332.48
+    "current_price": 362.21
   },
   {
     "ticker": "DDOG",
@@ -10434,7 +10434,7 @@
     "nirvana_score": 74.6,
     "signal_date": "2026-11-10",
     "signal_price": 178.68,
-    "current_price": 178.68
+    "current_price": 179.57
   },
   {
     "ticker": "PANW",
@@ -10836,7 +10836,7 @@
     "nirvana_score": 74.0,
     "signal_date": "2026-11-10",
     "signal_price": 326.1,
-    "current_price": 326.1
+    "current_price": 316.43
   },
   {
     "ticker": "NET",
@@ -11238,7 +11238,7 @@
     "nirvana_score": 73.5,
     "signal_date": "2026-11-10",
     "signal_price": 306.37,
-    "current_price": 306.37
+    "current_price": 312.28
   },
   {
     "ticker": "TXN",
@@ -11640,7 +11640,7 @@
     "nirvana_score": 73.4,
     "signal_date": "2026-11-10",
     "signal_price": 299.73,
-    "current_price": 299.73
+    "current_price": 311.4
   },
   {
     "ticker": "LRCX",
@@ -12042,7 +12042,7 @@
     "nirvana_score": 73.2,
     "signal_date": "2026-11-10",
     "signal_price": 222.85,
-    "current_price": 222.85
+    "current_price": 233.27
   },
   {
     "ticker": "MDB",
@@ -12432,7 +12432,7 @@
     "nirvana_score": 73.1,
     "signal_date": "2026-11-10",
     "signal_price": 329.73,
-    "current_price": 329.73
+    "current_price": 333.33
   },
   {
     "ticker": "SHOP",
@@ -12776,7 +12776,7 @@
     "nirvana_score": 72.3,
     "signal_date": "2026-11-10",
     "signal_price": 145.6,
-    "current_price": 145.6
+    "current_price": 148.14
   },
   {
     "ticker": "ASML",
@@ -13178,7 +13178,7 @@
     "nirvana_score": 72.2,
     "signal_date": "2026-11-10",
     "signal_price": 1507.38,
-    "current_price": 1507.38
+    "current_price": 1507.39
   },
   {
     "ticker": "MRVL",
@@ -13580,7 +13580,7 @@
     "nirvana_score": 71.8,
     "signal_date": "2026-11-10",
     "signal_price": 154.1,
-    "current_price": 154.1
+    "current_price": 163.84
   },
   {
     "ticker": "AMAT",
@@ -13982,7 +13982,7 @@
     "nirvana_score": 70.7,
     "signal_date": "2026-11-10",
     "signal_price": 371.48,
-    "current_price": 371.48
+    "current_price": 385.68
   },
   {
     "ticker": "PLTR",
@@ -14355,7 +14355,7 @@
     "nirvana_score": 70.5,
     "signal_date": "2026-11-10",
     "signal_price": 167.42,
-    "current_price": 167.42
+    "current_price": 169.59
   },
   {
     "ticker": "CAT",
@@ -14757,7 +14757,7 @@
     "nirvana_score": 70.3,
     "signal_date": "2026-11-10",
     "signal_price": 581.97,
-    "current_price": 581.97
+    "current_price": 596.85
   },
   {
     "ticker": "AMD",
@@ -15159,7 +15159,7 @@
     "nirvana_score": 70.1,
     "signal_date": "2026-11-10",
     "signal_price": 515.89,
-    "current_price": 515.89
+    "current_price": 565.63
   },
   {
     "ticker": "KLAC",
@@ -15561,7 +15561,7 @@
     "nirvana_score": 69.9,
     "signal_date": "2026-11-10",
     "signal_price": 152.46,
-    "current_price": 152.46
+    "current_price": 157.85
   },
   {
     "ticker": "ARM",
@@ -15963,7 +15963,7 @@
     "nirvana_score": 68.8,
     "signal_date": "2026-11-10",
     "signal_price": 180.63,
-    "current_price": 180.63
+    "current_price": 199.37
   },
   {
     "ticker": "MPWR",
@@ -16365,7 +16365,7 @@
     "nirvana_score": 68.6,
     "signal_date": "2026-11-10",
     "signal_price": 1355.01,
-    "current_price": 1355.01
+    "current_price": 1423.47
   },
   {
     "ticker": "ORCL",
@@ -16709,7 +16709,7 @@
     "nirvana_score": 68.3,
     "signal_date": "2026-11-10",
     "signal_price": 117.87,
-    "current_price": 117.87
+    "current_price": 126.13
   },
   {
     "ticker": "INTC",
@@ -16995,7 +16995,7 @@
     "nirvana_score": 67.6,
     "signal_date": "2026-11-10",
     "signal_price": 57.97,
-    "current_price": 57.97
+    "current_price": 60.58
   },
   {
     "ticker": "CRWD",
@@ -17397,7 +17397,7 @@
     "nirvana_score": 67.4,
     "signal_date": "2026-11-10",
     "signal_price": 225.5,
-    "current_price": 225.5
+    "current_price": 223.02
   },
   {
     "ticker": "META",
@@ -17799,7 +17799,7 @@
     "nirvana_score": 63.7,
     "signal_date": "2026-11-10",
     "signal_price": 645.65,
-    "current_price": 645.65
+    "current_price": 621.47
   },
   {
     "ticker": "TSLA",
@@ -18201,6 +18201,6 @@
     "nirvana_score": 60.8,
     "signal_date": "2026-11-10",
     "signal_price": 377.71,
-    "current_price": 377.71
+    "current_price": 390.17
   }
 ]
