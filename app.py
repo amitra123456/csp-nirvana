@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import sys
 import math
+import importlib
 from pathlib import Path
 from datetime import datetime, time, timedelta
 
@@ -20,6 +21,25 @@ import streamlit as st
 PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
+
+# Hot-reload core submodules to prevent stale sys.modules caching across Streamlit Cloud deployments
+for _mod in [
+    "core.options_scanner",
+    "core.probability_amplitude",
+    "core.earnings_engine",
+    "core.candlestick_engine",
+    "core.sentiment_engine",
+    "core.fair_value_engine",
+    "core.smc_engine",
+    "core.dark_pool_engine",
+    "core.regime_engine",
+    "core.portfolio_tracker"
+]:
+    if _mod in sys.modules:
+        try:
+            importlib.reload(sys.modules[_mod])
+        except Exception:
+            pass
 
 try:
     from config.settings import (
@@ -410,16 +430,28 @@ with st.sidebar:
 # ---------------------------------------------------------
 @st.cache_data(ttl=600, show_spinner=False)
 def execute_scan(tickers_tuple, dte, cushion, min_prem, min_roc, red_flg, bear_cushion_flg, exclude_blackout_flg):
-    return run_screener(
-        tickers=list(tickers_tuple),
-        target_dte=dte,
-        cushion_pct=cushion,
-        min_premium=min_prem,
-        min_roc_pct=min_roc,
-        red_only=red_flg,
-        enforce_bear_cushion=bear_cushion_flg,
-        exclude_critical_blackout=exclude_blackout_flg
-    )
+    try:
+        return run_screener(
+            tickers=list(tickers_tuple),
+            target_dte=dte,
+            cushion_pct=cushion,
+            min_premium=min_prem,
+            min_roc_pct=min_roc,
+            red_only=red_flg,
+            enforce_bear_cushion=bear_cushion_flg,
+            exclude_critical_blackout=exclude_blackout_flg
+        )
+    except TypeError:
+        # Graceful fallback if in-memory run_screener has an un-reloaded legacy signature
+        return run_screener(
+            tickers=list(tickers_tuple),
+            target_dte=dte,
+            cushion_pct=cushion,
+            min_premium=min_prem,
+            min_roc_pct=min_roc,
+            red_only=red_flg,
+            enforce_bear_cushion=bear_cushion_flg
+        )
 
 current_params = (tuple(symbols_to_run), target_dte, cushion_pct, min_premium, min_roc_pct, red_only, enforce_bear_cushion, exclude_critical_blackout)
 

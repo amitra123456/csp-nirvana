@@ -152,7 +152,9 @@ def run_screener(
     min_roc_pct: float = DEFAULTS["min_roc_pct"],
     red_only: bool = False,
     enforce_bear_cushion: bool = True,
-    exclude_critical_blackout: bool = False
+    exclude_critical_blackout: bool = False,
+    *args,
+    **kwargs
 ) -> Tuple[List[Dict[str, Any]], Dict[str, pd.DataFrame]]:
     """Runs the complete institutional screener across the watchlist."""
     results = []
