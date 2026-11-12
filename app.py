@@ -10,7 +10,6 @@ from __future__ import annotations
 import os
 import sys
 import json
-import subprocess
 from pathlib import Path
 from datetime import datetime
 from typing import Optional, Dict, Any, List
@@ -34,13 +33,21 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------
+# HTML Helper to avoid Markdown indented code-block rendering
+# ---------------------------------------------------------
+def render_html(html_str: str) -> None:
+    """Renders HTML cleanly in Streamlit, stripping leading whitespace so markdown never creates code blocks."""
+    lines = [line.lstrip() for line in html_str.strip().splitlines()]
+    st.markdown("\n".join(lines), unsafe_allow_html=True)
+
+# ---------------------------------------------------------
 # Quiet Desk Design System CSS
 # Palette: #0B0E13 (bg), #0E1218 (header), #121821 (card),
 # #18202B (raised), #1E2733 (border), #253041 (borderStrong),
 # #E8ECF1 (text), #A3AEBC (secondary), #8792A2 (muted),
 # #6CB4FF (favorable blue), #F2B24C (caution amber), #FF8B5C (risk orange).
 # ---------------------------------------------------------
-st.markdown(
+render_html(
     """
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
@@ -218,8 +225,7 @@ st.markdown(
             border: 1px solid #253041 !important;
         }
     </style>
-    """,
-    unsafe_allow_html=True,
+    """
 )
 
 # ---------------------------------------------------------
@@ -228,7 +234,6 @@ st.markdown(
 def load_snapshot() -> Optional[Dict[str, Any]]:
     snap_path = PROJECT_ROOT / "data" / "snapshots" / "latest.json"
     if not snap_path.exists():
-        # Fallback to parent data directory if running from subfolder
         snap_path = PROJECT_ROOT.parent / "data" / "snapshots" / "latest.json"
     if snap_path.exists():
         try:
@@ -285,6 +290,16 @@ def get_freshness_badge(as_of_str: str) -> tuple[str, str, str]:
     except Exception:
         return "TIMESTAMP UNKNOWN", "dot-amber", ""
 
+def execute_pipeline_refresh():
+    with st.spinner("Executing 3:35 PM ET screener pipeline..."):
+        try:
+            from scripts.daily_335pm_update import run_daily_pipeline
+            run_daily_pipeline()
+            st.success("Pipeline refreshed successfully!")
+            st.rerun()
+        except Exception as e:
+            st.error(f"Pipeline error: {e}")
+
 # Load Snapshot
 snapshot = load_snapshot()
 
@@ -304,7 +319,7 @@ else:
     itm_count = 0
     positions = []
 
-st.markdown(
+render_html(
     f"""
     <div class="top-navbar">
         <div style="display: flex; align-items: center; gap: 14px;">
@@ -325,20 +340,13 @@ st.markdown(
             </a>
         </div>
     </div>
-    """,
-    unsafe_allow_html=True,
+    """
 )
 
 if not snapshot:
     st.error("No snapshot found at data/snapshots/latest.json. Click below to trigger the 3:35 PM pipeline.")
     if st.button("⚡ Run Pipeline Now", type="primary"):
-        with st.spinner("Executing daily 3:35 PM snapshot pipeline..."):
-            res = subprocess.run(["python", "scripts/daily_335pm_update.py"], capture_output=True, text=True)
-            if res.returncode == 0:
-                st.success("Pipeline executed successfully!")
-                st.rerun()
-            else:
-                st.error(f"Pipeline failed: {res.stderr}")
+        execute_pipeline_refresh()
     st.stop()
 
 # ---------------------------------------------------------
@@ -364,23 +372,20 @@ with tab_today:
     col_ctrl1, col_ctrl2 = st.columns([2, 1])
     with col_ctrl1:
         st.markdown(f"### Today's Qualified Setups &middot; {len(setups)}")
-        st.markdown(
-            f"<div style='font-size: 0.82rem; color: #8792A2;'>Target DTE: <strong>{rules.get('target_dte', 35)}d</strong> &middot; Min Cushion: <strong>{rules.get('cushion_min_pct', 12)}%</strong> &middot; Min ROC: <strong>{rules.get('min_roc_pct', 1.2)}%</strong></div>",
-            unsafe_allow_html=True
+        render_html(
+            f"<div style='font-size: 0.82rem; color: #8792A2;'>Target DTE: <strong>{rules.get('target_dte', 35)}d</strong> &middot; Min Cushion: <strong>{rules.get('cushion_min_pct', 12)}%</strong> &middot; Min ROC: <strong>{rules.get('min_roc_pct', 1.2)}%</strong></div>"
         )
     with col_ctrl2:
         c1, c2 = st.columns(2)
         with c1:
             if st.button("⚡ Run Scan Now", use_container_width=True):
-                with st.spinner("Running 3:35 PM ET screener pipeline..."):
-                    subprocess.run(["python", "scripts/daily_335pm_update.py"], capture_output=True)
-                    st.rerun()
+                execute_pipeline_refresh()
         with c2:
             st.link_button("Next.js UI ↗", "http://localhost:3000", use_container_width=True)
 
     # ITM Alert Warning Banner
     if itm_count > 0:
-        st.markdown(
+        render_html(
             f"""
             <div class="desk-card" style="border-color: rgba(255, 139, 92, 0.4); background-color: rgba(255, 139, 92, 0.05); margin-top: 0.5rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -390,8 +395,7 @@ with tab_today:
                     <span class="badge badge-orange">Check Positions Tab</span>
                 </div>
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
 
     # Setups Table
@@ -402,7 +406,7 @@ with tab_today:
 
         for i, s in enumerate(setups):
             ticker = s.get("ticker", "")
-            name = s.get("name", "")
+            name = s.get("name", ticker)
             spot = s.get("spot", 0.0)
             strike = s.get("strike", 0.0)
             cushion = s.get("cushion_pct", 0.0)
@@ -419,26 +423,26 @@ with tab_today:
             trend_badge = f'<span class="badge badge-blue">{trend.upper()}</span>'
 
             rows_html.append(f"""
-                <tr>
-                    <td class="font-mono" style="color: #8792A2;">#{i+1}</td>
-                    <td>
-                        <strong style="font-size: 0.95rem; color: #E8ECF1;">{ticker}</strong>
-                        <div style="font-size: 0.72rem; color: #8792A2;">{name}</div>
-                    </td>
-                    <td class="font-mono">${spot:.2f}</td>
-                    <td class="font-mono"><strong style="color: #6CB4FF;">${strike:.1f}P</strong></td>
-                    <td class="font-mono" style="color: #6CB4FF; font-weight: 600;">+{cushion:.1f}%</td>
-                    <td class="font-mono" style="color: #E8ECF1;">${bid:.2f}</td>
-                    <td class="font-mono" style="color: #6CB4FF; font-weight: 600;">{roc_cycle:.2f}%</td>
-                    <td class="font-mono" style="color: #8792A2;">{roc_ann:.1f}%</td>
-                    <td class="font-mono">{odds:.1f}%</td>
-                    <td class="font-mono" style="color: #8792A2;">{expiry} ({dte}d)</td>
-                    <td>{trend_badge}</td>
-                    <td class="font-mono" style="font-weight: 700; color: #6CB4FF; font-size: 0.95rem;">{score:.1f}</td>
-                </tr>
-            """)
+<tr>
+<td class="font-mono" style="color: #8792A2;">#{i+1}</td>
+<td>
+<strong style="font-size: 0.95rem; color: #E8ECF1;">{ticker}</strong>
+<div style="font-size: 0.72rem; color: #8792A2;">{name}</div>
+</td>
+<td class="font-mono">${spot:.2f}</td>
+<td class="font-mono"><strong style="color: #6CB4FF;">${strike:.1f}P</strong></td>
+<td class="font-mono" style="color: #6CB4FF; font-weight: 600;">+{cushion:.1f}%</td>
+<td class="font-mono" style="color: #E8ECF1;">${bid:.2f}</td>
+<td class="font-mono" style="color: #6CB4FF; font-weight: 600;">{roc_cycle:.2f}%</td>
+<td class="font-mono" style="color: #8792A2;">{roc_ann:.1f}%</td>
+<td class="font-mono">{odds:.1f}%</td>
+<td class="font-mono" style="color: #8792A2;">{expiry} ({dte}d)</td>
+<td>{trend_badge}</td>
+<td class="font-mono" style="font-weight: 700; color: #6CB4FF; font-size: 0.95rem;">{score:.1f}</td>
+</tr>
+""")
 
-        st.markdown(
+        render_html(
             f"""
             <div class="table-wrap">
                 <table class="quiet-table">
@@ -463,14 +467,13 @@ with tab_today:
                     </tbody>
                 </table>
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
 
         # "If you take all N" Card
         avg_cushion = sum(s.get("cushion_pct", 0) for s in setups) / len(setups) if setups else 0
         avg_roc = sum(s.get("roc_cycle_pct", 0) for s in setups) / len(setups) if setups else 0
-        st.markdown(
+        render_html(
             f"""
             <div class="desk-card-raised">
                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
@@ -487,8 +490,7 @@ with tab_today:
                     </div>
                 </div>
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
     else:
         st.info("No candidates qualified in current snapshot under active parameters.")
@@ -500,7 +502,7 @@ with tab_today:
             f"<tr><td class='font-mono'><strong>{hb.get('ticker')}</strong></td><td style='color: #8792A2;'>{hb.get('reason')}</td></tr>"
             for hb in held_back
         ])
-        st.markdown(
+        render_html(
             f"""
             <div class="table-wrap">
                 <table class="quiet-table">
@@ -508,8 +510,7 @@ with tab_today:
                     <tbody>{hb_rows}</tbody>
                 </table>
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
 
 # =========================================================
@@ -521,7 +522,7 @@ with tab_ticket:
         selected_ticker = st.selectbox("Select Trade Setup Candidate", tickers, index=0)
         setup = next((s for s in setups if s.get("ticker") == selected_ticker), setups[0])
 
-        st.markdown(
+        render_html(
             f"""
             <div style="display: flex; justify-content: space-between; align-items: baseline; margin-top: 0.5rem; margin-bottom: 1rem;">
                 <div>
@@ -537,12 +538,11 @@ with tab_ticket:
                     </div>
                 </div>
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
 
         # Primary Execution Card
-        st.markdown(
+        render_html(
             f"""
             <div class="desk-card" style="border: 2px solid #253041; background: linear-gradient(180deg, #18202B 0%, #121821 100%);">
                 <div style="font-size: 0.72rem; color: #6CB4FF; font-family: 'JetBrains Mono', monospace; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;">
@@ -557,36 +557,31 @@ with tab_ticket:
                     Break-even: <strong>${setup.get('cost_basis', 0.0):.2f}</strong>
                 </div>
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
 
         # 4 Key Metrics
         k1, k2, k3, k4 = st.columns(4)
         with k1:
-            st.markdown(
-                f"""<div class="desk-card"><div class="kpi-title">ANNUALIZED ROC</div><div class="kpi-value" style="color: #6CB4FF;">{setup.get('roc_annual_pct', 0.0):.1f}%</div><div class="kpi-sub">{setup.get('roc_cycle_pct', 0.0):.2f}% per {setup.get('dte')}d cycle</div></div>""",
-                unsafe_allow_html=True
+            render_html(
+                f"""<div class="desk-card"><div class="kpi-title">ANNUALIZED ROC</div><div class="kpi-value" style="color: #6CB4FF;">{setup.get('roc_annual_pct', 0.0):.1f}%</div><div class="kpi-sub">{setup.get('roc_cycle_pct', 0.0):.2f}% per {setup.get('dte')}d cycle</div></div>"""
             )
         with k2:
-            st.markdown(
-                f"""<div class="desk-card"><div class="kpi-title">NET COST BASIS</div><div class="kpi-value">${setup.get('cost_basis', 0.0):.2f}</div><div class="kpi-sub">-{setup.get('cushion_pct', 0.0):.1f}% below spot</div></div>""",
-                unsafe_allow_html=True
+            render_html(
+                f"""<div class="desk-card"><div class="kpi-title">NET COST BASIS</div><div class="kpi-value">${setup.get('cost_basis', 0.0):.2f}</div><div class="kpi-sub">-{setup.get('cushion_pct', 0.0):.1f}% below spot</div></div>"""
             )
         with k3:
-            st.markdown(
-                f"""<div class="desk-card"><div class="kpi-title">STRIKE CUSHION</div><div class="kpi-value" style="color: #6CB4FF;">+{setup.get('cushion_pct', 0.0):.1f}%</div><div class="kpi-sub">1σ low: ${setup.get('one_sigma_low', 0.0):.2f}</div></div>""",
-                unsafe_allow_html=True
+            render_html(
+                f"""<div class="desk-card"><div class="kpi-title">STRIKE CUSHION</div><div class="kpi-value" style="color: #6CB4FF;">+{setup.get('cushion_pct', 0.0):.1f}%</div><div class="kpi-sub">1σ low: ${setup.get('one_sigma_low', 0.0):.2f}</div></div>"""
             )
         with k4:
-            st.markdown(
-                f"""<div class="desk-card"><div class="kpi-title">MARKET ODDS OTM</div><div class="kpi-value">{setup.get('odds_otm_market_pct', 0.0):.1f}%</div><div class="kpi-sub">Touch probability: {setup.get('odds_touch_market_pct', 0.0):.1f}%</div></div>""",
-                unsafe_allow_html=True
+            render_html(
+                f"""<div class="desk-card"><div class="kpi-title">MARKET ODDS OTM</div><div class="kpi-value">{setup.get('odds_otm_market_pct', 0.0):.1f}%</div><div class="kpi-sub">Touch probability: {setup.get('odds_touch_market_pct', 0.0):.1f}%</div></div>"""
             )
 
         # Systematic Trade Plan
         plan = setup.get("plan", {})
-        st.markdown(
+        render_html(
             f"""
             <div class="desk-card">
                 <div class="kpi-title">SYSTEMATIC LIFECYCLE MANAGEMENT PLAN</div>
@@ -608,8 +603,7 @@ with tab_ticket:
                     </div>
                 </div>
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
 
         # 7-Part Scoring Breakdown
@@ -621,7 +615,7 @@ with tab_ticket:
                 with col:
                     earned, total = vals[0], vals[1]
                     pct = (earned / total) * 100 if total > 0 else 0
-                    st.markdown(
+                    render_html(
                         f"""
                         <div class="desk-card-raised" style="text-align: center; padding: 0.75rem 0.5rem;">
                             <div style="font-size: 0.68rem; color: #8792A2; text-transform: uppercase; font-family: 'JetBrains Mono', monospace;">{part_name}</div>
@@ -630,8 +624,7 @@ with tab_ticket:
                                 <div style="background-color: #6CB4FF; height: 100%; width: {pct}%;"></div>
                             </div>
                         </div>
-                        """,
-                        unsafe_allow_html=True
+                        """
                     )
     else:
         st.info("No candidate available for trade ticket.")
@@ -646,31 +639,26 @@ with tab_positions:
     # 5 KPI Strip
     p1, p2, p3, p4, p5 = st.columns(5)
     with p1:
-        st.markdown(
-            f"""<div class="desk-card"><div class="kpi-title">ACTIVE CONTRACTS</div><div class="kpi-value">{portfolio.get('open_count', len(pos_list))}</div><div class="kpi-sub">Cash-secured puts</div></div>""",
-            unsafe_allow_html=True
+        render_html(
+            f"""<div class="desk-card"><div class="kpi-title">ACTIVE CONTRACTS</div><div class="kpi-value">{portfolio.get('open_count', len(pos_list))}</div><div class="kpi-sub">Cash-secured puts</div></div>"""
         )
     with p2:
-        st.markdown(
-            f"""<div class="desk-card"><div class="kpi-title">TOTAL COLLATERAL</div><div class="kpi-value">${portfolio.get('collateral', 0):,.0f}</div><div class="kpi-sub">Reserved cash</div></div>""",
-            unsafe_allow_html=True
+        render_html(
+            f"""<div class="desk-card"><div class="kpi-title">TOTAL COLLATERAL</div><div class="kpi-value">${portfolio.get('collateral', 0):,.0f}</div><div class="kpi-sub">Reserved cash</div></div>"""
         )
     with p3:
-        st.markdown(
-            f"""<div class="desk-card"><div class="kpi-title">CREDIT COLLECTED</div><div class="kpi-value" style="color: #6CB4FF;">${portfolio.get('credit_collected', 0):,.0f}</div><div class="kpi-sub">Immediate premium</div></div>""",
-            unsafe_allow_html=True
+        render_html(
+            f"""<div class="desk-card"><div class="kpi-title">CREDIT COLLECTED</div><div class="kpi-value" style="color: #6CB4FF;">${portfolio.get('credit_collected', 0):,.0f}</div><div class="kpi-sub">Immediate premium</div></div>"""
         )
     with p4:
         unrealized = portfolio.get('unrealized', 0)
         u_color = "#6CB4FF" if unrealized >= 0 else "#FF8B5C"
-        st.markdown(
-            f"""<div class="desk-card"><div class="kpi-title">UNREALIZED P&L</div><div class="kpi-value" style="color: {u_color};">${unrealized:,.0f}</div><div class="kpi-sub">Mark-to-market</div></div>""",
-            unsafe_allow_html=True
+        render_html(
+            f"""<div class="desk-card"><div class="kpi-title">UNREALIZED P&L</div><div class="kpi-value" style="color: {u_color};">${unrealized:,.0f}</div><div class="kpi-sub">Mark-to-market</div></div>"""
         )
     with p5:
-        st.markdown(
-            f"""<div class="desk-card"><div class="kpi-title">ITM EXPOSURE</div><div class="kpi-value" style="color: #FF8B5C;">${portfolio.get('itm_assignment_value', 0):,.0f}</div><div class="kpi-sub">{portfolio.get('out_of_rolls', 0)} out of rolls</div></div>""",
-            unsafe_allow_html=True
+        render_html(
+            f"""<div class="desk-card"><div class="kpi-title">ITM EXPOSURE</div><div class="kpi-value" style="color: #FF8B5C;">${portfolio.get('itm_assignment_value', 0):,.0f}</div><div class="kpi-sub">{portfolio.get('out_of_rolls', 0)} out of rolls</div></div>"""
         )
 
     # Urgent Action Required (ITM)
@@ -683,18 +671,18 @@ with tab_positions:
             pnl_color = "#6CB4FF" if pnl >= 0 else "#FF8B5C"
             step = p.get("next_step", "decide").upper()
             itm_rows.append(f"""
-                <tr>
-                    <td class="font-mono"><strong>{p.get('ticker')}</strong></td>
-                    <td class="font-mono">${p.get('strike'):.1f}P</td>
-                    <td class="font-mono" style="color: #FF8B5C;">{p.get('expiry')} ({p.get('dte')}d)</td>
-                    <td class="font-mono">${p.get('spot', 0.0):.2f}</td>
-                    <td class="font-mono" style="color: #FF8B5C;">{p.get('spot_vs_strike_pct', 0.0):.1f}%</td>
-                    <td class="font-mono" style="color: {pnl_color}; font-weight: 700;">${pnl:,.0f}</td>
-                    <td class="font-mono">{p.get('rolls', 0)} / {p.get('rolls_max', 2)}</td>
-                    <td><span class="badge badge-orange">{step}</span></td>
-                </tr>
-            """)
-        st.markdown(
+<tr>
+<td class="font-mono"><strong>{p.get('ticker')}</strong></td>
+<td class="font-mono">${p.get('strike'):.1f}P</td>
+<td class="font-mono" style="color: #FF8B5C;">{p.get('expiry')} ({p.get('dte')}d)</td>
+<td class="font-mono">${p.get('spot', 0.0):.2f}</td>
+<td class="font-mono" style="color: #FF8B5C;">{p.get('spot_vs_strike_pct', 0.0):.1f}%</td>
+<td class="font-mono" style="color: {pnl_color}; font-weight: 700;">${pnl:,.0f}</td>
+<td class="font-mono">{p.get('rolls', 0)} / {p.get('rolls_max', 2)}</td>
+<td><span class="badge badge-orange">{step}</span></td>
+</tr>
+""")
+        render_html(
             f"""
             <div class="table-wrap">
                 <table class="quiet-table">
@@ -713,8 +701,7 @@ with tab_positions:
                     <tbody>{''.join(itm_rows)}</tbody>
                 </table>
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
 
     # All Positions Ledger
@@ -727,19 +714,19 @@ with tab_positions:
             pnl = p.get("pnl", 0)
             pnl_col = "#6CB4FF" if pnl >= 0 else "#FF8B5C"
             all_rows.append(f"""
-                <tr>
-                    <td class="font-mono"><strong>{p.get('ticker')}</strong></td>
-                    <td class="font-mono">${p.get('strike'):.1f}P</td>
-                    <td class="font-mono">{p.get('expiry')} ({p.get('dte')}d)</td>
-                    <td class="font-mono">${p.get('open_credit', 0.0):.2f}</td>
-                    <td class="font-mono">${p.get('mark_mid', 0.0):.2f}</td>
-                    <td class="font-mono">${p.get('spot', 0.0):.2f}</td>
-                    <td class="font-mono" style="color: {pnl_col}; font-weight: 700;">${pnl:,.0f}</td>
-                    <td><span class="badge {badge_type}">{status}</span></td>
-                    <td class="font-mono" style="color: #8792A2;">{p.get('next_step', 'hold')}</td>
-                </tr>
-            """)
-        st.markdown(
+<tr>
+<td class="font-mono"><strong>{p.get('ticker')}</strong></td>
+<td class="font-mono">${p.get('strike'):.1f}P</td>
+<td class="font-mono">{p.get('expiry')} ({p.get('dte')}d)</td>
+<td class="font-mono">${p.get('open_credit', 0.0):.2f}</td>
+<td class="font-mono">${p.get('mark_mid', 0.0):.2f}</td>
+<td class="font-mono">${p.get('spot', 0.0):.2f}</td>
+<td class="font-mono" style="color: {pnl_col}; font-weight: 700;">${pnl:,.0f}</td>
+<td><span class="badge {badge_type}">{status}</span></td>
+<td class="font-mono" style="color: #8792A2;">{p.get('next_step', 'hold')}</td>
+</tr>
+""")
+        render_html(
             f"""
             <div class="table-wrap">
                 <table class="quiet-table">
@@ -759,8 +746,7 @@ with tab_positions:
                     <tbody>{''.join(all_rows)}</tbody>
                 </table>
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
 
 # =========================================================
@@ -768,7 +754,7 @@ with tab_positions:
 # =========================================================
 with tab_evidence:
     backtest = snapshot.get("backtest", {})
-    st.markdown(
+    render_html(
         f"""
         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1rem;">
             <div>
@@ -782,40 +768,35 @@ with tab_evidence:
                 Model As Of: {backtest.get('as_of', '—')[:10]}
             </div>
         </div>
-        """,
-        unsafe_allow_html=True
+        """
     )
 
     # 4 KPI Cards
     b1, b2, b3, b4 = st.columns(4)
     with b1:
-        st.markdown(
-            f"""<div class="desk-card"><div class="kpi-title">TOTAL TRADES</div><div class="kpi-value">{backtest.get('trades', 0):,}</div><div class="kpi-sub">Simulated cycles</div></div>""",
-            unsafe_allow_html=True
+        render_html(
+            f"""<div class="desk-card"><div class="kpi-title">TOTAL TRADES</div><div class="kpi-value">{backtest.get('trades', 0):,}</div><div class="kpi-sub">Simulated cycles</div></div>"""
         )
     with b2:
-        st.markdown(
-            f"""<div class="desk-card"><div class="kpi-title">WIN RATE</div><div class="kpi-value" style="color: #6CB4FF;">{backtest.get('win_rate', 0.0):.1f}%</div><div class="kpi-sub">BE hurdle: {backtest.get('breakeven_win_rate', 0.0):.1f}%</div></div>""",
-            unsafe_allow_html=True
+        render_html(
+            f"""<div class="desk-card"><div class="kpi-title">WIN RATE</div><div class="kpi-value" style="color: #6CB4FF;">{backtest.get('win_rate', 0.0):.1f}%</div><div class="kpi-sub">BE hurdle: {backtest.get('breakeven_win_rate', 0.0):.1f}%</div></div>"""
         )
     with b3:
         avg_w = backtest.get('avg_win', 0)
         avg_l = backtest.get('avg_loss', 0)
         ratio = abs(avg_l / avg_w) if avg_w != 0 else 0
-        st.markdown(
-            f"""<div class="desk-card"><div class="kpi-title">AVG WIN / AVG LOSS</div><div class="kpi-value"><span style="color: #6CB4FF;">${avg_w:,.0f}</span> / <span style="color: #FF8B5C;">-${abs(avg_l):,.0f}</span></div><div class="kpi-sub">Payoff ratio 1 : {ratio:.1f}</div></div>""",
-            unsafe_allow_html=True
+        render_html(
+            f"""<div class="desk-card"><div class="kpi-title">AVG WIN / AVG LOSS</div><div class="kpi-value"><span style="color: #6CB4FF;">${avg_w:,.0f}</span> / <span style="color: #FF8B5C;">-${abs(avg_l):,.0f}</span></div><div class="kpi-sub">Payoff ratio 1 : {ratio:.1f}</div></div>"""
         )
     with b4:
-        st.markdown(
-            f"""<div class="desk-card"><div class="kpi-title">NET REALIZED P&L</div><div class="kpi-value" style="color: #6CB4FF;">${backtest.get('net_pnl', 0):,.0f}</div><div class="kpi-sub">Compounded simulation</div></div>""",
-            unsafe_allow_html=True
+        render_html(
+            f"""<div class="desk-card"><div class="kpi-title">NET REALIZED P&L</div><div class="kpi-value" style="color: #6CB4FF;">${backtest.get('net_pnl', 0):,.0f}</div><div class="kpi-sub">Compounded simulation</div></div>"""
         )
 
     # Win Rate vs Breakeven Visual Bar
     win_rate = backtest.get("win_rate", 95.0)
     be_rate = backtest.get("breakeven_win_rate", 87.0)
-    st.markdown(
+    render_html(
         f"""
         <div class="desk-card">
             <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; margin-bottom: 6px;">
@@ -832,8 +813,7 @@ with tab_evidence:
                 <span>100%</span>
             </div>
         </div>
-        """,
-        unsafe_allow_html=True
+        """
     )
 
     # Monthly Bar Chart
@@ -867,7 +847,7 @@ with tab_rules:
     st.markdown("### Institutional Strategy Rules & Risk Parameters")
     r1, r2 = st.columns(2)
     with r1:
-        st.markdown(
+        render_html(
             """
             <div class="desk-card">
                 <div class="kpi-title" style="color: #6CB4FF;">1. RED DAY PULLBACK TRIGGER</div>
@@ -892,11 +872,10 @@ with tab_rules:
                     <li>&bull; IV between 5% and 300%</li>
                 </ul>
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
     with r2:
-        st.markdown(
+        render_html(
             """
             <div class="desk-card">
                 <div class="kpi-title" style="color: #FF8B5C;">3. EARNINGS BLACKOUT PROTOCOL</div>
@@ -919,6 +898,5 @@ with tab_rules:
                     <li>&bull; <strong>Roll Limit:</strong> Max 2 rolls per position; if exceeded, take physical delivery</li>
                 </ul>
             </div>
-            """,
-            unsafe_allow_html=True
+            """
         )
