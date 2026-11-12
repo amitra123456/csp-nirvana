@@ -30,3 +30,12 @@ desktop.ini
 *.log
 .cache/
 scratch/
+
+# Node.js / Next.js
+web/node_modules/
+web/.next/
+web/out/
+node_modules/
+.next/
+*.tsbuildinfo
+

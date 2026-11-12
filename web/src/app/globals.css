@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --desk-bg: #0B0E13;
+  --desk-header: #0E1218;
+  --desk-card: #121821;
+  --desk-raised: #18202B;
+  --desk-border: #1E2733;
+  --desk-text: #E8ECF1;
+}
+
+body {
+  background-color: var(--desk-bg);
+  color: var(--desk-text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom scrollbars for clean quiet desk feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0E13;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E2733;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #253041;
+}
