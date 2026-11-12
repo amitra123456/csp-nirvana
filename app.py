@@ -238,6 +238,26 @@ def load_snapshot() -> Optional[Dict[str, Any]]:
             return None
     return None
 
+load_latest_snapshot = load_snapshot
+
+def load_daily_metadata() -> Optional[Dict[str, Any]]:
+    """Loads 3:35 PM daily pipeline metadata. Never fabricates data if missing."""
+    snap = load_latest_snapshot()
+    if snap and "run" in snap:
+        run_data = snap["run"]
+        as_of = run_data.get("as_of_et", "")
+        return {
+            "last_updated": as_of.replace("T", " ")[:19] + " ET" if as_of else "—",
+            "as_of_raw": as_of,
+            "status": run_data.get("status", "ok").upper(),
+            "total_population": len(snap.get("setups", [])) + len(snap.get("held_back", [])),
+            "qualified_setups_count": len(snap.get("setups", [])),
+            "active_positions_count": len(snap.get("positions", [])),
+            "closed_trades_count": snap.get("backtest", {}).get("trades", 0),
+            "next_scheduled_run": "3:35 PM ET on open market days"
+        }
+    return None
+
 def format_curr(val: Optional[float]) -> str:
     if val is None or pd.isna(val):
         return "—"

@@ -15,6 +15,23 @@ import numpy as np
 import pandas as pd
 from core.snapshot_models import SetupModel, PositionModel, Levels, TradePlan, HeldPositionSummary, WatchoutItem
 
+try:
+    from config.settings import get_company_name
+except Exception:
+    def get_company_name(ticker: str) -> str:
+        return ticker
+
+def compute_bs_put_delta(spot: float, strike: float, dte: int, iv: float, r: float = 0.045) -> float:
+    """Computes analytical Black-Scholes Put Delta."""
+    if spot <= 0 or strike <= 0 or iv <= 0:
+        return -0.20
+    t = max(1, dte) / 365.0
+    sigma = max(0.01, iv)
+    d1 = (math.log(spot / strike) + (r + 0.5 * sigma * sigma) * t) / (sigma * math.sqrt(t))
+    cdf_d1 = 0.5 * (1.0 + math.erf(d1 / math.sqrt(2.0)))
+    put_delta = cdf_d1 - 1.0
+    return round(min(-0.01, max(-0.99, put_delta)), 3)
+
 def derive_levels(bars: pd.DataFrame) -> Dict[str, Optional[float]]:
     """Computes technical indicator levels strictly from completed daily bars."""
     if bars is None or len(bars) < 20:
@@ -102,7 +119,9 @@ def derive_setup(
     Nothing else in the codebase computes these numbers.
     """
     ticker = str(quote['ticker']).upper()
-    name = str(quote.get('name', ticker))
+    name = str(quote.get('name', '')).strip()
+    if not name or name.upper() == ticker:
+        name = get_company_name(ticker)
     spot = float(quote['price'])
     spot_ts = str(quote.get('timestamp', quote.get('spot_ts', '')))
     
@@ -113,7 +132,11 @@ def derive_setup(
     ask = float(chain_row.get('ask', bid))
     mid = round((bid + ask) / 2.0, 2)
     iv = float(chain_row.get('iv', 0.40))
-    delta = float(chain_row.get('delta', -0.20))
+    raw_delta = chain_row.get('delta')
+    if raw_delta is not None:
+        delta = float(raw_delta)
+    else:
+        delta = compute_bs_put_delta(spot, strike, dte, iv)
     open_interest = int(chain_row.get('open_interest', 0))
 
     # Core Mathematical Formulas

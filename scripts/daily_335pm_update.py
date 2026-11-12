@@ -43,7 +43,7 @@ from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
 from alpaca.data.enums import Adjustment, DataFeed
 
-from config.settings import ALL_108_CANDIDATES, DEFAULTS
+from config.settings import ALL_108_CANDIDATES, DEFAULTS, get_company_name
 from core.snapshot_models import (
     Snapshot, RunMetadata, RunError, RulesConfig, HeldBackModel,
     PositionModel, PortfolioModel, BacktestModel, MonthlyPnl
@@ -286,7 +286,7 @@ def run_daily_pipeline(force_alpaca_fail: bool = False) -> Snapshot:
         # Build clean raw input dicts for pure derive_setup
         quote_input = {
             "ticker": ticker,
-            "name": r.get('name', ticker),
+            "name": r.get('name') or get_company_name(ticker),
             "price": spot_val,
             "timestamp": as_of_et_str
         }
@@ -297,7 +297,7 @@ def run_daily_pipeline(force_alpaca_fail: bool = False) -> Snapshot:
             "bid": bid_val,
             "ask": ask_val,
             "iv": iv_val,
-            "delta": r.get('delta', -0.20),
+            "delta": r.get('delta'),
             "open_interest": oi_val
         }
         news_input = {
