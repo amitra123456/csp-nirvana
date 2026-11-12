@@ -423,7 +423,7 @@ with tab_today:
                     <td class="font-mono" style="color: #8792A2;">#{i+1}</td>
                     <td>
                         <strong style="font-size: 0.95rem; color: #E8ECF1;">{ticker}</strong>
-                        <div style="font-size: 0.72rem; color: #8792A2;">{name[:16]}</div>
+                        <div style="font-size: 0.72rem; color: #8792A2;">{name}</div>
                     </td>
                     <td class="font-mono">${spot:.2f}</td>
                     <td class="font-mono"><strong style="color: #6CB4FF;">${strike:.1f}P</strong></td>
