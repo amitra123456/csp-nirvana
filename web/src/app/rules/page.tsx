@@ -75,7 +75,7 @@ export default function RulesPage() {
           </span>
         </div>
         <p className="mt-1 text-sm text-text-muted">
-          Complete mathematical criteria: 7-Factor Nirvana Composite Scoring Engine followed by detailed lifecycle flowcharts for Stock Selection, Defensive Rolling, and Planned Assignment vs. Loss Triage.
+          Complete mathematical criteria: 7-Factor Nirvana Composite Scoring Engine followed by the operational Assignment vs. Taking the Loss Triage Protocol.
         </p>
       </div>
 
@@ -267,210 +267,18 @@ export default function RulesPage() {
       </div>
 
       {/* ========================================================================= */}
-      {/* SECTION 2: THREE COMPREHENSIVE PROTOCOL FLOWCHARTS */}
+      {/* SECTION 2: OPERATIONAL EXECUTION: ASSIGNMENT VS. LOSS TRIAGE PROTOCOL */}
       {/* ========================================================================= */}
       <div className="space-y-6">
         <div>
-          <h2 className="text-lg font-bold text-text-primary">2. Operational Execution & Lifecycle Flowcharts</h2>
+          <h2 className="text-lg font-bold text-text-primary">2. Operational Execution: Assignment vs. Taking the Loss Protocol</h2>
           <p className="text-xs text-text-muted mt-1">
-            Three distinct procedural cards covering candidate filtering, defensive rolling triggers, and planned assignment vs loss management.
+            Systematic decision tree for deep in-the-money positions (&gt;7% ITM) or expiration: Planned Wheel Assignment vs. Disciplined Stop Loss.
           </p>
         </div>
 
         {/* ----------------------------------------------------------------------- */}
-        {/* CARD 1: STOCK SELECTION CRITERIA FLOWCHART */}
-        {/* ----------------------------------------------------------------------- */}
-        <div className="bg-bg-card border border-border-subtle rounded-xl p-6 space-y-6 shadow-sm">
-          <div className="flex items-center gap-3 border-b border-border-subtle pb-4">
-            <div className="p-2 rounded-lg bg-bg-raised text-accent-favorable">
-              <Filter className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-text-primary">Flowchart Card #1: Stock Selection & Strike Qualification</h3>
-              <p className="text-xs text-text-muted">8-step mechanical funnel executed every day at 3:35 PM ET across the 108 institutional assets</p>
-            </div>
-          </div>
-
-          {/* Visual Step-by-Step Flow Nodes */}
-          <div className="space-y-3 font-mono text-xs">
-            {/* Step 1 */}
-            <div className="p-3.5 rounded-lg bg-bg-raised border border-border-subtle flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <span className="px-2 py-0.5 rounded bg-bg-canvas border border-border-strong text-accent-favorable font-bold shrink-0">STEP 1</span>
-                <div>
-                  <span className="font-bold text-text-primary">Universe Pre-Screen (108 Institutional Equities)</span>
-                  <p className="text-text-muted text-[11px] mt-0.5">Liquid S&P 500 / Nasdaq megacaps with listed weekly options, deep market liquidity, and institutional following.</p>
-                </div>
-              </div>
-              <span className="text-accent-favorable font-bold text-right shrink-0">108 Candidates</span>
-            </div>
-
-            <div className="flex justify-center"><ArrowDown className="w-4 h-4 text-text-muted" /></div>
-
-            {/* Step 2 */}
-            <div className="p-3.5 rounded-lg bg-bg-raised border border-border-subtle flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <span className="px-2 py-0.5 rounded bg-bg-canvas border border-border-strong text-accent-favorable font-bold shrink-0">STEP 2</span>
-                <div>
-                  <span className="font-bold text-text-primary">Pullback & SMC Dealing Range Confirmation</span>
-                  <p className="text-text-muted text-[11px] mt-0.5">Asset must be in a pullback or consolidation discount: <code>Close ≤ 20 SMA</code> OR <code>Day Move ≤ -0.8%</code> OR <code>RSI(14) ≤ 45</code>. We never chase green breakouts.</p>
-                </div>
-              </div>
-              <span className="text-accent-caution font-bold text-right shrink-0">Filter: Pullback Only</span>
-            </div>
-
-            <div className="flex justify-center"><ArrowDown className="w-4 h-4 text-text-muted" /></div>
-
-            {/* Step 3 */}
-            <div className="p-3.5 rounded-lg bg-bg-raised border border-border-subtle flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <span className="px-2 py-0.5 rounded bg-bg-canvas border border-border-strong text-accent-favorable font-bold shrink-0">STEP 3</span>
-                <div>
-                  <span className="font-bold text-text-primary">Beta-Adaptive Strike & Cushion Selection (~35 DTE)</span>
-                  <p className="text-text-muted text-[11px] mt-0.5">Target Cushion = <code>12.0% × √Beta</code>. Round strike down to nearest grid. Net basis must sit behind ICT OTE (61.8%–78.6%) or 1–2Y Macro Support Shelf.</p>
-                </div>
-              </div>
-              <span className="text-accent-favorable font-bold text-right shrink-0">Cushion: 10.5% – 18.0%</span>
-            </div>
-
-            <div className="flex justify-center"><ArrowDown className="w-4 h-4 text-text-muted" /></div>
-
-            {/* Step 4 */}
-            <div className="p-3.5 rounded-lg bg-bg-raised border border-border-subtle flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <span className="px-2 py-0.5 rounded bg-bg-canvas border border-border-strong text-accent-favorable font-bold shrink-0">STEP 4</span>
-                <div>
-                  <span className="font-bold text-text-primary">Liquidity & Yield Hurdle Gating</span>
-                  <p className="text-text-muted text-[11px] mt-0.5">Verified via real quoted bid: <code>Bid ≥ $1.20</code> (or $0.80 for low-beta), <code>Cycle ROC ≥ 1.0%</code> (≥12% annualized), <code>Open Interest ≥ 100</code>, <code>Spread ≤ 25%</code>.</p>
-                </div>
-              </div>
-              <span className="text-text-primary font-bold text-right shrink-0">Guarantees Viability</span>
-            </div>
-
-            <div className="flex justify-center"><ArrowDown className="w-4 h-4 text-text-muted" /></div>
-
-            {/* Step 5 */}
-            <div className="p-3.5 rounded-lg bg-bg-raised border border-accent-risk/40 flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <span className="px-2 py-0.5 rounded bg-accent-risk/20 text-accent-risk font-bold shrink-0">GATE 5</span>
-                <div>
-                  <span className="font-bold text-accent-risk">Earnings Blackout Rule #1 Check</span>
-                  <p className="text-text-muted text-[11px] mt-0.5">Does the 35-day option cycle span an upcoming earnings release? If within 7 days: <strong>REJECTED</strong>. If within 14 days: -8 pts deduction.</p>
-                </div>
-              </div>
-              <div className="text-right shrink-0">
-                <span className="text-accent-risk font-bold">Hard Lockout &lt; 7d</span>
-              </div>
-            </div>
-
-            <div className="flex justify-center"><ArrowDown className="w-4 h-4 text-text-muted" /></div>
-
-            {/* Step 6 */}
-            <div className="p-3.5 rounded-lg bg-bg-raised border border-accent-favorable/40 flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <span className="px-2 py-0.5 rounded bg-accent-favorable/20 text-accent-favorable font-bold shrink-0">GATE 6</span>
-                <div>
-                  <span className="font-bold text-text-primary">Nirvana Composite Scoring & Sizing Allocation</span>
-                  <p className="text-text-muted text-[11px] mt-0.5">Compute 0–100 score. If <strong>Score ≥ 82</strong>: Tag as <strong>2X Allocation</strong> (2 Contracts; requires 1–2Y Macro Shelf fortification if β ≥ 1.30 to block mid-air growth traps). If <strong>75 ≤ Score &lt; 82</strong>: Tag as <strong>1X Allocation</strong> (1 Contract). If &lt;75: Held Back.</p>
-                </div>
-              </div>
-              <div className="text-right shrink-0">
-                <span className="text-accent-favorable font-bold">🎯 Qualified Setup Issued</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ----------------------------------------------------------------------- */}
-        {/* CARD 2: ROLL CRITERIA FLOWCHART */}
-        {/* ----------------------------------------------------------------------- */}
-        <div className="bg-bg-card border border-border-subtle rounded-xl p-6 space-y-6 shadow-sm">
-          <div className="flex items-center gap-3 border-b border-border-subtle pb-4">
-            <div className="p-2 rounded-lg bg-bg-raised text-accent-caution">
-              <RefreshCw className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-text-primary">Flowchart Card #2: Defensive Rolling Action Protocol</h3>
-              <p className="text-xs text-text-muted">Mechanical rules governing when to harvest 50% profit vs when and how to execute a defensive roll</p>
-            </div>
-          </div>
-
-          <div className="space-y-4 font-mono text-xs">
-            {/* Step 1: Active Monitoring */}
-            <div className="p-3.5 rounded-lg bg-bg-raised border border-border-subtle">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-text-primary">ACTIVE MONITORING (Candle-by-Candle Tracking)</span>
-                <span className="text-accent-favorable text-[11px]">Mark-to-Market Daily</span>
-              </div>
-              <p className="text-text-muted text-[11px] mt-1">
-                Evaluate daily close price, remaining DTE, option mark, and current put delta (Δ).
-              </p>
-            </div>
-
-            {/* Decision Fork: Profit Target vs Testing */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Left Branch: Take Profit */}
-              <div className="p-4 rounded-lg bg-accent-favorable/5 border border-accent-favorable/30 space-y-2">
-                <div className="flex items-center gap-2 text-accent-favorable font-bold">
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>PATH A: 50% Take-Profit Target Hit</span>
-                </div>
-                <div className="text-[11px] text-text-secondary leading-relaxed">
-                  <strong>Trigger:</strong> Option value decays to <code>≤ 50% of open credit</code> (e.g. sold at $2.00, now bid at $1.00).<br />
-                  <strong>Action:</strong> 🎯 <strong>BUY BACK TO CLOSE</strong>.<br />
-                  <strong>Result:</strong> Realize 50% max profit early; releases 100% of cash collateral to cycle into fresh setups. Average holding duration is only <strong>8.8 to 9.2 days</strong>.
-                </div>
-              </div>
-
-              {/* Right Branch: Underlying Tested */}
-              <div className="p-4 rounded-lg bg-accent-caution/5 border border-accent-caution/30 space-y-2">
-                <div className="flex items-center gap-2 text-accent-caution font-bold">
-                  <AlertTriangle className="w-4 h-4" />
-                  <span>PATH B: Position Tested / In The Money</span>
-                </div>
-                <div className="text-[11px] text-text-secondary leading-relaxed">
-                  <strong>When do we decide to roll?</strong><br />
-                  • <strong>Trigger 1 (ATM Touch Window):</strong> Spot drops to within <code>0% to 3% ITM</code> (or spot &lt; Strike × 1.02). This is where extrinsic time-value is at its peak!<br />
-                  • <strong>Trigger 2 (Delta Expansion):</strong> Put Delta crosses <code>|Δ| &gt; 0.40</code>.<br />
-                  • <strong>Roll Budget Check:</strong> Has position already used 2 rolls? (<code>rolls &lt; 2</code>).
-                </div>
-              </div>
-            </div>
-
-            {/* Rolling Feasibility Gate */}
-            <div className="p-4 rounded-lg bg-bg-raised border border-border-strong space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-accent-caution flex items-center gap-2">
-                  <GitBranch className="w-4 h-4" />
-                  THE GOLDEN CREDIT RULE OF ROLLING
-                </span>
-                <span className="px-2 py-0.5 rounded bg-bg-canvas text-[11px] font-bold border border-border-subtle">
-                  Strict Requirement
-                </span>
-              </div>
-              <p className="text-text-muted text-[11px] leading-relaxed">
-                We roll <strong>OUT</strong> in time (~35 DTE further) and <strong>DOWN</strong> in strike if possible. However, the trade must satisfy one cardinal rule:
-              </p>
-              <div className="p-3 rounded bg-bg-canvas border border-border-subtle text-[11px] space-y-1.5">
-                <div className="text-accent-favorable font-bold">
-                  ✓ IF Net Credit ≥ +$0.20 Available:
-                </div>
-                <p className="text-text-secondary pl-3">
-                  Execute the roll. Buy back existing put, sell next 35 DTE put. Total credit collected increases, which lowers our net cost basis further. Record <code>Rolls += 1</code>.
-                </p>
-                <div className="text-accent-risk font-bold pt-1">
-                  ✗ IF Net Credit is NOT Available (Requires Paying a Debit) OR Rolls = 2:
-                </div>
-                <p className="text-text-secondary pl-3">
-                  <strong>NEVER pay a debit to roll</strong>. If the stock has gapped deeply ITM (&gt;7% ITM) where extrinsic value has evaporated, rolling for a credit is mathematically impossible. <strong>Do NOT roll</strong>. Transition immediately to <strong>Flowchart Card #3</strong> (Planned Assignment or Loss).
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* ----------------------------------------------------------------------- */}
-        {/* CARD 3: ASSIGNMENT OR TAKE THE LOSS CRITERIA FLOWCHART */}
+        {/* ASSIGNMENT OR TAKE THE LOSS CRITERIA PROTOCOL */}
         {/* ----------------------------------------------------------------------- */}
         <div className="bg-bg-card border border-border-subtle rounded-xl p-6 space-y-6 shadow-sm">
           <div className="flex items-center gap-3 border-b border-border-subtle pb-4">
@@ -478,7 +286,7 @@ export default function RulesPage() {
               <Briefcase className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-text-primary">Flowchart Card #3: Assignment vs. Taking the Loss Triage Protocol</h3>
+              <h3 className="text-base font-bold text-text-primary">Assignment vs. Taking the Loss Triage Protocol</h3>
               <p className="text-xs text-text-muted">Decision tree for deep ITM positions (&gt;7% ITM) or expiration where rolling is unviable</p>
             </div>
           </div>
