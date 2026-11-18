@@ -239,12 +239,20 @@ def derive_setup(
     is_golden_cross = bool(sma50 and sma200 and sma50 > sma200 and spot > sma200)
     is_near_macro = bool(levels_dict.get('is_near_macro_support'))
     macro_shelf = levels_dict.get('macro_support') or levels_dict.get('swing_low_252')
+    is_under_macro = bool(macro_shelf and strike <= macro_shelf)
 
     # 1. Cushion Subscore (Max 20 pts) - Beta-Adaptive Normalized
     beta = float(fundamentals.get('beta', 1.0)) if fundamentals and fundamentals.get('beta') else 1.0
     beta = max(0.5, min(2.5, beta))
     target_cushion = 12.0 * math.sqrt(beta)
     cushion_subscore = min(20.0, max(2.0, round((cushion_pct / target_cushion) * 16.0, 1)))
+
+    if beta >= 1.30 and not (is_under_macro or is_near_macro):
+        watchouts.append(WatchoutItem(
+            severity="medium",
+            title="High-Beta Mid-Air Suspension",
+            detail=f"Beta is elevated ({beta:.2f}) and put strike ${strike:.2f} is not fortified by a 1-2Y Macro Support Shelf. Applied -4 pt structural deduction."
+        ))
 
     # 2. Valuation Subscore (Max 20 pts)
     val_subscore = min(20.0, max(2.0, round(float(fundamentals.get('fcf_yield_pct', 4.0)) * 2.5, 1)))
@@ -258,10 +266,16 @@ def derive_setup(
     elif sma200 and spot < sma200:
         levels_base -= 4.0  # -4 pts penalty for falling secular bear market
 
-    if macro_shelf and strike <= macro_shelf:
+    if is_under_macro:
         levels_base += 3.0  # +3 pts: strike safely fortified under 1-2Y Macro Shelf
     elif is_near_macro:
         levels_base += 2.0  # +2 pts: stock testing major macro accumulation shelf
+
+    # High-Beta Mid-Air Structural Deduction:
+    # High-beta assets (beta >= 1.30) suspended in mid-air without 1-2Y macro support fortification
+    # suffer severe factor leakage during broader tech market selloffs.
+    if beta >= 1.30 and not (is_under_macro or is_near_macro):
+        levels_base -= 4.0  # -4 pts penalty: High-Beta Mid-Air Suspension
 
     levels_subscore = min(20.0, max(2.0, round(levels_base, 1)))
 

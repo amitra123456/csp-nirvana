@@ -143,7 +143,7 @@ export default function RulesPage() {
             </div>
             <div className="text-sm font-bold text-text-primary">Macro S/R & Trend Integration</div>
             <p className="text-xs text-text-muted leading-relaxed">
-              Base 12.0 pts. <strong>+4 pts</strong> Golden Cross (50 &gt; 200 SMA), <strong>+3 pts</strong> Strike fortified under 1–2Y Macro Shelf, <strong>-4 pts</strong> Secular bear penalty.
+              Base 12.0 pts. <strong>+4 pts</strong> Golden Cross (50 &gt; 200 SMA), <strong>+3 pts</strong> Strike fortified under 1–2Y Macro Shelf, <strong>-4 pts</strong> Secular bear penalty. <strong>-4 pts</strong> High-Beta Mid-Air Suspension (β ≥ 1.30 above macro shelf).
             </p>
             <div className="text-[11px] font-mono text-text-secondary pt-1 border-t border-border-subtle">
               Fortified shelf drops loss rate by -57%
@@ -216,13 +216,14 @@ export default function RulesPage() {
               <span className="text-xs font-mono text-accent-risk uppercase">Binary Penalties</span>
               <span className="text-xs font-mono font-bold text-accent-risk">Up to -25 pts</span>
             </div>
-            <div className="text-sm font-bold text-accent-risk">Earnings Blackout Deductions</div>
+            <div className="text-sm font-bold text-accent-risk">Blackout & Mid-Air Deductions</div>
             <p className="text-xs text-text-muted leading-relaxed">
-              <strong>-25 pts:</strong> Option cycle spans earnings within 7 days (Rule 1 violation).<br />
-              <strong>-8 pts:</strong> Pre-earnings digestion window (8 to 14 days).
+              <strong>-25 pts:</strong> Option spans earnings within 7 days (Rule 1 violation).<br />
+              <strong>-8 pts:</strong> Pre-earnings digestion window (8 to 14 days).<br />
+              <strong>-4 pts:</strong> High-Beta Mid-Air Suspension (β ≥ 1.30 above 2Y Macro Shelf).
             </p>
             <div className="text-[11px] font-mono text-accent-risk pt-1 border-t border-border-subtle">
-              Severe jump-risk elimination
+              Severe jump-risk & growth blow-through elimination
             </div>
           </div>
         </div>
@@ -370,7 +371,7 @@ export default function RulesPage() {
                 <span className="px-2 py-0.5 rounded bg-accent-favorable/20 text-accent-favorable font-bold shrink-0">GATE 6</span>
                 <div>
                   <span className="font-bold text-text-primary">Nirvana Composite Scoring & Sizing Allocation</span>
-                  <p className="text-text-muted text-[11px] mt-0.5">Compute 0–100 score. If <strong>Score ≥ 82</strong>: Tag as <strong>2X Allocation</strong> (2 Contracts). If <strong>75 ≤ Score &lt; 82</strong>: Tag as <strong>1X Allocation</strong> (1 Contract). If &lt;75: Held Back.</p>
+                  <p className="text-text-muted text-[11px] mt-0.5">Compute 0–100 score. If <strong>Score ≥ 82</strong>: Tag as <strong>2X Allocation</strong> (2 Contracts; requires 1–2Y Macro Shelf fortification if β ≥ 1.30 to block mid-air growth traps). If <strong>75 ≤ Score &lt; 82</strong>: Tag as <strong>1X Allocation</strong> (1 Contract). If &lt;75: Held Back.</p>
                 </div>
               </div>
               <div className="text-right shrink-0">

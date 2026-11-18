@@ -227,10 +227,18 @@ def compute_probability_and_amplitude(
 
     # Macro 1-2 Year Support Shelf Fortification
     macro_shelf = smc.get('macro_support_shelf', 0.0) or smc.get('swing_low_252', 0.0)
-    if macro_shelf and strike <= macro_shelf:
+    is_under_macro = bool(macro_shelf and strike <= macro_shelf)
+    is_near_macro = bool(smc.get('is_near_macro_support', False))
+    if is_under_macro:
         ms_base += 3.0  # Strike fortified beneath multi-year institutional accumulation
-    elif smc.get('is_near_macro_support', False):
+    elif is_near_macro:
         ms_base += 2.0  # Stock testing major macro shelf
+
+    # High-Beta Mid-Air Structural Deduction:
+    # High-beta assets (beta >= 1.30) without 1-2Y macro support fortification
+    # lack structural downside floor during sector drawdowns.
+    if beta >= 1.30 and not (is_under_macro or is_near_macro):
+        ms_base -= 4.0  # -4 pts penalty for high-beta mid-air suspension
 
     ms_subscore = min(20.0, max(2.0, ms_base))
 

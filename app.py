@@ -1783,7 +1783,8 @@ with tab_rules:
                 <strong>Macro S/R & Trend:</strong> Base 12 pts.<br>
                 <strong>+4 pts:</strong> Golden Cross (50 > 200 SMA).<br>
                 <strong>+3 pts:</strong> Fortified under 1-2Y Macro Shelf.<br>
-                <strong>-4 pts:</strong> Secular bear downtrend penalty.
+                <strong>-4 pts:</strong> Secular bear downtrend penalty.<br>
+                <strong>-4 pts:</strong> High-Beta Mid-Air Suspension (β ≥ 1.30 above macro shelf).
             </div>
         </div>
         <div class="desk-card">
@@ -1828,9 +1829,10 @@ with tab_rules:
         <div class="desk-card" style="border: 1px solid rgba(255, 139, 92, 0.4);">
             <div class="kpi-title" style="color: #FF8B5C;">BINARY DEDUCTIONS</div>
             <div style="font-size: 0.82rem; line-height: 1.4; color: #FF8B5C;">
-                <strong>Earnings Blackout Penalties:</strong><br>
+                <strong>Event & Structure Penalties:</strong><br>
                 <strong>-25 pts:</strong> Cycle spans earnings &le; 7 days.<br>
-                <strong>-8 pts:</strong> Pre-earnings digestion &le; 14 days.
+                <strong>-8 pts:</strong> Pre-earnings digestion &le; 14 days.<br>
+                <strong>-4 pts:</strong> High-Beta Mid-Air Suspension (β ≥ 1.30 above 2Y Macro Shelf).
             </div>
         </div>
         """)
