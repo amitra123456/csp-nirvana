@@ -39,7 +39,7 @@ export function Header({ asOfEt = "", itmCount = 0 }: HeaderProps) {
   const navLinks = [
     { href: "/", label: "Signals" },
     { href: "/admin", label: "Admin", badge: itmCount > 0 ? `${itmCount} ITM` : undefined },
-    { href: "/evidence", label: "Evidence" },
+    { href: "/evidence", label: "Historical Analysis" },
     { href: "/rules", label: "Rules" },
   ];
 

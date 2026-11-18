@@ -1,3 +1,20 @@
 {
-  "approved": []
+  "approved": [
+    "NXPI"
+  ],
+  "disapproved": [
+    "PLTR"
+  ],
+  "records": {
+    "NXPI": {
+      "status": "approved",
+      "comment": "Solid 15.6% cushion",
+      "updated_at": "2026-11-18T18:53:10.613Z"
+    },
+    "PLTR": {
+      "status": "disapproved",
+      "comment": "High beta test",
+      "updated_at": "2026-11-18T18:53:11.398Z"
+    }
+  }
 }

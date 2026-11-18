@@ -15,15 +15,15 @@ export default function SignalsPage() {
   const [redDaysOnly, setRedDaysOnly] = useState(false);
   const [hideHeld, setHideHeld] = useState(false);
 
-  // Admin Approval State
-  const [approvedTickers, setApprovedTickers] = useState<Set<string>>(new Set());
+  // Admin Review & Approval State (status: approved | disapproved | none, and comments)
+  const [reviewRecords, setReviewRecords] = useState<Record<string, { status: "approved" | "disapproved" | "none"; comment: string }>>({});
 
   useEffect(() => {
     // 1. Initial cached read
     try {
-      const cached = localStorage.getItem("csp_approved_tickers");
+      const cached = localStorage.getItem("csp_review_records");
       if (cached) {
-        setApprovedTickers(new Set(JSON.parse(cached)));
+        setReviewRecords(JSON.parse(cached));
       }
     } catch (e) {}
 
@@ -31,32 +31,13 @@ export default function SignalsPage() {
     fetch("/api/approve")
       .then((r) => r.json())
       .then((data) => {
-        if (Array.isArray(data.approved)) {
-          setApprovedTickers(new Set(data.approved.map((s: string) => s.toUpperCase())));
-          localStorage.setItem("csp_approved_tickers", JSON.stringify(data.approved));
+        if (data.records && typeof data.records === "object") {
+          setReviewRecords(data.records);
+          localStorage.setItem("csp_review_records", JSON.stringify(data.records));
         }
       })
       .catch(() => {});
   }, []);
-
-  const toggleApproval = async (ticker: string, isApproved: boolean) => {
-    const sym = ticker.toUpperCase();
-    const next = new Set(approvedTickers);
-    if (isApproved) next.add(sym);
-    else next.delete(sym);
-    setApprovedTickers(next);
-    localStorage.setItem("csp_approved_tickers", JSON.stringify(Array.from(next)));
-
-    try {
-      await fetch("/api/approve", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticker: sym, approved: isApproved }),
-      });
-    } catch (e) {
-      console.error("Failed to save approval:", e);
-    }
-  };
 
   useEffect(() => {
     async function loadData() {
@@ -275,9 +256,9 @@ export default function SignalsPage() {
       </div>
 
       {/* 4. Main 2-Column Grid (Card 1: Table + Right Rail) */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="flex flex-col lg:flex-row gap-5 items-start">
         {/* Setups Table: Card 1 */}
-        <div className="lg:col-span-3 rounded-card border border-desk-border bg-desk-card overflow-hidden">
+        <div className="flex-1 min-w-0 rounded-card border border-desk-border bg-desk-card overflow-hidden">
           <div className="p-4 border-b border-desk-border bg-desk-raised/60 flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider flex items-center gap-2">
@@ -290,17 +271,17 @@ export default function SignalsPage() {
             </div>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-center text-sm">
               <thead className="border-b border-desk-border bg-desk-raised text-xs text-desk-secondary font-medium uppercase tracking-wider">
                 <tr>
-                  <th className="py-3 px-4">Stock</th>
-                  <th className="py-3 px-3">Date of Signal</th>
-                  <th className="py-3 px-3 text-right">Current Price</th>
-                  <th className="py-3 px-3">Put Strike</th>
-                  <th className="py-3 px-3">Put Expiration</th>
-                  <th className="py-3 px-3 text-right">Credit</th>
-                  <th className="py-3 px-3">Position Size</th>
-                  <th className="py-3 px-3 text-right">Return/Cycle</th>
+                  <th className="py-3 px-3 text-center">Stock</th>
+                  <th className="py-3 px-3 text-center">Date of Signal</th>
+                  <th className="py-3 px-3 text-center">Current Price</th>
+                  <th className="py-3 px-3 text-center">Put Strike</th>
+                  <th className="py-3 px-3 text-center">Put Expiration</th>
+                  <th className="py-3 px-3 text-center">Credit</th>
+                  <th className="py-3 px-3 text-center">Position Size</th>
+                  <th className="py-3 px-3 text-center">Return/Cycle</th>
                   <th className="py-3 px-3 text-center">Model Score</th>
                   <th className="py-3 px-4 text-center">Approved</th>
                 </tr>
@@ -314,69 +295,74 @@ export default function SignalsPage() {
                   </tr>
                 ) : (
                   filteredSetups.map((s) => {
-                    const isApproved = approvedTickers.has(s.ticker.toUpperCase());
+                    const sym = s.ticker.toUpperCase();
+                    const rec = reviewRecords[sym] || { status: "none", comment: "" };
+                    const status = rec.status;
+                    const comment = rec.comment;
                     const signalDate = s.spot_ts ? s.spot_ts.slice(0, 10) : (snapshot.run?.as_of_et?.slice(0, 10) || "2026-11-18");
 
                     return (
-                      <tr key={s.ticker} className={`hover:bg-desk-raised/60 transition-colors ${isApproved ? "bg-emerald-500/[0.02]" : ""}`}>
+                      <tr key={s.ticker} className={`hover:bg-desk-raised/60 transition-colors ${status === "approved" ? "bg-emerald-500/[0.02]" : status === "disapproved" ? "bg-rose-500/[0.02]" : ""}`}>
                         {/* 1. Stock */}
-                        <td className="py-3.5 px-4 font-sans">
-                          <Link href={`/ticket/${s.ticker}`} className="font-bold text-desk-text hover:text-desk-accent flex flex-col">
+                        <td className="py-3.5 px-3 font-sans text-center">
+                          <Link href={`/ticket/${s.ticker}`} className="inline-flex flex-col items-center hover:text-desk-accent">
                             <span className="text-sm font-mono text-desk-accent font-bold">{s.ticker}</span>
-                            <span className="text-xs text-desk-secondary truncate max-w-[120px]">{s.name}</span>
+                            <span className="text-[11px] text-desk-secondary truncate max-w-[110px]">{s.name}</span>
                           </Link>
                         </td>
 
                         {/* 2. Date of Signal */}
-                        <td className="py-3.5 px-3 font-mono text-desk-text">
+                        <td className="py-3.5 px-3 font-mono text-center">
                           <div className="font-medium text-white">{signalDate}</div>
                           <div className="text-[10px] text-desk-tertiary">3:35 PM ET</div>
                         </td>
 
                         {/* 3. Current Price */}
-                        <td className="py-3.5 px-3 text-right font-mono font-bold text-white">
+                        <td className="py-3.5 px-3 font-mono font-bold text-white text-center">
                           ${s.spot.toFixed(2)}
                         </td>
 
                         {/* 4. Put Strike */}
-                        <td className="py-3.5 px-3 font-mono">
+                        <td className="py-3.5 px-3 font-mono text-center">
                           <div className="font-bold text-emerald-400">${s.strike.toFixed(1)}P</div>
-                          <div className="text-[11px] text-desk-secondary">+{s.cushion_pct.toFixed(1)}% Cushion</div>
+                          <div className="text-[10px] text-desk-secondary">+{s.cushion_pct.toFixed(1)}% Cushion</div>
                         </td>
 
                         {/* 5. Put Expiration */}
-                        <td className="py-3.5 px-3 font-mono">
+                        <td className="py-3.5 px-3 font-mono text-center">
                           <div className="font-semibold text-white">{s.expiry}</div>
-                          <div className="text-[11px] text-desk-tertiary">{s.dte} DTE</div>
+                          <div className="text-[10px] text-desk-tertiary">{s.dte} DTE</div>
                         </td>
 
                         {/* 6. Credit */}
-                        <td className="py-3.5 px-3 text-right font-mono font-semibold text-desk-text">
-                          <div>${s.bid.toFixed(2)}</div>
-                          <div className="text-[11px] text-desk-secondary">(${s.credit.toFixed(0)})</div>
+                        <td className="py-3.5 px-3 font-mono text-center">
+                          <div className="font-semibold text-desk-text">${s.bid.toFixed(2)}</div>
+                          <div className="text-[10px] text-desk-secondary">(${s.credit.toFixed(0)})</div>
                         </td>
 
                         {/* 7. Position Size (1X or 2x..) */}
-                        <td className="py-3.5 px-3 font-mono">
-                          {s.sizing_tier === "2x" ? (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
-                              🔥 2X (2 Cont)
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-desk-raised text-desk-secondary border border-desk-border whitespace-nowrap">
-                              1X (1 Cont)
-                            </span>
-                          )}
+                        <td className="py-3.5 px-3 font-mono text-center">
+                          <div className="flex justify-center">
+                            {s.sizing_tier === "2x" ? (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
+                                🔥 2X (2 Cont)
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-desk-raised text-desk-secondary border border-desk-border whitespace-nowrap">
+                                1X (1 Cont)
+                              </span>
+                            )}
+                          </div>
                         </td>
 
                         {/* 8. Return/Cycle */}
-                        <td className="py-3.5 px-3 text-right font-mono">
+                        <td className="py-3.5 px-3 font-mono text-center">
                           <div className="font-bold text-desk-accent">+{s.roc_cycle_pct.toFixed(2)}%</div>
-                          <div className="text-[11px] text-desk-secondary">({s.roc_annual_pct.toFixed(1)}% Ann.)</div>
+                          <div className="text-[10px] text-desk-secondary">({s.roc_annual_pct.toFixed(1)}% Ann.)</div>
                         </td>
 
                         {/* 9. Model Score */}
-                        <td className="py-3.5 px-3 text-center font-mono">
+                        <td className="py-3.5 px-3 font-mono text-center">
                           <div className="inline-flex flex-col items-center">
                             <span className="font-bold text-white px-2 py-0.5 rounded bg-desk-raised border border-desk-border">
                               {s.score.toFixed(1)}
@@ -387,23 +373,49 @@ export default function SignalsPage() {
                           </div>
                         </td>
 
-                        {/* 10. Approved Checkbox & Badge */}
+                        {/* 10. Approved Column (Green Tick or Red Cross with Comment Note) */}
                         <td className="py-3.5 px-4 text-center">
-                          <label className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-control border cursor-pointer select-none transition-all ${
-                            isApproved
-                              ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold shadow-sm"
-                              : "bg-desk-raised border-desk-border text-desk-tertiary hover:border-desk-secondary"
-                          }`}>
-                            <input
-                              type="checkbox"
-                              checked={isApproved}
-                              onChange={(e) => toggleApproval(s.ticker, e.target.checked)}
-                              className="w-3.5 h-3.5 rounded border-desk-border bg-desk-bg text-emerald-500 cursor-pointer accent-emerald-500"
-                            />
-                            <span className="text-[11px] font-mono">
-                              {isApproved ? "Approved" : "Approve"}
-                            </span>
-                          </label>
+                          <div className="inline-flex flex-col items-center justify-center">
+                            {status === "approved" ? (
+                              <div
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-control bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 font-bold shadow-sm select-none"
+                                title={comment ? `Approved: ${comment}` : "Approved by Admin"}
+                              >
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                                <span className="text-[11px] font-mono">Approved</span>
+                              </div>
+                            ) : status === "disapproved" ? (
+                              <div
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-control bg-rose-500/15 border border-rose-500/40 text-rose-400 font-bold shadow-sm select-none"
+                                title={comment ? `Disapproved: ${comment}` : "Disapproved by Admin"}
+                              >
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                  <line x1="18" y1="6" x2="6" y2="18" />
+                                  <line x1="6" y1="6" x2="18" y2="18" />
+                                </svg>
+                                <span className="text-[11px] font-mono">Disapproved</span>
+                              </div>
+                            ) : (
+                              <div
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-control bg-desk-raised border border-desk-border text-desk-tertiary select-none"
+                                title="Pending Admin Review"
+                              >
+                                <span className="text-[10px]">⏳</span>
+                                <span className="text-[11px] font-mono">Pending</span>
+                              </div>
+                            )}
+
+                            {comment && (
+                              <div
+                                className="text-[10px] text-desk-secondary font-mono italic mt-1 max-w-[130px] truncate"
+                                title={comment}
+                              >
+                                💬 {comment}
+                              </div>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     );
@@ -414,55 +426,55 @@ export default function SignalsPage() {
           </div>
         </div>
 
-        {/* Right Rail: Portfolio Impact & Held Back */}
-        <div className="space-y-6">
+        {/* Right Rail: Portfolio Impact & Held Back (Narrower & Smaller Fonts) */}
+        <div className="w-full lg:w-60 xl:w-64 shrink-0 space-y-3.5">
           {/* "If you take all N" card */}
-          <div className="rounded-card border border-desk-border bg-desk-card p-5 space-y-4">
-            <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider">
+          <div className="rounded-card border border-desk-border bg-desk-card p-3.5 space-y-3">
+            <h2 className="text-xs font-bold text-desk-text uppercase tracking-wider">
               If you take all {filteredSetups.length}
             </h2>
 
-            <div className="space-y-3 font-mono">
+            <div className="space-y-2.5 font-mono text-xs">
               <div>
-                <span className="text-xs text-desk-secondary block">Cash collateral to set aside</span>
-                <span className="text-xl font-bold text-desk-text">{formatCurrency(totals.totalCash)}</span>
+                <span className="text-[10px] text-desk-tertiary block uppercase">Cash collateral</span>
+                <span className="text-sm font-bold text-desk-text">{formatCurrency(totals.totalCash)}</span>
               </div>
 
               <div>
-                <span className="text-xs text-desk-secondary block">Immediate credit collected</span>
-                <span className="text-xl font-bold text-desk-accent">{formatCurrency(totals.totalCredit)}</span>
+                <span className="text-[10px] text-desk-tertiary block uppercase">Credit collected</span>
+                <span className="text-sm font-bold text-desk-accent">{formatCurrency(totals.totalCredit)}</span>
               </div>
 
               <div>
-                <span className="text-xs text-desk-secondary block">Average return per cycle</span>
-                <span className="text-sm font-bold text-desk-text">{totals.avgRoc.toFixed(2)}%</span>
+                <span className="text-[10px] text-desk-tertiary block uppercase">Avg return / cycle</span>
+                <span className="text-xs font-bold text-desk-text">{totals.avgRoc.toFixed(2)}%</span>
               </div>
             </div>
 
             {filteredSetups.length > 5 && (
-              <div className="rounded-control bg-desk-caution/10 border border-desk-caution/30 p-2.5 text-xs text-desk-cautionText font-sans">
-                ⚠️ Sector concentration warning: taking all {filteredSetups.length} setups exceeds recommended single-batch collateral cap.
+              <div className="rounded-control bg-desk-caution/10 border border-desk-caution/30 p-2 text-[10px] text-desk-cautionText font-sans leading-tight">
+                ⚠️ Sector concentration warning: taking all {filteredSetups.length} setups exceeds recommended collateral cap.
               </div>
             )}
           </div>
 
           {/* "Held Back · N" card */}
-          <div className="rounded-card border border-desk-border bg-desk-card p-5 space-y-3">
+          <div className="rounded-card border border-desk-border bg-desk-card p-3.5 space-y-2.5">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider">
+              <h2 className="text-xs font-bold text-desk-text uppercase tracking-wider">
                 Held back &middot; {snapshot.held_back?.length || 0}
               </h2>
-              <span className="text-xs text-desk-tertiary">Validation gates</span>
+              <span className="text-[10px] text-desk-tertiary">Gates</span>
             </div>
 
-            <div className="divide-y divide-desk-border/60 max-h-80 overflow-y-auto pr-1">
+            <div className="divide-y divide-desk-border/60 max-h-72 overflow-y-auto pr-1">
               {(!snapshot.held_back || snapshot.held_back.length === 0) ? (
-                <div className="text-xs text-desk-secondary py-3">No candidates held back.</div>
+                <div className="text-[11px] text-desk-secondary py-2">No candidates held back.</div>
               ) : (
                 snapshot.held_back.slice(0, 10).map((h, i) => (
-                  <div key={i} className="py-2.5 text-xs">
-                    <span className="font-mono font-bold text-desk-accent">{h.ticker}</span>
-                    <p className="text-desk-secondary mt-0.5">{h.reason}</p>
+                  <div key={i} className="py-2 text-[11px]">
+                    <span className="font-mono font-bold text-desk-accent text-xs">{h.ticker}</span>
+                    <p className="text-desk-secondary text-[10px] leading-tight mt-0.5">{h.reason}</p>
                   </div>
                 ))
               )}

@@ -17,15 +17,15 @@ export default function AdminDeskPage() {
   const [selectedSetup, setSelectedSetup] = useState<Setup | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Admin Approval State
-  const [approvedTickers, setApprovedTickers] = useState<Set<string>>(new Set());
+  // Admin Review & Approval State (status: approved | disapproved | none, and comments)
+  const [reviewRecords, setReviewRecords] = useState<Record<string, { status: "approved" | "disapproved" | "none"; comment: string }>>({});
 
   useEffect(() => {
     // 1. Initial cached read
     try {
-      const cached = localStorage.getItem("csp_approved_tickers");
+      const cached = localStorage.getItem("csp_review_records");
       if (cached) {
-        setApprovedTickers(new Set(JSON.parse(cached)));
+        setReviewRecords(JSON.parse(cached));
       }
     } catch (e) {}
 
@@ -33,30 +33,57 @@ export default function AdminDeskPage() {
     fetch("/api/approve")
       .then((r) => r.json())
       .then((data) => {
-        if (Array.isArray(data.approved)) {
-          setApprovedTickers(new Set(data.approved.map((s: string) => s.toUpperCase())));
-          localStorage.setItem("csp_approved_tickers", JSON.stringify(data.approved));
+        if (data.records && typeof data.records === "object") {
+          setReviewRecords(data.records);
+          localStorage.setItem("csp_review_records", JSON.stringify(data.records));
         }
       })
       .catch(() => {});
   }, []);
 
-  const toggleApproval = async (ticker: string, isApproved: boolean) => {
+  const setReviewStatus = async (ticker: string, newStatus: "approved" | "disapproved" | "none") => {
     const sym = ticker.toUpperCase();
-    const next = new Set(approvedTickers);
-    if (isApproved) next.add(sym);
-    else next.delete(sym);
-    setApprovedTickers(next);
-    localStorage.setItem("csp_approved_tickers", JSON.stringify(Array.from(next)));
+    const current = reviewRecords[sym] || { status: "none", comment: "" };
+    const updated = {
+      ...reviewRecords,
+      [sym]: { ...current, status: newStatus },
+    };
+    setReviewRecords(updated);
+    localStorage.setItem("csp_review_records", JSON.stringify(updated));
 
     try {
       await fetch("/api/approve", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ticker: sym, approved: isApproved }),
+        body: JSON.stringify({ ticker: sym, status: newStatus, comment: current.comment }),
       });
     } catch (e) {
-      console.error("Failed to save approval:", e);
+      console.error("Failed to update status:", e);
+    }
+  };
+
+  const updateCommentText = (ticker: string, comment: string) => {
+    const sym = ticker.toUpperCase();
+    const current = reviewRecords[sym] || { status: "none", comment: "" };
+    const updated = {
+      ...reviewRecords,
+      [sym]: { ...current, comment },
+    };
+    setReviewRecords(updated);
+    localStorage.setItem("csp_review_records", JSON.stringify(updated));
+  };
+
+  const saveComment = async (ticker: string) => {
+    const sym = ticker.toUpperCase();
+    const current = reviewRecords[sym] || { status: "none", comment: "" };
+    try {
+      await fetch("/api/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker: sym, status: current.status, comment: current.comment }),
+      });
+    } catch (e) {
+      console.error("Failed to save comment:", e);
     }
   };
 
@@ -377,7 +404,7 @@ export default function AdminDeskPage() {
                   <th className="py-3 px-4 text-right">Spot & Cushion</th>
                   <th className="py-3 px-4 text-right">Option Bid / ROC</th>
                   <th className="py-3 px-4">Macro Levels & Structure</th>
-                  <th className="py-3 px-4 text-center">Chart &amp; Approval</th>
+                  <th className="py-3 px-4 text-center">Chart, Approval &amp; Notes</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-desk-border/70">
@@ -498,38 +525,76 @@ export default function AdminDeskPage() {
                         </div>
                       </td>
 
-                      {/* 8. TradingView Action Button & Approval Checkbox */}
+                      {/* 8. TradingView Action Button, Approve & Disapprove Checkboxes & Comment Input */}
                       <td className="py-3 px-4 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          <button
-                            onClick={() => handleStockClick(s.ticker)}
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-control bg-desk-raised hover:bg-desk-accent hover:text-desk-bg text-white font-semibold text-xs transition-colors border border-desk-border"
-                            title="Open TradingView Chart with all levels"
-                          >
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <line x1="18" y1="20" x2="18" y2="10" />
-                              <line x1="12" y1="20" x2="12" y2="4" />
-                              <line x1="6" y1="20" x2="6" y2="14" />
-                            </svg>
-                            <span>Chart</span>
-                          </button>
+                        {(() => {
+                          const sym = s.ticker.toUpperCase();
+                          const rec = reviewRecords[sym] || { status: "none", comment: "" };
+                          const status = rec.status;
+                          const comment = rec.comment || "";
 
-                          <label className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-control border cursor-pointer select-none transition-all ${
-                            approvedTickers.has(s.ticker.toUpperCase())
-                              ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold"
-                              : "bg-[#121821] border-desk-border text-desk-secondary hover:border-desk-secondary"
-                          }`}>
-                            <input
-                              type="checkbox"
-                              checked={approvedTickers.has(s.ticker.toUpperCase())}
-                              onChange={(e) => toggleApproval(s.ticker, e.target.checked)}
-                              className="w-3.5 h-3.5 rounded border-desk-border bg-desk-bg text-emerald-500 cursor-pointer accent-emerald-500"
-                            />
-                            <span className="text-[11px] font-mono">
-                              {approvedTickers.has(s.ticker.toUpperCase()) ? "Approved" : "Approve"}
-                            </span>
-                          </label>
-                        </div>
+                          return (
+                            <div className="flex flex-col items-center gap-1.5 min-w-[260px]">
+                              <div className="flex items-center justify-center gap-2 w-full">
+                                <button
+                                  onClick={() => handleStockClick(s.ticker)}
+                                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-control bg-desk-raised hover:bg-desk-accent hover:text-desk-bg text-white font-semibold text-xs transition-colors border border-desk-border"
+                                  title="Open TradingView Chart with all levels"
+                                >
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="20" x2="18" y2="10" />
+                                    <line x1="12" y1="20" x2="12" y2="4" />
+                                    <line x1="6" y1="20" x2="6" y2="14" />
+                                  </svg>
+                                  <span>Chart</span>
+                                </button>
+
+                                {/* Approve Checkbox */}
+                                <label className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-control border cursor-pointer select-none transition-all ${
+                                  status === "approved"
+                                    ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400 font-bold shadow-sm"
+                                    : "bg-[#121821] border-desk-border text-desk-secondary hover:border-emerald-500/40"
+                                }`}>
+                                  <input
+                                    type="checkbox"
+                                    checked={status === "approved"}
+                                    onChange={() => setReviewStatus(s.ticker, status === "approved" ? "none" : "approved")}
+                                    className="w-3.5 h-3.5 rounded border-desk-border bg-desk-bg text-emerald-500 cursor-pointer accent-emerald-500"
+                                  />
+                                  <span className="text-[11px] font-mono">Approve</span>
+                                </label>
+
+                                {/* Disapprove Checkbox */}
+                                <label className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-control border cursor-pointer select-none transition-all ${
+                                  status === "disapproved"
+                                    ? "bg-rose-500/20 border-rose-500/50 text-rose-400 font-bold shadow-sm"
+                                    : "bg-[#121821] border-desk-border text-desk-secondary hover:border-rose-500/40"
+                                }`}>
+                                  <input
+                                    type="checkbox"
+                                    checked={status === "disapproved"}
+                                    onChange={() => setReviewStatus(s.ticker, status === "disapproved" ? "none" : "disapproved")}
+                                    className="w-3.5 h-3.5 rounded border-desk-border bg-desk-bg text-rose-500 cursor-pointer accent-rose-500"
+                                  />
+                                  <span className="text-[11px] font-mono">Disapprove</span>
+                                </label>
+                              </div>
+
+                              {/* Comment Box */}
+                              <div className="w-full">
+                                <input
+                                  type="text"
+                                  placeholder="Write comment..."
+                                  value={comment}
+                                  onChange={(e) => updateCommentText(s.ticker, e.target.value)}
+                                  onBlur={() => saveComment(s.ticker)}
+                                  onKeyDown={(e) => { if (e.key === "Enter") saveComment(s.ticker); }}
+                                  className="w-full px-2 py-1 text-[11px] font-mono bg-desk-bg/90 border border-desk-border rounded text-desk-text placeholder:text-desk-tertiary/50 focus:outline-none focus:border-desk-accent transition-colors"
+                                />
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </td>
                     </tr>
                   );
