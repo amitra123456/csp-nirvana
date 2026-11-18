@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Setup, Levels } from "@/types/snapshot";
 import { formatCurrency, formatPercent } from "@/lib/data";
+import { TradingViewLevelsChart } from "./TradingViewLevelsChart";
 
 interface TradingViewModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface TradingViewModalProps {
 
 export function TradingViewModal({ isOpen, onClose, setup }: TradingViewModalProps) {
   const [activeTab, setActiveTab] = useState<"levels" | "factors">("levels");
+  const [chartMode, setChartMode] = useState<"levels" | "embed">("levels");
 
   // Handle escape key
   useEffect(() => {
@@ -226,6 +228,32 @@ export function TradingViewModal({ isOpen, onClose, setup }: TradingViewModalPro
               </div>
             </div>
 
+            {/* Chart Mode Toggle */}
+            <div className="flex items-center rounded-control bg-desk-bg p-0.5 border border-desk-border text-[11px] font-mono">
+              <button
+                onClick={() => setChartMode("levels")}
+                className={`px-2.5 py-1 rounded-control transition-all font-semibold ${
+                  chartMode === "levels"
+                    ? "bg-desk-accent text-desk-bg shadow-sm"
+                    : "text-desk-secondary hover:text-white"
+                }`}
+                title="TradingView chart with all model lines and shaded boxes drawn"
+              >
+                📊 Drawn Lines &amp; Boxes
+              </button>
+              <button
+                onClick={() => setChartMode("embed")}
+                className={`px-2.5 py-1 rounded-control transition-all font-semibold ${
+                  chartMode === "embed"
+                    ? "bg-desk-accent text-desk-bg shadow-sm"
+                    : "text-desk-secondary hover:text-white"
+                }`}
+                title="Generic TradingView.com embedded widget"
+              >
+                🌐 Web Embed
+              </button>
+            </div>
+
             {/* External TradingView Link */}
             <a
               href={tvUrl}
@@ -259,12 +287,16 @@ export function TradingViewModal({ isOpen, onClose, setup }: TradingViewModalPro
         <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
           {/* Main Chart Section */}
           <div className="flex-1 h-full min-h-[350px] relative bg-[#0B0E14]">
-            <iframe
-              src={widgetSrc}
-              title={`TradingView Chart for ${ticker}`}
-              className="w-full h-full border-0"
-              allowFullScreen
-            />
+            {chartMode === "levels" ? (
+              <TradingViewLevelsChart setup={setup} className="w-full h-full" />
+            ) : (
+              <iframe
+                src={widgetSrc}
+                title={`TradingView Chart for ${ticker}`}
+                className="w-full h-full border-0"
+                allowFullScreen
+              />
+            )}
           </div>
 
           {/* Model Levels & Parameters Side Panel */}
