@@ -283,7 +283,7 @@ export default function SignalsPage() {
                   <th className="py-3 px-3 text-center">Position Size</th>
                   <th className="py-3 px-3 text-center">Return/Cycle</th>
                   <th className="py-3 px-3 text-center">Model Score</th>
-                  <th className="py-3 px-4 text-center">Approved</th>
+                  <th className="py-3 px-4 text-center">Expert Analysis</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-desk-border font-mono text-xs">
