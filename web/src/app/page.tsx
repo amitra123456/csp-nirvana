@@ -15,6 +15,49 @@ export default function SignalsPage() {
   const [redDaysOnly, setRedDaysOnly] = useState(false);
   const [hideHeld, setHideHeld] = useState(false);
 
+  // Admin Approval State
+  const [approvedTickers, setApprovedTickers] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    // 1. Initial cached read
+    try {
+      const cached = localStorage.getItem("csp_approved_tickers");
+      if (cached) {
+        setApprovedTickers(new Set(JSON.parse(cached)));
+      }
+    } catch (e) {}
+
+    // 2. Fetch from /api/approve
+    fetch("/api/approve")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data.approved)) {
+          setApprovedTickers(new Set(data.approved.map((s: string) => s.toUpperCase())));
+          localStorage.setItem("csp_approved_tickers", JSON.stringify(data.approved));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const toggleApproval = async (ticker: string, isApproved: boolean) => {
+    const sym = ticker.toUpperCase();
+    const next = new Set(approvedTickers);
+    if (isApproved) next.add(sym);
+    else next.delete(sym);
+    setApprovedTickers(next);
+    localStorage.setItem("csp_approved_tickers", JSON.stringify(Array.from(next)));
+
+    try {
+      await fetch("/api/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker: sym, approved: isApproved }),
+      });
+    } catch (e) {
+      console.error("Failed to save approval:", e);
+    }
+  };
+
   useEffect(() => {
     async function loadData() {
       try {
@@ -251,15 +294,15 @@ export default function SignalsPage() {
               <thead className="border-b border-desk-border bg-desk-raised text-xs text-desk-secondary font-medium uppercase tracking-wider">
                 <tr>
                   <th className="py-3 px-4">Stock</th>
-                  <th className="py-3 px-3">Score</th>
-                  <th className="py-3 px-3">Sell Put</th>
-                  <th className="py-3 px-3">Cushion</th>
-                  <th className="py-3 px-3">Credit</th>
-                  <th className="py-3 px-3">Return/Cycle</th>
-                  <th className="py-3 px-3">Conviction</th>
-                  <th className="py-3 px-3">Market Odds</th>
-                  <th className="py-3 px-3">Context</th>
-                  <th className="py-3 px-4 text-right">Action</th>
+                  <th className="py-3 px-3">Date of Signal</th>
+                  <th className="py-3 px-3 text-right">Current Price</th>
+                  <th className="py-3 px-3">Put Strike</th>
+                  <th className="py-3 px-3">Put Expiration</th>
+                  <th className="py-3 px-3 text-right">Credit</th>
+                  <th className="py-3 px-3">Position Size</th>
+                  <th className="py-3 px-3 text-right">Return/Cycle</th>
+                  <th className="py-3 px-3 text-center">Model Score</th>
+                  <th className="py-3 px-4 text-center">Approved</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-desk-border font-mono text-xs">
@@ -271,9 +314,12 @@ export default function SignalsPage() {
                   </tr>
                 ) : (
                   filteredSetups.map((s) => {
+                    const isApproved = approvedTickers.has(s.ticker.toUpperCase());
+                    const signalDate = s.spot_ts ? s.spot_ts.slice(0, 10) : (snapshot.run?.as_of_et?.slice(0, 10) || "2026-11-18");
+
                     return (
-                      <tr key={s.ticker} className="hover:bg-desk-raised/60 transition-colors">
-                        {/* Stock */}
+                      <tr key={s.ticker} className={`hover:bg-desk-raised/60 transition-colors ${isApproved ? "bg-emerald-500/[0.02]" : ""}`}>
+                        {/* 1. Stock */}
                         <td className="py-3.5 px-4 font-sans">
                           <Link href={`/ticket/${s.ticker}`} className="font-bold text-desk-text hover:text-desk-accent flex flex-col">
                             <span className="text-sm font-mono text-desk-accent font-bold">{s.ticker}</span>
@@ -281,88 +327,83 @@ export default function SignalsPage() {
                           </Link>
                         </td>
 
-                        {/* Score */}
-                        <td className="py-3.5 px-3">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-desk-text">{s.score.toFixed(1)}</span>
-                            <div className="w-12 h-1.5 rounded-full bg-desk-bg overflow-hidden">
-                              <div
-                                className="h-full bg-desk-accent rounded-full"
-                                style={{ width: `${Math.min(100, s.score)}%` }}
-                              />
-                            </div>
-                          </div>
-                        </td>
-
-                        {/* Sell Put */}
+                        {/* 2. Date of Signal */}
                         <td className="py-3.5 px-3 font-mono text-desk-text">
-                          <div className="font-semibold">${s.strike.toFixed(2)}</div>
-                          <div className="text-[11px] text-desk-secondary">{s.expiry} ({s.dte}d)</div>
+                          <div className="font-medium text-white">{signalDate}</div>
+                          <div className="text-[10px] text-desk-tertiary">3:35 PM ET</div>
                         </td>
 
-                        {/* Cushion */}
-                        <td className="py-3.5 px-3">
-                          <span className="font-bold text-desk-text">{s.cushion_pct.toFixed(1)}%</span>
-                          <span className="block text-[11px] text-desk-tertiary">OTM</span>
+                        {/* 3. Current Price */}
+                        <td className="py-3.5 px-3 text-right font-mono font-bold text-white">
+                          ${s.spot.toFixed(2)}
                         </td>
 
-                        {/* Credit */}
-                        <td className="py-3.5 px-3 font-semibold text-desk-text">
-                          ${s.bid.toFixed(2)}
-                          <span className="block text-[11px] text-desk-secondary">(${s.credit.toFixed(0)})</span>
+                        {/* 4. Put Strike */}
+                        <td className="py-3.5 px-3 font-mono">
+                          <div className="font-bold text-emerald-400">${s.strike.toFixed(1)}P</div>
+                          <div className="text-[11px] text-desk-secondary">+{s.cushion_pct.toFixed(1)}% Cushion</div>
                         </td>
 
-                        {/* Return/cycle */}
-                        <td className="py-3.5 px-3">
-                          <span className="font-bold text-desk-accent">{s.roc_cycle_pct.toFixed(2)}%</span>
-                          <span className="block text-[11px] text-desk-secondary">({s.roc_annual_pct.toFixed(1)}% Ann.)</span>
+                        {/* 5. Put Expiration */}
+                        <td className="py-3.5 px-3 font-mono">
+                          <div className="font-semibold text-white">{s.expiry}</div>
+                          <div className="text-[11px] text-desk-tertiary">{s.dte} DTE</div>
                         </td>
 
-                        {/* Conviction */}
-                        <td className="py-3.5 px-3">
+                        {/* 6. Credit */}
+                        <td className="py-3.5 px-3 text-right font-mono font-semibold text-desk-text">
+                          <div>${s.bid.toFixed(2)}</div>
+                          <div className="text-[11px] text-desk-secondary">(${s.credit.toFixed(0)})</div>
+                        </td>
+
+                        {/* 7. Position Size (1X or 2x..) */}
+                        <td className="py-3.5 px-3 font-mono">
                           {s.sizing_tier === "2x" ? (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 whitespace-nowrap">
-                              🔥 2X WHALE
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
+                              🔥 2X (2 Cont)
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-desk-border text-desk-secondary whitespace-nowrap">
-                              1X STD
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-desk-raised text-desk-secondary border border-desk-border whitespace-nowrap">
+                              1X (1 Cont)
                             </span>
                           )}
                         </td>
 
-                        {/* Market Odds */}
-                        <td className="py-3.5 px-3">
-                          <span className="font-bold text-desk-text">{s.odds_otm_market_pct.toFixed(1)}%</span>
-                          <span className="block text-[11px] text-desk-tertiary">OTM win</span>
+                        {/* 8. Return/Cycle */}
+                        <td className="py-3.5 px-3 text-right font-mono">
+                          <div className="font-bold text-desk-accent">+{s.roc_cycle_pct.toFixed(2)}%</div>
+                          <div className="text-[11px] text-desk-secondary">({s.roc_annual_pct.toFixed(1)}% Ann.)</div>
                         </td>
 
-                        {/* Context Chips */}
-                        <td className="py-3.5 px-3 font-sans">
-                          <div className="flex flex-col gap-1">
-                            <span className="inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold bg-desk-border text-desk-secondary w-max uppercase">
-                              {s.trend}
+                        {/* 9. Model Score */}
+                        <td className="py-3.5 px-3 text-center font-mono">
+                          <div className="inline-flex flex-col items-center">
+                            <span className="font-bold text-white px-2 py-0.5 rounded bg-desk-raised border border-desk-border">
+                              {s.score.toFixed(1)}
                             </span>
-                            {s.held_position && (
-                              <span className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-semibold w-max ${
-                                s.held_position.itm
-                                  ? "bg-desk-risk/15 text-desk-riskText border border-desk-risk/30"
-                                  : "bg-desk-accent/15 text-desk-accent border border-desk-accent/30"
-                              }`}>
-                                Hold ${s.held_position.strike} &middot; {s.held_position.itm ? "ITM" : "OTM"}
-                              </span>
-                            )}
+                            <span className="text-[10px] text-desk-tertiary mt-0.5">
+                              PoS {s.odds_otm_market_pct.toFixed(0)}%
+                            </span>
                           </div>
                         </td>
 
-                        {/* Review Button */}
-                        <td className="py-3.5 px-4 text-right">
-                          <Link
-                            href={`/ticket/${s.ticker}`}
-                            className="inline-flex min-h-[34px] items-center rounded-control bg-desk-raised px-3 py-1 text-xs font-semibold text-desk-accent hover:bg-desk-accent hover:text-desk-bg transition-colors"
-                          >
-                            Review &rarr;
-                          </Link>
+                        {/* 10. Approved Checkbox & Badge */}
+                        <td className="py-3.5 px-4 text-center">
+                          <label className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-control border cursor-pointer select-none transition-all ${
+                            isApproved
+                              ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold shadow-sm"
+                              : "bg-desk-raised border-desk-border text-desk-tertiary hover:border-desk-secondary"
+                          }`}>
+                            <input
+                              type="checkbox"
+                              checked={isApproved}
+                              onChange={(e) => toggleApproval(s.ticker, e.target.checked)}
+                              className="w-3.5 h-3.5 rounded border-desk-border bg-desk-bg text-emerald-500 cursor-pointer accent-emerald-500"
+                            />
+                            <span className="text-[11px] font-mono">
+                              {isApproved ? "Approved" : "Approve"}
+                            </span>
+                          </label>
                         </td>
                       </tr>
                     );

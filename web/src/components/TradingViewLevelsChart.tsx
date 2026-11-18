@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { Setup } from "@/types/snapshot";
 import { createChart, ColorType, LineStyle, CandlestickSeries, HistogramSeries, IChartApi } from "lightweight-charts";
 
@@ -19,24 +19,15 @@ interface ZoneBox {
   textColor: string;
 }
 
-interface RenderedZone {
-  id: string;
-  label: string;
-  y: number;
-  height: number;
-  fill: string;
-  stroke: string;
-  text: string;
-}
-
 export function TradingViewLevelsChart({ setup, className = "" }: TradingViewLevelsChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<any>(null);
+  const animFrameIdRef = useRef<number | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [zones, setZones] = useState<RenderedZone[]>([]);
 
   const spot = setup.spot;
   const strike = setup.strike;
@@ -95,32 +86,80 @@ export function TradingViewLevelsChart({ setup, className = "" }: TradingViewLev
   const zoneBoxesRef = useRef<ZoneBox[]>(definedZoneBoxes);
   zoneBoxesRef.current = definedZoneBoxes;
 
-  // Stable function to calculate pixel positions
-  const updateZonesFromSeries = useCallback(() => {
-    const series = seriesRef.current;
-    if (!series) return;
+  // Cached DOM elements for direct 60/120fps transformation without React re-render overhead
+  const domElementsRef = useRef<Map<string, {
+    group: SVGGElement;
+    rect: SVGRectElement;
+    badge: SVGRectElement;
+    text: SVGTextElement;
+  }>>(new Map());
 
-    const boxes = zoneBoxesRef.current;
-    const computed: RenderedZone[] = [];
-    for (const b of boxes) {
-      const yTop = series.priceToCoordinate(b.topPrice);
-      const yBottom = series.priceToCoordinate(b.bottomPrice);
-      if (yTop !== null && yBottom !== null) {
-        const minY = Math.min(yTop, yBottom);
-        const height = Math.max(16, Math.abs(yBottom - yTop));
-        computed.push({
-          id: b.id,
-          label: b.label,
-          y: minY,
-          height: height,
-          fill: b.fillColor,
-          stroke: b.borderColor,
-          text: b.textColor,
-        });
+  // Function to refresh DOM element cache
+  const refreshDomCache = () => {
+    const map = new Map();
+    for (const box of zoneBoxesRef.current) {
+      const group = document.getElementById(`zone-group-${box.id}`) as unknown as SVGGElement | null;
+      const rect = document.getElementById(`zone-rect-${box.id}`) as unknown as SVGRectElement | null;
+      const badge = document.getElementById(`zone-badge-${box.id}`) as unknown as SVGRectElement | null;
+      const text = document.getElementById(`zone-text-${box.id}`) as unknown as SVGTextElement | null;
+      if (group && rect && badge && text) {
+        map.set(box.id, { group, rect, badge, text });
       }
     }
-    setZones(computed);
-  }, []);
+    domElementsRef.current = map;
+  };
+
+  // High-performance zone box sync: directly updates SVG DOM attributes
+  const syncZones = () => {
+    const series = seriesRef.current;
+    const container = containerRef.current;
+    if (!series || !container) return;
+
+    const chart = chartRef.current;
+    // Price scale width on the right (defaults to ~65px)
+    const priceScaleWidth = chart?.priceScale("right")?.width() || 65;
+    // Candlestick pane width stops cleanly before the price axis
+    const candlePaneWidth = Math.max(10, container.clientWidth - priceScaleWidth);
+    const containerHeight = container.clientHeight || 520;
+
+    for (const box of zoneBoxesRef.current) {
+      let el = domElementsRef.current.get(box.id);
+      if (!el) {
+        refreshDomCache();
+        el = domElementsRef.current.get(box.id);
+        if (!el) continue;
+      }
+
+      const yTop = series.priceToCoordinate(box.topPrice);
+      const yBottom = series.priceToCoordinate(box.bottomPrice);
+
+      if (yTop === null || yBottom === null || isNaN(yTop) || isNaN(yBottom)) {
+        el.group.style.display = "none";
+        continue;
+      }
+
+      const minY = Math.min(yTop, yBottom);
+      const maxY = Math.max(yTop, yBottom);
+      const height = Math.max(2, maxY - minY);
+
+      // If completely outside the visible viewport vertically, hide
+      if (maxY < -50 || minY > containerHeight + 50) {
+        el.group.style.display = "none";
+        continue;
+      }
+
+      el.group.style.display = "";
+      el.rect.setAttribute("x", "0");
+      el.rect.setAttribute("y", minY.toFixed(1));
+      el.rect.setAttribute("width", candlePaneWidth.toFixed(1));
+      el.rect.setAttribute("height", height.toFixed(1));
+
+      // Sticky badge positioning: stays pinned inside the visible container while zone is visible
+      const badgeY = Math.max(6, Math.min(minY + 4, Math.min(maxY - 22, containerHeight - 26)));
+      el.badge.setAttribute("y", badgeY.toFixed(1));
+      el.text.setAttribute("y", (badgeY + 13).toFixed(1));
+    }
+  };
 
   // Main Chart Initialization: Run ONLY when ticker changes!
   useEffect(() => {
@@ -175,6 +214,18 @@ export function TradingViewLevelsChart({ setup, className = "" }: TradingViewLev
             borderColor: "#1E2733",
             autoScale: true,
             scaleMargins: { top: 0.08, bottom: 0.12 },
+          },
+          handleScale: {
+            mouseWheel: true,
+            pinch: true,
+            axisPressedMouseMove: true,
+            axisDoubleClickReset: true,
+          },
+          handleScroll: {
+            mouseWheel: true,
+            pressedMouseMove: true,
+            horzTouchDrag: true,
+            vertTouchDrag: true,
           },
         });
 
@@ -378,13 +429,25 @@ export function TradingViewLevelsChart({ setup, className = "" }: TradingViewLev
           });
         }
 
-        // Compute initial zone box pixel coordinates
-        updateZonesFromSeries();
         setLoading(false);
 
-        // Update zone box pixel coordinates on zoom/pan
+        // Populate DOM elements cache and run initial sync
+        setTimeout(() => {
+          refreshDomCache();
+          syncZones();
+        }, 50);
+
+        // Continuous sync loop via requestAnimationFrame:
+        // Guarantees 60/120fps sync when user pans, drags price scale, zooms, or gestures
+        const animationLoop = () => {
+          syncZones();
+          animFrameIdRef.current = requestAnimationFrame(animationLoop);
+        };
+        animFrameIdRef.current = requestAnimationFrame(animationLoop);
+
+        // Subscribe to time scale change as an explicit trigger
         chart.timeScale().subscribeVisibleLogicalRangeChange(() => {
-          updateZonesFromSeries();
+          syncZones();
         });
 
         // Resize handler
@@ -394,7 +457,7 @@ export function TradingViewLevelsChart({ setup, className = "" }: TradingViewLev
               width: containerRef.current.clientWidth,
               height: containerRef.current.clientHeight,
             });
-            updateZonesFromSeries();
+            syncZones();
           }
         };
         window.addEventListener("resize", handleResize);
@@ -414,6 +477,10 @@ export function TradingViewLevelsChart({ setup, className = "" }: TradingViewLev
 
     return () => {
       isCancelled = true;
+      if (animFrameIdRef.current !== null) {
+        cancelAnimationFrame(animFrameIdRef.current);
+        animFrameIdRef.current = null;
+      }
       if (chart) {
         chart.remove();
         chartRef.current = null;
@@ -445,40 +512,46 @@ export function TradingViewLevelsChart({ setup, className = "" }: TradingViewLev
 
       {/* Synchronized SVG Shaded Price Zones & Boxes Overlay */}
       {!loading && !error && (
-        <svg className="absolute inset-0 pointer-events-none w-full h-full z-10">
-          {zones.map((z) => (
-            <g key={z.id}>
+        <svg
+          ref={svgRef}
+          className="absolute inset-0 pointer-events-none w-full h-full z-10 overflow-hidden"
+        >
+          {definedZoneBoxes.map((box) => (
+            <g key={box.id} id={`zone-group-${box.id}`} style={{ display: "none" }}>
               {/* Shaded Box / Price Zone */}
               <rect
+                id={`zone-rect-${box.id}`}
                 x={0}
-                y={z.y}
-                width="100%"
-                height={z.height}
-                fill={z.fill}
-                stroke={z.stroke}
+                y={0}
+                width={0}
+                height={0}
+                fill={box.fillColor}
+                stroke={box.borderColor}
                 strokeWidth="1"
                 strokeDasharray="4 3"
               />
               {/* Zone Tag & Badge */}
               <rect
+                id={`zone-badge-${box.id}`}
                 x={12}
-                y={z.y + 4}
-                width={Math.min(340, z.label.length * 7.5)}
+                y={0}
+                width={Math.min(360, box.label.length * 7.5)}
                 height={18}
                 rx={3}
-                fill="#121821"
-                stroke={z.stroke}
+                fill="#0E131B"
+                stroke={box.borderColor}
                 strokeWidth="1"
               />
               <text
+                id={`zone-text-${box.id}`}
                 x={18}
-                y={z.y + 17}
-                fill={z.text}
+                y={0}
+                fill={box.textColor}
                 fontSize="10"
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                {z.label}
+                {box.label}
               </text>
             </g>
           ))}

@@ -17,6 +17,49 @@ export default function AdminDeskPage() {
   const [selectedSetup, setSelectedSetup] = useState<Setup | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Admin Approval State
+  const [approvedTickers, setApprovedTickers] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    // 1. Initial cached read
+    try {
+      const cached = localStorage.getItem("csp_approved_tickers");
+      if (cached) {
+        setApprovedTickers(new Set(JSON.parse(cached)));
+      }
+    } catch (e) {}
+
+    // 2. Fetch from /api/approve
+    fetch("/api/approve")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data.approved)) {
+          setApprovedTickers(new Set(data.approved.map((s: string) => s.toUpperCase())));
+          localStorage.setItem("csp_approved_tickers", JSON.stringify(data.approved));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const toggleApproval = async (ticker: string, isApproved: boolean) => {
+    const sym = ticker.toUpperCase();
+    const next = new Set(approvedTickers);
+    if (isApproved) next.add(sym);
+    else next.delete(sym);
+    setApprovedTickers(next);
+    localStorage.setItem("csp_approved_tickers", JSON.stringify(Array.from(next)));
+
+    try {
+      await fetch("/api/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ticker: sym, approved: isApproved }),
+      });
+    } catch (e) {
+      console.error("Failed to save approval:", e);
+    }
+  };
+
   useEffect(() => {
     async function loadData() {
       try {
@@ -334,7 +377,7 @@ export default function AdminDeskPage() {
                   <th className="py-3 px-4 text-right">Spot & Cushion</th>
                   <th className="py-3 px-4 text-right">Option Bid / ROC</th>
                   <th className="py-3 px-4">Macro Levels & Structure</th>
-                  <th className="py-3 px-4 text-center">TradingView</th>
+                  <th className="py-3 px-4 text-center">Chart &amp; Approval</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-desk-border/70">
@@ -455,19 +498,38 @@ export default function AdminDeskPage() {
                         </div>
                       </td>
 
-                      {/* 8. TradingView Action Button */}
+                      {/* 8. TradingView Action Button & Approval Checkbox */}
                       <td className="py-3 px-4 text-center">
-                        <button
-                          onClick={() => handleStockClick(s.ticker)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-control bg-desk-raised hover:bg-desk-accent hover:text-desk-bg text-white font-semibold text-xs transition-colors border border-desk-border"
-                        >
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="18" y1="20" x2="18" y2="10" />
-                            <line x1="12" y1="20" x2="12" y2="4" />
-                            <line x1="6" y1="20" x2="6" y2="14" />
-                          </svg>
-                          <span>Chart</span>
-                        </button>
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => handleStockClick(s.ticker)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-control bg-desk-raised hover:bg-desk-accent hover:text-desk-bg text-white font-semibold text-xs transition-colors border border-desk-border"
+                            title="Open TradingView Chart with all levels"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <line x1="18" y1="20" x2="18" y2="10" />
+                              <line x1="12" y1="20" x2="12" y2="4" />
+                              <line x1="6" y1="20" x2="6" y2="14" />
+                            </svg>
+                            <span>Chart</span>
+                          </button>
+
+                          <label className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-control border cursor-pointer select-none transition-all ${
+                            approvedTickers.has(s.ticker.toUpperCase())
+                              ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-400 font-bold"
+                              : "bg-[#121821] border-desk-border text-desk-secondary hover:border-desk-secondary"
+                          }`}>
+                            <input
+                              type="checkbox"
+                              checked={approvedTickers.has(s.ticker.toUpperCase())}
+                              onChange={(e) => toggleApproval(s.ticker, e.target.checked)}
+                              className="w-3.5 h-3.5 rounded border-desk-border bg-desk-bg text-emerald-500 cursor-pointer accent-emerald-500"
+                            />
+                            <span className="text-[11px] font-mono">
+                              {approvedTickers.has(s.ticker.toUpperCase()) ? "Approved" : "Approve"}
+                            </span>
+                          </label>
+                        </div>
                       </td>
                     </tr>
                   );
