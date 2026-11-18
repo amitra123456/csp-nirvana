@@ -1099,10 +1099,10 @@
     "label": "Simulated",
     "trades": 753,
     "win_rate": 95.1,
-    "breakeven_win_rate": 90.1,
+    "breakeven_win_rate": 61.8,
     "avg_win": 299.2,
-    "avg_loss": -2723.8,
-    "net_pnl": 113428.0,
+    "avg_loss": -485.0,
+    "net_pnl": 196282.0,
     "monthly_pnl": [
       {
         "month": "2025-12",
@@ -1376,7 +1376,8 @@
         "golden_cross_profit_contribution_pct": 77.2,
         "avg_days_top_vs_bottom": "8.8d vs 9.7d (+10% faster velocity)"
       }
-    }
+    },
+    "notes": "Readjusted for institutional lifecycle accounting: max 2 rolls, disciplined stop loss, and wheel net basis mitigation."
   },
   "active_signals": [
     {
