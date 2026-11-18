@@ -94,8 +94,10 @@ def compute_smc_structure(df: pd.DataFrame) -> Dict[str, Any]:
             c1_high = float(df['High'].iloc[i - 2])
             c3_low = float(df['Low'].iloc[i])
             if c3_low > c1_high:
+                d_idx = df.index[i - 1]
+                d_str = d_idx.strftime('%Y-%m-%d') if hasattr(d_idx, 'strftime') else (str(df['Timestamp'].iloc[i - 1])[:10] if 'Timestamp' in df else str(d_idx))
                 fvgs.append({
-                    'date': df.index[i - 1].strftime('%Y-%m-%d'),
+                    'date': d_str,
                     'bottom': c1_high,
                     'top': c3_low
                 })

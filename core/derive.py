@@ -226,28 +226,7 @@ def derive_setup(
             detail=f"Option spans earnings report on {news.get('earnings_date', 'upcoming')}."
         ))
 
-    # Score breakdown (7 parts: cushion, valuation, levels, news_flow, candles, probability, yield)
-    score_parts = news.get('score_parts', {
-        "cushion": [min(20.0, round(cushion_pct * 1.4, 1)), 20.0],
-        "valuation": [min(20.0, round(float(fundamentals.get('fcf_yield_pct', 5.0)) * 2.5, 1)), 20.0],
-        "levels": [18.0, 20.0],
-        "news_flow": [14.0, 15.0],
-        "candles": [float(news.get('candle_score', 8.0)), 10.0],
-        "probability": [min(8.0, round(odds_otm_market_pct * 0.08, 1)), 8.0],
-        "yield": [min(7.0, round(roc_cycle_pct * 2.0, 1)), 7.0]
-    })
-    total_score = round(sum(p[0] for p in score_parts.values()), 1)
-
-    held_pos_summary = None
-    if held_position:
-        h_strike = float(held_position['strike'])
-        held_pos_summary = HeldPositionSummary(
-            strike=h_strike,
-            expiry=str(held_position['expiry']),
-            itm=bool(spot < h_strike)
-        )
-
-    # 2X Conviction Risk Sizing Logic (#5 Golden Cross + #6 Whale Volume)
+    # 2X Conviction & Structural Indicators (#5 Golden Cross + #6 Whale Volume + Macro Shelf)
     vol_mult = 1.0
     if bars is not None and len(bars) >= 20 and 'Volume' in bars:
         vol_20 = float(bars['Volume'].iloc[-20:].mean())
@@ -259,6 +238,70 @@ def derive_setup(
     sma200 = levels_dict.get('sma200')
     is_golden_cross = bool(sma50 and sma200 and sma50 > sma200 and spot > sma200)
     is_near_macro = bool(levels_dict.get('is_near_macro_support'))
+    macro_shelf = levels_dict.get('macro_support') or levels_dict.get('swing_low_252')
+
+    # 1. Cushion Subscore (Max 20 pts) - Beta-Adaptive Normalized
+    beta = float(fundamentals.get('beta', 1.0)) if fundamentals and fundamentals.get('beta') else 1.0
+    beta = max(0.5, min(2.5, beta))
+    target_cushion = 12.0 * math.sqrt(beta)
+    cushion_subscore = min(20.0, max(2.0, round((cushion_pct / target_cushion) * 16.0, 1)))
+
+    # 2. Valuation Subscore (Max 20 pts)
+    val_subscore = min(20.0, max(2.0, round(float(fundamentals.get('fcf_yield_pct', 4.0)) * 2.5, 1)))
+
+    # 3. Technical Levels Subscore (Max 20 pts) - Macro S/R & Trend Integration
+    levels_base = 12.0
+    if is_golden_cross:
+        levels_base += 4.0  # +4 pts for Golden Cross secular bull market
+    elif sma200 and spot > sma200:
+        levels_base += 2.0  # +2 pts for trading above 200-day SMA
+    elif sma200 and spot < sma200:
+        levels_base -= 4.0  # -4 pts penalty for falling secular bear market
+
+    if macro_shelf and strike <= macro_shelf:
+        levels_base += 3.0  # +3 pts: strike safely fortified under 1-2Y Macro Shelf
+    elif is_near_macro:
+        levels_base += 2.0  # +2 pts: stock testing major macro accumulation shelf
+
+    levels_subscore = min(20.0, max(2.0, round(levels_base, 1)))
+
+    # 4. News Flow & Sentiment (Max 15 pts)
+    news_flow_subscore = 14.0
+
+    # 5. Candlestick Confirmation (Max 10 pts) - Whale Volume Integration
+    candle_base = float(news.get('candle_score', 7.0))
+    if is_up_day and vol_mult >= 1.8:
+        candle_base += 3.0  # +3 pts: Whale Volume confirmation on up day (98.6% win rate conviction)
+    elif is_up_day and vol_mult >= 1.4:
+        candle_base += 1.5  # +1.5 pts: Above-average accumulation volume
+    candle_subscore = min(10.0, max(1.0, round(candle_base, 1)))
+
+    # 6. Statistical Probability Subscore (Max 8 pts)
+    prob_subscore = min(8.0, max(1.0, round(odds_otm_market_pct * 0.08, 1)))
+
+    # 7. Cycle Yield Subscore (Max 7 pts)
+    yield_subscore = min(7.0, max(1.0, round(roc_cycle_pct * 2.0, 1)))
+
+    # Score breakdown (7 parts: cushion, valuation, levels, news_flow, candles, probability, yield)
+    score_parts = news.get('score_parts', {
+        "cushion": [cushion_subscore, 20.0],
+        "valuation": [val_subscore, 20.0],
+        "levels": [levels_subscore, 20.0],
+        "news_flow": [news_flow_subscore, 15.0],
+        "candles": [candle_subscore, 10.0],
+        "probability": [prob_subscore, 8.0],
+        "yield": [yield_subscore, 7.0]
+    })
+    total_score = round(sum(p[0] for p in score_parts.values()), 1)
+
+    held_pos_summary = None
+    if held_position:
+        h_strike = float(held_position['strike'])
+        held_pos_summary = HeldPositionSummary(
+            strike=h_strike,
+            expiry=str(held_position['expiry']),
+            itm=bool(spot < h_strike)
+        )
 
     sizing_tier = "1x"
     sizing_reason = "Standard 1X Allocation (1 Contract)"

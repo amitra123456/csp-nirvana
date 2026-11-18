@@ -19,93 +19,6 @@
   },
   "setups": [
     {
-      "ticker": "TSM",
-      "name": "Taiwan Semi",
-      "spot": 357.9,
-      "spot_ts": "2026-11-18T11:40:56.468427-05:00",
-      "expiry": "2026-12-24",
-      "dte": 36,
-      "strike": 310.0,
-      "bid": 5.9,
-      "ask": 6.65,
-      "mid": 6.28,
-      "iv": 0.534,
-      "delta": -0.167,
-      "open_interest": 361,
-      "cushion_pct": 13.4,
-      "credit": 590.0,
-      "collateral": 31000.0,
-      "roc_cycle_pct": 1.9,
-      "roc_annual_pct": 19.3,
-      "cost_basis": 304.1,
-      "odds_otm_market_pct": 83.3,
-      "odds_touch_market_pct": 33.4,
-      "odds_model_pct": 96.8,
-      "one_sigma_low": 302.62,
-      "sizing_tier": "1x",
-      "sizing_reason": "Standard 1X Allocation (1 Contract)",
-      "recommended_contracts": 1,
-      "levels": {
-        "sma50": 425.79,
-        "sma200": 402.43,
-        "avwap": 377.03,
-        "vwap20": 390.23,
-        "ote_618": 403.25,
-        "ote_786": 380.37,
-        "swing_low_252": 264.73,
-        "macro_support": 317.2,
-        "macro_vpoc": 385.66,
-        "is_near_macro_support": false
-      },
-      "score": 89.3,
-      "score_parts": {
-        "cushion": [
-          18.8,
-          20.0
-        ],
-        "valuation": [
-          20.0,
-          20.0
-        ],
-        "levels": [
-          18.0,
-          20.0
-        ],
-        "news_flow": [
-          14.0,
-          15.0
-        ],
-        "candles": [
-          8.0,
-          10.0
-        ],
-        "probability": [
-          6.7,
-          8.0
-        ],
-        "yield": [
-          3.8,
-          7.0
-        ]
-      },
-      "trend": "range",
-      "held_position": null,
-      "watchouts": [
-        {
-          "severity": "medium",
-          "title": "Strike Above 1\u03c3 Low",
-          "detail": "Put strike $310.00 is higher than the 1-standard-deviation move floor ($302.62)."
-        }
-      ],
-      "plan": {
-        "tp50": 2.95,
-        "tp60": 2.36,
-        "roll_trigger_price": 316.2,
-        "stress_drop_pct": 30.0,
-        "stress_loss": -5357.0
-      }
-    },
-    {
       "ticker": "NXPI",
       "name": "NXP Semiconductors",
       "spot": 248.94,
@@ -118,7 +31,7 @@
       "mid": 3.3,
       "iv": 0.588,
       "delta": -0.132,
-      "open_interest": 1259,
+      "open_interest": 0,
       "cushion_pct": 15.6,
       "credit": 300.0,
       "collateral": 21000.0,
@@ -128,15 +41,15 @@
       "odds_otm_market_pct": 86.8,
       "odds_touch_market_pct": 26.4,
       "odds_model_pct": 99.0,
-      "one_sigma_low": 210.33,
+      "one_sigma_low": 210.32,
       "sizing_tier": "1x",
       "sizing_reason": "Standard 1X Allocation (1 Contract)",
       "recommended_contracts": 1,
       "levels": {
         "sma50": 241.6,
         "sma200": 247.04,
-        "avwap": 243.16,
-        "vwap20": 254.05,
+        "avwap": 243.17,
+        "vwap20": 254.04,
         "ote_618": 238.58,
         "ote_786": 228.9,
         "swing_low_252": 180.34,
@@ -144,18 +57,18 @@
         "macro_vpoc": 247.0,
         "is_near_macro_support": false
       },
-      "score": 86.1,
+      "score": 77.3,
       "score_parts": {
         "cushion": [
-          20.0,
+          19.0,
           20.0
         ],
         "valuation": [
-          16.3,
+          9.5,
           20.0
         ],
         "levels": [
-          18.0,
+          17.0,
           20.0
         ],
         "news_flow": [
@@ -187,467 +100,6 @@
       }
     },
     {
-      "ticker": "HOOD",
-      "name": "Robinhood Mkts",
-      "spot": 68.17,
-      "spot_ts": "2026-11-18T11:40:56.468427-05:00",
-      "expiry": "2026-12-24",
-      "dte": 36,
-      "strike": 55.0,
-      "bid": 1.5,
-      "ask": 1.66,
-      "mid": 1.58,
-      "iv": 0.772,
-      "delta": -0.153,
-      "open_interest": 133,
-      "cushion_pct": 19.3,
-      "credit": 150.0,
-      "collateral": 5500.0,
-      "roc_cycle_pct": 2.73,
-      "roc_annual_pct": 27.7,
-      "cost_basis": 53.5,
-      "odds_otm_market_pct": 84.7,
-      "odds_touch_market_pct": 30.6,
-      "odds_model_pct": 94.3,
-      "one_sigma_low": 53.49,
-      "sizing_tier": "1x",
-      "sizing_reason": "Standard 1X Allocation (1 Contract)",
-      "recommended_contracts": 1,
-      "levels": {
-        "sma50": 100.35,
-        "sma200": 91.07,
-        "avwap": 69.22,
-        "vwap20": 84.37,
-        "ote_618": 89.97,
-        "ote_786": 79.98,
-        "swing_low_252": 63.53,
-        "macro_support": 63.53,
-        "macro_vpoc": 94.59,
-        "is_near_macro_support": false
-      },
-      "score": 84.7,
-      "score_parts": {
-        "cushion": [
-          20.0,
-          20.0
-        ],
-        "valuation": [
-          12.4,
-          20.0
-        ],
-        "levels": [
-          18.0,
-          20.0
-        ],
-        "news_flow": [
-          14.0,
-          15.0
-        ],
-        "candles": [
-          8.0,
-          10.0
-        ],
-        "probability": [
-          6.8,
-          8.0
-        ],
-        "yield": [
-          5.5,
-          7.0
-        ]
-      },
-      "trend": "range",
-      "held_position": {
-        "strike": 70.0,
-        "expiry": "2026-12-18",
-        "itm": true
-      },
-      "watchouts": [
-        {
-          "severity": "medium",
-          "title": "Strike Above 1\u03c3 Low",
-          "detail": "Put strike $55.00 is higher than the 1-standard-deviation move floor ($53.49)."
-        }
-      ],
-      "plan": {
-        "tp50": 0.75,
-        "tp60": 0.6,
-        "roll_trigger_price": 56.1,
-        "stress_drop_pct": 30.0,
-        "stress_loss": -578.0
-      }
-    },
-    {
-      "ticker": "MRVL",
-      "name": "Marvell Tech",
-      "spot": 143.3,
-      "spot_ts": "2026-11-18T11:40:56.468427-05:00",
-      "expiry": "2026-12-24",
-      "dte": 36,
-      "strike": 125.0,
-      "bid": 7.1,
-      "ask": 8.2,
-      "mid": 7.65,
-      "iv": 0.888,
-      "delta": -0.259,
-      "open_interest": 119,
-      "cushion_pct": 12.8,
-      "credit": 710.0,
-      "collateral": 12500.0,
-      "roc_cycle_pct": 5.68,
-      "roc_annual_pct": 57.6,
-      "cost_basis": 117.9,
-      "odds_otm_market_pct": 74.1,
-      "odds_touch_market_pct": 51.8,
-      "odds_model_pct": 80.3,
-      "one_sigma_low": 108.41,
-      "sizing_tier": "1x",
-      "sizing_reason": "Standard 1X Allocation (1 Contract)",
-      "recommended_contracts": 1,
-      "levels": {
-        "sma50": 224.24,
-        "sma200": 187.95,
-        "avwap": 150.25,
-        "vwap20": 175.84,
-        "ote_618": 196.95,
-        "ote_786": 168.68,
-        "swing_low_252": 70.63,
-        "macro_support": 99.1,
-        "macro_vpoc": 180.17,
-        "is_near_macro_support": false
-      },
-      "score": 75.5,
-      "score_parts": {
-        "cushion": [
-          17.9,
-          20.0
-        ],
-        "valuation": [
-          4.7,
-          20.0
-        ],
-        "levels": [
-          18.0,
-          20.0
-        ],
-        "news_flow": [
-          14.0,
-          15.0
-        ],
-        "candles": [
-          8.0,
-          10.0
-        ],
-        "probability": [
-          5.9,
-          8.0
-        ],
-        "yield": [
-          7.0,
-          7.0
-        ]
-      },
-      "trend": "range",
-      "held_position": {
-        "strike": 140.0,
-        "expiry": "2026-12-18",
-        "itm": false
-      },
-      "watchouts": [
-        {
-          "severity": "medium",
-          "title": "Strike Above 1\u03c3 Low",
-          "detail": "Put strike $125.00 is higher than the 1-standard-deviation move floor ($108.41)."
-        },
-        {
-          "severity": "high",
-          "title": "Earnings Blackout",
-          "detail": "Option spans earnings report on 2026-12-01."
-        }
-      ],
-      "plan": {
-        "tp50": 3.55,
-        "tp60": 2.84,
-        "roll_trigger_price": 127.5,
-        "stress_drop_pct": 30.0,
-        "stress_loss": -1759.0
-      }
-    },
-    {
-      "ticker": "NVDA",
-      "name": "NVIDIA Corp",
-      "spot": 151.44,
-      "spot_ts": "2026-11-18T11:40:56.468427-05:00",
-      "expiry": "2026-12-24",
-      "dte": 36,
-      "strike": 130.0,
-      "bid": 2.68,
-      "ask": 2.77,
-      "mid": 2.73,
-      "iv": 0.561,
-      "delta": -0.164,
-      "open_interest": 1782,
-      "cushion_pct": 14.2,
-      "credit": 268.0,
-      "collateral": 13000.0,
-      "roc_cycle_pct": 2.06,
-      "roc_annual_pct": 20.9,
-      "cost_basis": 127.32,
-      "odds_otm_market_pct": 83.6,
-      "odds_touch_market_pct": 32.8,
-      "odds_model_pct": 90.4,
-      "one_sigma_low": 126.97,
-      "sizing_tier": "1x",
-      "sizing_reason": "Standard 1X Allocation (1 Contract)",
-      "recommended_contracts": 1,
-      "levels": {
-        "sma50": 210.33,
-        "sma200": 203.45,
-        "avwap": 158.68,
-        "vwap20": 176.59,
-        "ote_618": 184.91,
-        "ote_786": 169.03,
-        "swing_low_252": 148.8,
-        "macro_support": 126.56,
-        "macro_vpoc": 195.45,
-        "is_near_macro_support": false
-      },
-      "score": 73.5,
-      "score_parts": {
-        "cushion": [
-          19.9,
-          20.0
-        ],
-        "valuation": [
-          2.8,
-          20.0
-        ],
-        "levels": [
-          18.0,
-          20.0
-        ],
-        "news_flow": [
-          14.0,
-          15.0
-        ],
-        "candles": [
-          8.0,
-          10.0
-        ],
-        "probability": [
-          6.7,
-          8.0
-        ],
-        "yield": [
-          4.1,
-          7.0
-        ]
-      },
-      "trend": "range",
-      "held_position": {
-        "strike": 150.0,
-        "expiry": "2026-12-18",
-        "itm": false
-      },
-      "watchouts": [
-        {
-          "severity": "medium",
-          "title": "Strike Above 1\u03c3 Low",
-          "detail": "Put strike $130.00 is higher than the 1-standard-deviation move floor ($126.97)."
-        },
-        {
-          "severity": "high",
-          "title": "Earnings Blackout",
-          "detail": "Option spans earnings report on 2026-11-17."
-        }
-      ],
-      "plan": {
-        "tp50": 1.34,
-        "tp60": 1.07,
-        "roll_trigger_price": 132.6,
-        "stress_drop_pct": 30.0,
-        "stress_loss": -2131.0
-      }
-    },
-    {
-      "ticker": "ARM",
-      "name": "Arm Holdings",
-      "spot": 182.7,
-      "spot_ts": "2026-11-18T11:40:56.468427-05:00",
-      "expiry": "2026-12-24",
-      "dte": 36,
-      "strike": 160.0,
-      "bid": 7.15,
-      "ask": 8.65,
-      "mid": 7.9,
-      "iv": 0.779,
-      "delta": -0.247,
-      "open_interest": 240,
-      "cushion_pct": 12.4,
-      "credit": 715.0,
-      "collateral": 16000.0,
-      "roc_cycle_pct": 4.47,
-      "roc_annual_pct": 45.3,
-      "cost_basis": 152.85,
-      "odds_otm_market_pct": 75.3,
-      "odds_touch_market_pct": 49.4,
-      "odds_model_pct": 80.9,
-      "one_sigma_low": 143.07,
-      "sizing_tier": "1x",
-      "sizing_reason": "Standard 1X Allocation (1 Contract)",
-      "recommended_contracts": 1,
-      "levels": {
-        "sma50": 243.42,
-        "sma200": 233.94,
-        "avwap": 181.19,
-        "vwap20": 193.03,
-        "ote_618": 229.42,
-        "ote_786": 200.33,
-        "swing_low_252": 100.12,
-        "macro_support": 140.89,
-        "macro_vpoc": 220.96,
-        "is_near_macro_support": false
-      },
-      "score": 71.8,
-      "score_parts": {
-        "cushion": [
-          17.4,
-          20.0
-        ],
-        "valuation": [
-          1.4,
-          20.0
-        ],
-        "levels": [
-          18.0,
-          20.0
-        ],
-        "news_flow": [
-          14.0,
-          15.0
-        ],
-        "candles": [
-          8.0,
-          10.0
-        ],
-        "probability": [
-          6.0,
-          8.0
-        ],
-        "yield": [
-          7.0,
-          7.0
-        ]
-      },
-      "trend": "range",
-      "held_position": null,
-      "watchouts": [
-        {
-          "severity": "medium",
-          "title": "Strike Above 1\u03c3 Low",
-          "detail": "Put strike $160.00 is higher than the 1-standard-deviation move floor ($143.07)."
-        }
-      ],
-      "plan": {
-        "tp50": 3.58,
-        "tp60": 2.86,
-        "roll_trigger_price": 163.2,
-        "stress_drop_pct": 30.0,
-        "stress_loss": -2496.0
-      }
-    },
-    {
-      "ticker": "INTC",
-      "name": "Intel Corp",
-      "spot": 53.72,
-      "spot_ts": "2026-11-18T11:40:56.468427-05:00",
-      "expiry": "2026-12-24",
-      "dte": 36,
-      "strike": 47.0,
-      "bid": 2.03,
-      "ask": 2.28,
-      "mid": 2.15,
-      "iv": 0.75,
-      "delta": -0.241,
-      "open_interest": 174,
-      "cushion_pct": 12.5,
-      "credit": 203.0,
-      "collateral": 4700.0,
-      "roc_cycle_pct": 4.32,
-      "roc_annual_pct": 43.8,
-      "cost_basis": 44.97,
-      "odds_otm_market_pct": 75.9,
-      "odds_touch_market_pct": 48.2,
-      "odds_model_pct": 80.0,
-      "one_sigma_low": 42.44,
-      "sizing_tier": "1x",
-      "sizing_reason": "Standard 1X Allocation (1 Contract)",
-      "recommended_contracts": 1,
-      "levels": {
-        "sma50": 92.12,
-        "sma200": 87.49,
-        "avwap": 56.88,
-        "vwap20": 65.83,
-        "ote_618": 80.86,
-        "ote_786": 68.2,
-        "swing_low_252": 32.9,
-        "macro_support": 41.66,
-        "macro_vpoc": 77.49,
-        "is_near_macro_support": false
-      },
-      "score": 71.3,
-      "score_parts": {
-        "cushion": [
-          17.5,
-          20.0
-        ],
-        "valuation": [
-          0.7,
-          20.0
-        ],
-        "levels": [
-          18.0,
-          20.0
-        ],
-        "news_flow": [
-          14.0,
-          15.0
-        ],
-        "candles": [
-          8.0,
-          10.0
-        ],
-        "probability": [
-          6.1,
-          8.0
-        ],
-        "yield": [
-          7.0,
-          7.0
-        ]
-      },
-      "trend": "range",
-      "held_position": {
-        "strike": 105.0,
-        "expiry": "2026-11-13",
-        "itm": true
-      },
-      "watchouts": [
-        {
-          "severity": "medium",
-          "title": "Strike Above 1\u03c3 Low",
-          "detail": "Put strike $47.00 is higher than the 1-standard-deviation move floor ($42.44)."
-        }
-      ],
-      "plan": {
-        "tp50": 1.01,
-        "tp60": 0.81,
-        "roll_trigger_price": 47.94,
-        "stress_drop_pct": 30.0,
-        "stress_loss": -737.0
-      }
-    },
-    {
       "ticker": "PLTR",
       "name": "Palantir Tech",
       "spot": 154.09,
@@ -660,7 +112,7 @@
       "mid": 3.55,
       "iv": 0.57,
       "delta": -0.197,
-      "open_interest": 259,
+      "open_interest": 0,
       "cushion_pct": 12.4,
       "credit": 325.0,
       "collateral": 13500.0,
@@ -670,34 +122,34 @@
       "odds_otm_market_pct": 80.3,
       "odds_touch_market_pct": 39.4,
       "odds_model_pct": 90.5,
-      "one_sigma_low": 128.84,
+      "one_sigma_low": 128.83,
       "sizing_tier": "1x",
       "sizing_reason": "Standard 1X Allocation (1 Contract)",
       "recommended_contracts": 1,
       "levels": {
-        "sma50": 183.93,
+        "sma50": 183.94,
         "sma200": 153.82,
-        "avwap": 163.11,
-        "vwap20": 174.78,
+        "avwap": 163.02,
+        "vwap20": 174.66,
         "ote_618": 175.67,
         "ote_786": 165.55,
         "swing_low_252": 106.39,
         "macro_support": 147.65,
-        "macro_vpoc": 153.68,
+        "macro_vpoc": 153.69,
         "is_near_macro_support": false
       },
-      "score": 70.4,
+      "score": 76.8,
       "score_parts": {
         "cushion": [
-          17.4,
+          15.1,
           20.0
         ],
         "valuation": [
-          1.8,
+          9.5,
           20.0
         ],
         "levels": [
-          18.0,
+          19.0,
           20.0
         ],
         "news_flow": [
@@ -723,7 +175,7 @@
         {
           "severity": "medium",
           "title": "Strike Above 1\u03c3 Low",
-          "detail": "Put strike $135.00 is higher than the 1-standard-deviation move floor ($128.84)."
+          "detail": "Put strike $135.00 is higher than the 1-standard-deviation move floor ($128.83)."
         }
       ],
       "plan": {
@@ -732,6 +184,93 @@
         "roll_trigger_price": 137.7,
         "stress_drop_pct": 30.0,
         "stress_loss": -2389.0
+      }
+    },
+    {
+      "ticker": "HOOD",
+      "name": "Robinhood Mkts",
+      "spot": 68.17,
+      "spot_ts": "2026-11-18T11:40:56.468427-05:00",
+      "expiry": "2026-12-24",
+      "dte": 36,
+      "strike": 55.0,
+      "bid": 1.5,
+      "ask": 1.66,
+      "mid": 1.58,
+      "iv": 0.772,
+      "delta": -0.153,
+      "open_interest": 0,
+      "cushion_pct": 19.3,
+      "credit": 150.0,
+      "collateral": 5500.0,
+      "roc_cycle_pct": 2.73,
+      "roc_annual_pct": 27.7,
+      "cost_basis": 53.5,
+      "odds_otm_market_pct": 84.7,
+      "odds_touch_market_pct": 30.6,
+      "odds_model_pct": 94.3,
+      "one_sigma_low": 53.49,
+      "sizing_tier": "1x",
+      "sizing_reason": "Standard 1X Allocation (1 Contract)",
+      "recommended_contracts": 1,
+      "levels": {
+        "sma50": 100.37,
+        "sma200": 91.08,
+        "avwap": 69.25,
+        "vwap20": 84.35,
+        "ote_618": 89.97,
+        "ote_786": 79.98,
+        "swing_low_252": 63.53,
+        "macro_support": 63.53,
+        "macro_vpoc": 94.59,
+        "is_near_macro_support": false
+      },
+      "score": 74.8,
+      "score_parts": {
+        "cushion": [
+          20.0,
+          20.0
+        ],
+        "valuation": [
+          9.5,
+          20.0
+        ],
+        "levels": [
+          11.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.8,
+          8.0
+        ],
+        "yield": [
+          5.5,
+          7.0
+        ]
+      },
+      "trend": "range",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1\u03c3 Low",
+          "detail": "Put strike $55.00 is higher than the 1-standard-deviation move floor ($53.49)."
+        }
+      ],
+      "plan": {
+        "tp50": 0.75,
+        "tp60": 0.6,
+        "roll_trigger_price": 56.1,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -578.0
       }
     },
     {
@@ -747,7 +286,7 @@
       "mid": 4.95,
       "iv": 0.774,
       "delta": -0.249,
-      "open_interest": 177,
+      "open_interest": 0,
       "cushion_pct": 12.2,
       "credit": 485.0,
       "collateral": 10000.0,
@@ -762,10 +301,10 @@
       "sizing_reason": "Standard 1X Allocation (1 Contract)",
       "recommended_contracts": 1,
       "levels": {
-        "sma50": 133.74,
-        "sma200": 152.53,
-        "avwap": 120.68,
-        "vwap20": 125.5,
+        "sma50": 133.75,
+        "sma200": 152.54,
+        "avwap": 120.66,
+        "vwap20": 125.49,
         "ote_618": 132.46,
         "ote_786": 122.26,
         "swing_low_252": 109.28,
@@ -773,18 +312,18 @@
         "macro_vpoc": 155.56,
         "is_near_macro_support": false
       },
-      "score": 70.1,
+      "score": 70.3,
       "score_parts": {
         "cushion": [
-          17.1,
+          14.8,
           20.0
         ],
         "valuation": [
-          0.0,
+          9.5,
           20.0
         ],
         "levels": [
-          18.0,
+          11.0,
           20.0
         ],
         "news_flow": [
@@ -822,6 +361,93 @@
       }
     },
     {
+      "ticker": "TSM",
+      "name": "Taiwan Semi",
+      "spot": 357.9,
+      "spot_ts": "2026-11-18T11:40:56.468427-05:00",
+      "expiry": "2026-12-24",
+      "dte": 36,
+      "strike": 310.0,
+      "bid": 5.9,
+      "ask": 6.65,
+      "mid": 6.28,
+      "iv": 0.534,
+      "delta": -0.167,
+      "open_interest": 0,
+      "cushion_pct": 13.4,
+      "credit": 590.0,
+      "collateral": 31000.0,
+      "roc_cycle_pct": 1.9,
+      "roc_annual_pct": 19.3,
+      "cost_basis": 304.1,
+      "odds_otm_market_pct": 83.3,
+      "odds_touch_market_pct": 33.4,
+      "odds_model_pct": 96.8,
+      "one_sigma_low": 302.64,
+      "sizing_tier": "1x",
+      "sizing_reason": "Standard 1X Allocation (1 Contract)",
+      "recommended_contracts": 1,
+      "levels": {
+        "sma50": 425.82,
+        "sma200": 402.44,
+        "avwap": 376.98,
+        "vwap20": 390.16,
+        "ote_618": 403.25,
+        "ote_786": 380.37,
+        "swing_low_252": 264.73,
+        "macro_support": 317.2,
+        "macro_vpoc": 385.65,
+        "is_near_macro_support": false
+      },
+      "score": 69.3,
+      "score_parts": {
+        "cushion": [
+          16.3,
+          20.0
+        ],
+        "valuation": [
+          9.5,
+          20.0
+        ],
+        "levels": [
+          11.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.7,
+          8.0
+        ],
+        "yield": [
+          3.8,
+          7.0
+        ]
+      },
+      "trend": "range",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1\u03c3 Low",
+          "detail": "Put strike $310.00 is higher than the 1-standard-deviation move floor ($302.64)."
+        }
+      ],
+      "plan": {
+        "tp50": 2.95,
+        "tp60": 2.36,
+        "roll_trigger_price": 316.2,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -5357.0
+      }
+    },
+    {
       "ticker": "TSLA",
       "name": "Tesla Inc.",
       "spot": 379.55,
@@ -834,7 +460,7 @@
       "mid": 6.88,
       "iv": 0.532,
       "delta": -0.172,
-      "open_interest": 318,
+      "open_interest": 0,
       "cushion_pct": 13.1,
       "credit": 660.0,
       "collateral": 33000.0,
@@ -844,15 +470,15 @@
       "odds_otm_market_pct": 82.8,
       "odds_touch_market_pct": 34.4,
       "odds_model_pct": 87.7,
-      "one_sigma_low": 321.14,
+      "one_sigma_low": 321.15,
       "sizing_tier": "1x",
       "sizing_reason": "Standard 1X Allocation (1 Contract)",
       "recommended_contracts": 1,
       "levels": {
-        "sma50": 375.74,
-        "sma200": 382.04,
-        "avwap": 371.88,
-        "vwap20": 381.93,
+        "sma50": 375.77,
+        "sma200": 382.05,
+        "avwap": 371.93,
+        "vwap20": 381.94,
         "ote_618": 367.22,
         "ote_786": 354.45,
         "swing_low_252": 297.43,
@@ -860,18 +486,18 @@
         "macro_vpoc": 392.77,
         "is_near_macro_support": true
       },
-      "score": 69.7,
+      "score": 69.0,
       "score_parts": {
         "cushion": [
-          18.3,
+          15.9,
           20.0
         ],
         "valuation": [
-          0.8,
+          9.5,
           20.0
         ],
         "levels": [
-          18.0,
+          11.0,
           20.0
         ],
         "news_flow": [
@@ -897,7 +523,7 @@
         {
           "severity": "medium",
           "title": "Strike Above 1\u03c3 Low",
-          "detail": "Put strike $330.00 is higher than the 1-standard-deviation move floor ($321.14)."
+          "detail": "Put strike $330.00 is higher than the 1-standard-deviation move floor ($321.15)."
         }
       ],
       "plan": {
@@ -906,6 +532,354 @@
         "roll_trigger_price": 336.6,
         "stress_drop_pct": 30.0,
         "stress_loss": -5771.0
+      }
+    },
+    {
+      "ticker": "MRVL",
+      "name": "Marvell Tech",
+      "spot": 143.3,
+      "spot_ts": "2026-11-18T11:40:56.468427-05:00",
+      "expiry": "2026-12-24",
+      "dte": 36,
+      "strike": 125.0,
+      "bid": 7.1,
+      "ask": 8.2,
+      "mid": 7.65,
+      "iv": 0.888,
+      "delta": -0.259,
+      "open_interest": 0,
+      "cushion_pct": 12.8,
+      "credit": 710.0,
+      "collateral": 12500.0,
+      "roc_cycle_pct": 5.68,
+      "roc_annual_pct": 57.6,
+      "cost_basis": 117.9,
+      "odds_otm_market_pct": 74.1,
+      "odds_touch_market_pct": 51.8,
+      "odds_model_pct": 80.3,
+      "one_sigma_low": 108.43,
+      "sizing_tier": "1x",
+      "sizing_reason": "Standard 1X Allocation (1 Contract)",
+      "recommended_contracts": 1,
+      "levels": {
+        "sma50": 224.26,
+        "sma200": 187.96,
+        "avwap": 150.23,
+        "vwap20": 175.78,
+        "ote_618": 196.95,
+        "ote_786": 168.68,
+        "swing_low_252": 70.63,
+        "macro_support": 99.1,
+        "macro_vpoc": 180.16,
+        "is_near_macro_support": false
+      },
+      "score": 68.0,
+      "score_parts": {
+        "cushion": [
+          15.6,
+          20.0
+        ],
+        "valuation": [
+          9.5,
+          20.0
+        ],
+        "levels": [
+          8.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          5.9,
+          8.0
+        ],
+        "yield": [
+          7.0,
+          7.0
+        ]
+      },
+      "trend": "range",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1\u03c3 Low",
+          "detail": "Put strike $125.00 is higher than the 1-standard-deviation move floor ($108.43)."
+        }
+      ],
+      "plan": {
+        "tp50": 3.55,
+        "tp60": 2.84,
+        "roll_trigger_price": 127.5,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -1759.0
+      }
+    },
+    {
+      "ticker": "INTC",
+      "name": "Intel Corp",
+      "spot": 53.72,
+      "spot_ts": "2026-11-18T11:40:56.468427-05:00",
+      "expiry": "2026-12-24",
+      "dte": 36,
+      "strike": 47.0,
+      "bid": 2.03,
+      "ask": 2.28,
+      "mid": 2.15,
+      "iv": 0.75,
+      "delta": -0.241,
+      "open_interest": 0,
+      "cushion_pct": 12.5,
+      "credit": 203.0,
+      "collateral": 4700.0,
+      "roc_cycle_pct": 4.32,
+      "roc_annual_pct": 43.8,
+      "cost_basis": 44.97,
+      "odds_otm_market_pct": 75.9,
+      "odds_touch_market_pct": 48.2,
+      "odds_model_pct": 80.0,
+      "one_sigma_low": 42.45,
+      "sizing_tier": "1x",
+      "sizing_reason": "Standard 1X Allocation (1 Contract)",
+      "recommended_contracts": 1,
+      "levels": {
+        "sma50": 92.13,
+        "sma200": 87.49,
+        "avwap": 56.87,
+        "vwap20": 65.81,
+        "ote_618": 80.86,
+        "ote_786": 68.2,
+        "swing_low_252": 32.9,
+        "macro_support": 41.66,
+        "macro_vpoc": 77.49,
+        "is_near_macro_support": false
+      },
+      "score": 67.8,
+      "score_parts": {
+        "cushion": [
+          15.2,
+          20.0
+        ],
+        "valuation": [
+          9.5,
+          20.0
+        ],
+        "levels": [
+          8.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.1,
+          8.0
+        ],
+        "yield": [
+          7.0,
+          7.0
+        ]
+      },
+      "trend": "range",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1\u03c3 Low",
+          "detail": "Put strike $47.00 is higher than the 1-standard-deviation move floor ($42.45)."
+        }
+      ],
+      "plan": {
+        "tp50": 1.01,
+        "tp60": 0.81,
+        "roll_trigger_price": 47.94,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -737.0
+      }
+    },
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA Corp",
+      "spot": 151.44,
+      "spot_ts": "2026-11-18T11:40:56.468427-05:00",
+      "expiry": "2026-12-24",
+      "dte": 36,
+      "strike": 130.0,
+      "bid": 2.68,
+      "ask": 2.77,
+      "mid": 2.73,
+      "iv": 0.561,
+      "delta": -0.164,
+      "open_interest": 0,
+      "cushion_pct": 14.2,
+      "credit": 268.0,
+      "collateral": 13000.0,
+      "roc_cycle_pct": 2.06,
+      "roc_annual_pct": 20.9,
+      "cost_basis": 127.32,
+      "odds_otm_market_pct": 83.6,
+      "odds_touch_market_pct": 32.8,
+      "odds_model_pct": 90.4,
+      "one_sigma_low": 126.98,
+      "sizing_tier": "1x",
+      "sizing_reason": "Standard 1X Allocation (1 Contract)",
+      "recommended_contracts": 1,
+      "levels": {
+        "sma50": 210.34,
+        "sma200": 203.46,
+        "avwap": 158.63,
+        "vwap20": 176.51,
+        "ote_618": 184.91,
+        "ote_786": 169.03,
+        "swing_low_252": 148.8,
+        "macro_support": 126.56,
+        "macro_vpoc": 195.43,
+        "is_near_macro_support": false
+      },
+      "score": 67.6,
+      "score_parts": {
+        "cushion": [
+          17.3,
+          20.0
+        ],
+        "valuation": [
+          9.5,
+          20.0
+        ],
+        "levels": [
+          8.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.7,
+          8.0
+        ],
+        "yield": [
+          4.1,
+          7.0
+        ]
+      },
+      "trend": "range",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1\u03c3 Low",
+          "detail": "Put strike $130.00 is higher than the 1-standard-deviation move floor ($126.98)."
+        }
+      ],
+      "plan": {
+        "tp50": 1.34,
+        "tp60": 1.07,
+        "roll_trigger_price": 132.6,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -2131.0
+      }
+    },
+    {
+      "ticker": "ARM",
+      "name": "Arm Holdings",
+      "spot": 182.7,
+      "spot_ts": "2026-11-18T11:40:56.468427-05:00",
+      "expiry": "2026-12-24",
+      "dte": 36,
+      "strike": 160.0,
+      "bid": 7.15,
+      "ask": 8.65,
+      "mid": 7.9,
+      "iv": 0.779,
+      "delta": -0.247,
+      "open_interest": 0,
+      "cushion_pct": 12.4,
+      "credit": 715.0,
+      "collateral": 16000.0,
+      "roc_cycle_pct": 4.47,
+      "roc_annual_pct": 45.3,
+      "cost_basis": 152.85,
+      "odds_otm_market_pct": 75.3,
+      "odds_touch_market_pct": 49.4,
+      "odds_model_pct": 80.9,
+      "one_sigma_low": 143.05,
+      "sizing_tier": "1x",
+      "sizing_reason": "Standard 1X Allocation (1 Contract)",
+      "recommended_contracts": 1,
+      "levels": {
+        "sma50": 243.43,
+        "sma200": 233.94,
+        "avwap": 181.2,
+        "vwap20": 192.99,
+        "ote_618": 229.42,
+        "ote_786": 200.33,
+        "swing_low_252": 100.12,
+        "macro_support": 140.89,
+        "macro_vpoc": 220.95,
+        "is_near_macro_support": false
+      },
+      "score": 67.6,
+      "score_parts": {
+        "cushion": [
+          15.1,
+          20.0
+        ],
+        "valuation": [
+          9.5,
+          20.0
+        ],
+        "levels": [
+          8.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.0,
+          8.0
+        ],
+        "yield": [
+          7.0,
+          7.0
+        ]
+      },
+      "trend": "range",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1\u03c3 Low",
+          "detail": "Put strike $160.00 is higher than the 1-standard-deviation move floor ($143.05)."
+        }
+      ],
+      "plan": {
+        "tp50": 3.58,
+        "tp60": 2.86,
+        "roll_trigger_price": 163.2,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -2496.0
       }
     }
   ],
