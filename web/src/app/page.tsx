@@ -550,9 +550,9 @@ export default function SignalsPage() {
                 setExpandedActiveTrees(m);
               }}
               className="px-2.5 py-1 rounded bg-desk-raised hover:bg-desk-border border border-desk-border text-desk-accent hover:text-white transition-colors font-bold"
-              title="Toggle tree view for all active trades"
+              title="Expand or collapse lifecycle breakdown for all active trades"
             >
-              {expandAllActive ? "▲ Collapse Trees" : "▼ Expand All Trees"}
+              {expandAllActive ? "▲ Collapse All" : "▼ Expand All"}
             </button>
           </div>
         </div>
@@ -561,7 +561,7 @@ export default function SignalsPage() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-desk-border bg-desk-raised text-xs text-desk-secondary font-medium uppercase tracking-wider">
               <tr>
-                <th className="py-3 px-3 text-center">Tree</th>
+                <th className="py-3 px-3 text-center">Details</th>
                 <th className="py-3 px-3">Entry Date</th>
                 <th className="py-3 px-3">Stock</th>
                 <th className="py-3 px-2 text-center">Rolls</th>
@@ -599,7 +599,7 @@ export default function SignalsPage() {
                   return (
                     <React.Fragment key={rowKey}>
                       <tr className="hover:bg-desk-raised/60 transition-colors">
-                        {/* 1. Tree Expander */}
+                        {/* 1. Lifecycle Expander */}
                         <td className="py-3 px-2 text-center">
                           <button
                             onClick={() =>
@@ -613,9 +613,9 @@ export default function SignalsPage() {
                                 ? "bg-desk-accent/20 border-desk-accent text-desk-accent"
                                 : "bg-desk-raised border-desk-border text-desk-secondary hover:text-white"
                             }`}
-                            title="Toggle lifecycle & roll tree"
+                            title="Toggle lifecycle & roll details"
                           >
-                            {isExpanded ? "▼ Tree" : "▶ Tree"}
+                            {isExpanded ? "▼ Hide" : "▶ Expand"}
                           </button>
                         </td>
 
@@ -743,7 +743,7 @@ export default function SignalsPage() {
                             <div className="py-2.5 px-4 bg-[#121821] border-l-4 border-desk-accent rounded-r-lg space-y-2 font-mono text-xs shadow-inner">
                               <div className="flex items-center justify-between text-[11px] pb-1.5 border-b border-desk-border/50 text-desk-tertiary">
                                 <span className="font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                                  <span>🌿 Campaign Lifecycle &amp; Roll Tree &middot; {a.ticker}</span>
+                                  <span>🌿 Campaign Lifecycle Breakdown &middot; {a.ticker}</span>
                                 </span>
                                 <span className="text-desk-secondary">
                                   Roll Status: <strong className="text-white">{a.rolls} / 2</strong> Max Allowed Rolls Executed
@@ -855,9 +855,9 @@ export default function SignalsPage() {
                 setExpandedClosedTrees(m);
               }}
               className="px-2.5 py-1 rounded bg-desk-raised hover:bg-desk-border border border-desk-border text-desk-accent hover:text-white transition-colors font-bold font-mono text-xs"
-              title="Toggle lifecycle & roll tree for all closed trades"
+              title="Expand or collapse lifecycle breakdown for all closed trades"
             >
-              {expandAllClosed ? "▲ Collapse Trees" : "▼ Expand All Trees"}
+              {expandAllClosed ? "▲ Collapse All" : "▼ Expand All"}
             </button>
           </div>
         </div>
@@ -891,7 +891,7 @@ export default function SignalsPage() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-desk-border bg-desk-raised text-xs text-desk-secondary font-medium uppercase tracking-wider">
               <tr>
-                <th className="py-3 px-3 text-center">Tree</th>
+                <th className="py-3 px-3 text-center">Details</th>
                 <th className="py-3 px-3">Open Date</th>
                 <th className="py-3 px-3">Close Date</th>
                 <th className="py-3 px-3">Stock</th>
@@ -922,7 +922,7 @@ export default function SignalsPage() {
                   return (
                     <React.Fragment key={rowKey}>
                       <tr className="hover:bg-desk-raised/60 transition-colors">
-                        {/* 1. Tree Expander */}
+                        {/* 1. Lifecycle Expander */}
                         <td className="py-3 px-2 text-center">
                           <button
                             onClick={() =>
@@ -936,9 +936,9 @@ export default function SignalsPage() {
                                 ? "bg-desk-accent/20 border-desk-accent text-desk-accent"
                                 : "bg-desk-raised border-desk-border text-desk-secondary hover:text-white"
                             }`}
-                            title="Toggle lifecycle & roll tree"
+                            title="Toggle lifecycle & roll details"
                           >
-                            {isExpanded ? "▼ Tree" : "▶ Tree"}
+                            {isExpanded ? "▼ Hide" : "▶ Expand"}
                           </button>
                         </td>
 
@@ -1020,7 +1020,7 @@ export default function SignalsPage() {
                             <div className="py-2.5 px-4 bg-[#121821] border-l-4 border-emerald-500 rounded-r-lg space-y-2 font-mono text-xs shadow-inner">
                               <div className="flex items-center justify-between text-[11px] pb-1.5 border-b border-desk-border/50 text-desk-tertiary">
                                 <span className="font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                                  <span>🌿 Campaign Lifecycle &amp; Execution Tree &middot; {c.ticker}</span>
+                                  <span>🌿 Campaign Lifecycle Breakdown &middot; {c.ticker}</span>
                                 </span>
                                 <span className="text-desk-secondary">
                                   {c.days_held} Days Hold &middot; {rolls} Roll{rolls === 1 ? "" : "s"} &middot; Outcome: <strong className={isWin ? "text-emerald-400" : "text-rose-400"}>{c.result}</strong>
