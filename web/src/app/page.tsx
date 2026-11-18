@@ -558,28 +558,28 @@ export default function SignalsPage() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-desk-border bg-desk-raised text-xs text-desk-secondary font-medium uppercase tracking-wider">
+          <table className="w-full text-left text-[11px]">
+            <thead className="border-b border-desk-border bg-desk-raised text-[10px] text-desk-secondary font-medium uppercase tracking-tight">
               <tr>
-                <th className="py-3 px-3 text-center">Details</th>
-                <th className="py-3 px-3">Entry Date</th>
-                <th className="py-3 px-3">Stock</th>
-                <th className="py-3 px-2 text-center">Rolls</th>
-                <th className="py-3 px-3">Put Strike</th>
-                <th className="py-3 px-3">Spot Price</th>
-                <th className="py-3 px-3">Cushion</th>
-                <th className="py-3 px-3">Entry Credit</th>
-                <th className="py-3 px-3">Put Mark</th>
-                <th className="py-3 px-3">Unrealized P&amp;L</th>
-                <th className="py-3 px-3">Progress</th>
-                <th className="py-3 px-3">Expiry</th>
-                <th className="py-3 px-4 text-right">Action Protocol</th>
+                <th className="py-2.5 px-2 text-center w-12">Details</th>
+                <th className="py-2.5 px-2 whitespace-nowrap">Entry Date</th>
+                <th className="py-2.5 px-2">Stock</th>
+                <th className="py-2.5 px-1.5 text-center">Rolls</th>
+                <th className="py-2.5 px-2 whitespace-nowrap">Put Strike</th>
+                <th className="py-2.5 px-2 whitespace-nowrap">Spot Price</th>
+                <th className="py-2.5 px-2 whitespace-nowrap">Cushion</th>
+                <th className="py-2.5 px-2 whitespace-nowrap">Entry Credit</th>
+                <th className="py-2.5 px-2 whitespace-nowrap">Put Mark</th>
+                <th className="py-2.5 px-2 whitespace-nowrap">Unrealized P&amp;L</th>
+                <th className="py-2.5 px-2 min-w-[95px] max-w-[120px]">Progress</th>
+                <th className="py-2.5 px-2 whitespace-nowrap">Expiry</th>
+                <th className="py-2.5 px-2 text-right">Action Protocol</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-desk-border font-mono text-xs">
+            <tbody className="divide-y divide-desk-border font-mono text-[11px]">
               {activeSignals.length === 0 ? (
                 <tr>
-                  <td colSpan={13} className="py-8 text-center text-desk-secondary font-sans text-sm">
+                  <td colSpan={13} className="py-8 text-center text-desk-secondary font-sans text-xs">
                     No active positions currently recorded in flight.
                   </td>
                 </tr>
@@ -600,7 +600,7 @@ export default function SignalsPage() {
                     <React.Fragment key={rowKey}>
                       <tr className="hover:bg-desk-raised/60 transition-colors">
                         {/* 1. Lifecycle Expander */}
-                        <td className="py-3 px-2 text-center">
+                        <td className="py-2 px-2 text-center">
                           <button
                             onClick={() =>
                               setExpandedActiveTrees((prev) => ({
@@ -608,7 +608,7 @@ export default function SignalsPage() {
                                 [rowKey]: !isExpanded,
                               }))
                             }
-                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold border transition-colors ${
+                            className={`px-1.5 py-0.5 rounded text-[9.5px] font-bold border transition-colors ${
                               isExpanded
                                 ? "bg-desk-accent/20 border-desk-accent text-desk-accent"
                                 : "bg-desk-raised border-desk-border text-desk-secondary hover:text-white"
@@ -620,19 +620,19 @@ export default function SignalsPage() {
                         </td>
 
                         {/* 2. Entry Date */}
-                        <td className="py-3.5 px-3 text-desk-secondary">{a.entry_date}</td>
+                        <td className="py-2 px-2 text-desk-secondary whitespace-nowrap text-[10.5px]">{a.entry_date}</td>
 
                         {/* 3. Stock */}
-                        <td className="py-3.5 px-3 font-sans font-bold">
+                        <td className="py-2 px-2 font-sans font-bold">
                           <Link href={`/ticket/${a.ticker}`} className="text-desk-accent hover:underline">
                             {a.ticker}
                           </Link>
                         </td>
 
                         {/* 4. Rolls Badge */}
-                        <td className="py-3.5 px-2 text-center">
+                        <td className="py-2 px-1.5 text-center">
                           <span
-                            className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap ${
+                            className={`inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold whitespace-nowrap ${
                               a.rolls === 0
                                 ? "bg-desk-bg border border-desk-border text-desk-secondary"
                                 : a.rolls === 1
@@ -646,51 +646,51 @@ export default function SignalsPage() {
                         </td>
 
                         {/* 5. Put Strike */}
-                        <td className="py-3.5 px-3 font-semibold text-desk-text">${a.strike.toFixed(1)}P</td>
+                        <td className="py-2 px-2 font-semibold text-desk-text whitespace-nowrap">${a.strike.toFixed(1)}P</td>
 
                         {/* 6. Spot Price */}
-                        <td className="py-3.5 px-3 text-desk-text">${a.current_spot.toFixed(2)}</td>
+                        <td className="py-2 px-2 text-desk-text whitespace-nowrap">${a.current_spot.toFixed(2)}</td>
 
                         {/* 7. Cushion */}
-                        <td className="py-3.5 px-3">
+                        <td className="py-2 px-2 whitespace-nowrap">
                           <span className={cushion > 0 ? "text-desk-accent font-semibold" : "text-desk-riskText font-semibold"}>
                             {cushion > 0 ? "+" : ""}{cushion.toFixed(1)}%
                           </span>
                         </td>
 
                         {/* 8. Entry Credit */}
-                        <td className="py-3.5 px-3 text-desk-text">${a.entry_price.toFixed(2)}</td>
+                        <td className="py-2 px-2 text-desk-text whitespace-nowrap">${a.entry_price.toFixed(2)}</td>
 
                         {/* 9. Put Mark */}
-                        <td className="py-3.5 px-3 font-bold text-desk-text">${a.current_price.toFixed(2)}</td>
+                        <td className="py-2 px-2 font-bold text-desk-text whitespace-nowrap">${a.current_price.toFixed(2)}</td>
 
                         {/* 10. Unrealized P&L ($ & %) */}
-                        <td className="py-3.5 px-3 font-mono">
+                        <td className="py-2 px-2 font-mono whitespace-nowrap">
                           <div className={`font-bold ${pnlColor}`}>
                             {unrealizedDollars >= 0 ? "+" : ""}${unrealizedDollars.toFixed(0)}
                           </div>
-                          <div className={`text-[10px] ${pnlColor}`}>
+                          <div className={`text-[9.5px] ${pnlColor}`}>
                             {a.profit_pct > 0 ? "+" : ""}{a.profit_pct.toFixed(1)}%
                           </div>
                         </td>
 
                         {/* 11. Progress Bar */}
-                        <td className="py-3.5 px-3 min-w-[130px]">
+                        <td className="py-2 px-2 min-w-[90px] max-w-[115px]">
                           {(() => {
                             const isPos = a.profit_pct >= 0;
                             const rightW = isPos ? Math.min(50, (a.profit_pct / 50.0) * 50) : 0;
                             const leftW = !isPos ? Math.min(50, (Math.abs(a.profit_pct) / 100.0) * 50) : 0;
                             const posColor = a.profit_pct >= 50 ? "bg-emerald-500" : "bg-desk-accent";
                             const labelColor = a.profit_pct >= 50 ? "text-emerald-400" : isPos ? "text-desk-accent" : "text-desk-riskText";
-                            const subLabel = a.profit_pct >= 50 ? "🎯 50% TP" : isPos ? `${((a.profit_pct / 50) * 100).toFixed(0)}% of TP` : "Drawdown";
+                            const subLabel = a.profit_pct >= 50 ? "🎯 50% TP" : isPos ? `${((a.profit_pct / 50) * 100).toFixed(0)}%` : "Drawdown";
 
                             return (
                               <div>
-                                <div className="flex items-center justify-between text-[11px] mb-1">
+                                <div className="flex items-center justify-between text-[10px] mb-0.5">
                                   <span className={`font-mono font-semibold ${labelColor}`}>
                                     {a.profit_pct > 0 ? "+" : ""}{a.profit_pct.toFixed(1)}%
                                   </span>
-                                  <span className="text-[10px] text-desk-secondary">
+                                  <span className="text-[9px] text-desk-secondary">
                                     {subLabel}
                                   </span>
                                 </div>
@@ -714,12 +714,12 @@ export default function SignalsPage() {
                         </td>
 
                         {/* 12. Expiry */}
-                        <td className="py-3.5 px-3 text-desk-secondary">{a.expiry}</td>
+                        <td className="py-2 px-2 text-desk-secondary whitespace-nowrap text-[10.5px]">{a.expiry}</td>
 
                         {/* 13. Action Protocol */}
-                        <td className="py-3.5 px-4 text-right min-w-[210px]">
+                        <td className="py-2 px-2 text-right min-w-[130px] max-w-[170px]">
                           <span
-                            className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap"
+                            className="inline-block px-1.5 py-0.5 rounded text-[9.5px] font-semibold whitespace-nowrap"
                             style={{
                               backgroundColor: `${a.badge_color || "#38BDF8"}18`,
                               color: a.badge_color || "#38BDF8",
@@ -729,7 +729,7 @@ export default function SignalsPage() {
                             {a.status}
                           </span>
                           {a.triage_action && (
-                            <div className="text-[10px] text-desk-secondary mt-1 max-w-[240px] ml-auto leading-tight">
+                            <div className="text-[9.5px] text-desk-secondary mt-0.5 max-w-[165px] ml-auto leading-tight line-clamp-2" title={a.triage_action}>
                               {a.triage_action}
                             </div>
                           )}
@@ -888,26 +888,26 @@ export default function SignalsPage() {
 
         {/* Closed Trades Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-desk-border bg-desk-raised text-xs text-desk-secondary font-medium uppercase tracking-wider">
+          <table className="w-full text-left text-[11px]">
+            <thead className="border-b border-desk-border bg-desk-raised text-[10px] text-desk-secondary font-medium uppercase tracking-tight">
               <tr>
-                <th className="py-3 px-3 text-center">Details</th>
-                <th className="py-3 px-3">Open Date</th>
-                <th className="py-3 px-3">Close Date</th>
-                <th className="py-3 px-3">Stock</th>
-                <th className="py-3 px-2 text-center">Rolls</th>
-                <th className="py-3 px-3">Put Strike</th>
-                <th className="py-3 px-3">Entry &rarr; Exit</th>
-                <th className="py-3 px-3">Realized P&amp;L</th>
-                <th className="py-3 px-3">Days</th>
-                <th className="py-3 px-3">Result</th>
-                <th className="py-3 px-4 text-right">Exit Reason &amp; Outcome</th>
+                <th className="py-2.5 px-2 text-center w-12">Details</th>
+                <th className="py-2.5 px-2 whitespace-nowrap">Open Date</th>
+                <th className="py-2.5 px-2 whitespace-nowrap">Close Date</th>
+                <th className="py-2.5 px-2">Stock</th>
+                <th className="py-2.5 px-1.5 text-center">Rolls</th>
+                <th className="py-2.5 px-2 whitespace-nowrap">Put Strike</th>
+                <th className="py-2.5 px-2 whitespace-nowrap">Entry &rarr; Exit</th>
+                <th className="py-2.5 px-2 whitespace-nowrap">Realized P&amp;L</th>
+                <th className="py-2.5 px-2">Days</th>
+                <th className="py-2.5 px-2">Result</th>
+                <th className="py-2.5 px-2 text-right">Exit Reason &amp; Outcome</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-desk-border font-mono text-xs">
+            <tbody className="divide-y divide-desk-border font-mono text-[11px]">
               {closedTrades.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className="py-8 text-center text-desk-secondary font-sans text-sm">
+                  <td colSpan={11} className="py-8 text-center text-desk-secondary font-sans text-xs">
                     No closed trades found in history.
                   </td>
                 </tr>
@@ -923,7 +923,7 @@ export default function SignalsPage() {
                     <React.Fragment key={rowKey}>
                       <tr className="hover:bg-desk-raised/60 transition-colors">
                         {/* 1. Lifecycle Expander */}
-                        <td className="py-3 px-2 text-center">
+                        <td className="py-2 px-2 text-center">
                           <button
                             onClick={() =>
                               setExpandedClosedTrees((prev) => ({
@@ -931,7 +931,7 @@ export default function SignalsPage() {
                                 [rowKey]: !isExpanded,
                               }))
                             }
-                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold border transition-colors ${
+                            className={`px-1.5 py-0.5 rounded text-[9.5px] font-bold border transition-colors ${
                               isExpanded
                                 ? "bg-desk-accent/20 border-desk-accent text-desk-accent"
                                 : "bg-desk-raised border-desk-border text-desk-secondary hover:text-white"
@@ -943,22 +943,22 @@ export default function SignalsPage() {
                         </td>
 
                         {/* 2. Open Date */}
-                        <td className="py-3 px-3 text-desk-secondary">{c.open_date}</td>
+                        <td className="py-2 px-2 text-desk-secondary whitespace-nowrap text-[10.5px]">{c.open_date}</td>
 
                         {/* 3. Close Date */}
-                        <td className="py-3 px-3 text-desk-secondary font-semibold">{c.close_date}</td>
+                        <td className="py-2 px-2 text-desk-secondary font-semibold whitespace-nowrap text-[10.5px]">{c.close_date}</td>
 
                         {/* 4. Stock */}
-                        <td className="py-3 px-3 font-sans font-bold">
+                        <td className="py-2 px-2 font-sans font-bold">
                           <Link href={`/ticket/${c.ticker}`} className="text-desk-accent hover:underline">
                             {c.ticker}
                           </Link>
                         </td>
 
                         {/* 5. Rolls Badge */}
-                        <td className="py-3 px-2 text-center">
+                        <td className="py-2 px-1.5 text-center">
                           <span
-                            className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap ${
+                            className={`inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold whitespace-nowrap ${
                               rolls === 0
                                 ? "bg-desk-bg border border-desk-border text-desk-secondary"
                                 : rolls === 1
@@ -972,30 +972,30 @@ export default function SignalsPage() {
                         </td>
 
                         {/* 6. Put Strike */}
-                        <td className="py-3 px-3 font-semibold text-desk-text">${c.strike.toFixed(1)}P</td>
+                        <td className="py-2 px-2 font-semibold text-desk-text whitespace-nowrap">${c.strike.toFixed(1)}P</td>
 
                         {/* 7. Entry -> Exit */}
-                        <td className="py-3 px-3 text-desk-secondary">
+                        <td className="py-2 px-2 text-desk-secondary whitespace-nowrap text-[10.5px]">
                           ${c.entry_credit.toFixed(2)} &rarr; ${c.exit_debit.toFixed(2)}
                         </td>
 
                         {/* 8. Realized P&L ($ & %) */}
-                        <td className="py-3 px-3 font-mono">
+                        <td className="py-2 px-2 font-mono whitespace-nowrap">
                           <div className={`font-bold ${gain >= 0 ? "text-emerald-400" : "text-desk-riskText"}`}>
                             {gain >= 0 ? "+" : ""}${gain.toFixed(1)}
                           </div>
-                          <div className={`text-[10px] ${c.profit_pct >= 0 ? "text-emerald-400" : "text-desk-riskText"}`}>
+                          <div className={`text-[9.5px] ${c.profit_pct >= 0 ? "text-emerald-400" : "text-desk-riskText"}`}>
                             {c.profit_pct > 0 ? "+" : ""}{c.profit_pct.toFixed(1)}%
                           </div>
                         </td>
 
                         {/* 9. Days */}
-                        <td className="py-3 px-3 text-desk-secondary">{c.days_held}d</td>
+                        <td className="py-2 px-2 text-desk-secondary whitespace-nowrap">{c.days_held}d</td>
 
                         {/* 10. Result */}
-                        <td className="py-3 px-3">
+                        <td className="py-2 px-2">
                           <span
-                            className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                            className={`inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold ${
                               isWin
                                 ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                                 : "bg-desk-risk/15 text-desk-riskText border border-desk-risk/30"
@@ -1006,7 +1006,7 @@ export default function SignalsPage() {
                         </td>
 
                         {/* 11. Exit Reason */}
-                        <td className="py-3 px-4 text-right text-desk-secondary text-[11px] truncate max-w-[220px]">
+                        <td className="py-2 px-2 text-right text-desk-secondary text-[10.5px] truncate max-w-[200px]">
                           <span className={c.exit_type.includes("Stop Loss") ? "text-rose-400 font-bold" : c.exit_type.includes("Assigned") ? "text-amber-400 font-bold" : ""}>
                             {c.exit_type}
                           </span>
