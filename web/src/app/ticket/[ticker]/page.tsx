@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getSnapshot } from "@/lib/server-data";
 import { formatCurrency, formatPercent } from "@/lib/data";
 import { TicketActionButtons } from "@/components/TicketActionButtons";
+import { ModelLevelsChart } from "@/components/ModelLevelsChart";
 
 interface PageProps {
   params: { ticker: string };
@@ -173,6 +174,7 @@ export default async function TradeTicketPage({ params }: PageProps) {
                 bid={setup.bid}
                 tp50={setup.plan.tp50}
                 tp60={setup.plan.tp60}
+                setup={setup}
               />
             )}
           </div>
@@ -230,6 +232,9 @@ export default async function TradeTicketPage({ params }: PageProps) {
               <span className="font-mono font-bold text-desk-text">${(spot - strike).toFixed(2)} ({setup?.cushion_pct.toFixed(1)}% buffer)</span>
             </div>
           </div>
+
+          {/* Model Levels Distribution Chart (Signal Price & 13 Structural Defenses) */}
+          {setup && <ModelLevelsChart setup={setup} />}
 
           {/* Plan Card */}
           <div className="rounded-card border border-desk-border bg-desk-card p-6 space-y-4">

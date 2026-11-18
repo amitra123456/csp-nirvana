@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { Setup } from "@/types/snapshot";
+import { TradingViewModal } from "./TradingViewModal";
 
 interface TicketActionButtonsProps {
   ticker: string;
@@ -10,6 +12,7 @@ interface TicketActionButtonsProps {
   bid: number;
   tp50: number;
   tp60: number;
+  setup?: Setup;
 }
 
 export function TicketActionButtons({
@@ -19,9 +22,11 @@ export function TicketActionButtons({
   bid,
   tp50,
   tp60,
+  setup,
 }: TicketActionButtonsProps) {
   const [copied, setCopied] = useState(false);
   const [stagedMsg, setStagedMsg] = useState<string | null>(null);
+  const [isChartOpen, setIsChartOpen] = useState(false);
 
   const handleCopy = () => {
     if (typeof navigator !== "undefined") {
@@ -53,6 +58,16 @@ export function TicketActionButtons({
         >
           Stage exits at TP50 / TP60
         </button>
+        {setup && (
+          <button
+            onClick={() => setIsChartOpen(true)}
+            className="min-h-[44px] inline-flex items-center gap-1.5 rounded-control bg-sky-500/15 border border-sky-500/40 px-4 py-2 text-xs font-bold text-sky-400 hover:bg-sky-500/25 active:scale-98 transition-all"
+            title="Open TradingView candlestick chart with Entry Price and all 13 model levels"
+          >
+            <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
+            <span>📊 Interactive Chart</span>
+          </button>
+        )}
         <Link
           href="/"
           className="min-h-[44px] flex items-center rounded-control bg-transparent px-4 py-2 text-xs font-semibold text-desk-secondary hover:text-desk-text transition-colors"
@@ -64,6 +79,15 @@ export function TicketActionButtons({
         <div className="rounded-control bg-desk-raised border border-desk-border px-3 py-1.5 text-xs font-mono text-desk-accent">
           {stagedMsg}
         </div>
+      )}
+
+      {/* TradingView Chart Modal */}
+      {setup && (
+        <TradingViewModal
+          isOpen={isChartOpen}
+          onClose={() => setIsChartOpen(false)}
+          setup={setup}
+        />
       )}
     </div>
   );

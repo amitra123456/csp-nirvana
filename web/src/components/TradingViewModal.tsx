@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Setup, Levels } from "@/types/snapshot";
 import { formatCurrency, formatPercent } from "@/lib/data";
 import { TradingViewLevelsChart } from "./TradingViewLevelsChart";
+import { ModelLevelsChart } from "./ModelLevelsChart";
 
 interface TradingViewModalProps {
   isOpen: boolean;
@@ -42,12 +43,12 @@ export function TradingViewModal({ isOpen, onClose, setup }: TradingViewModalPro
   // Compile all model levels with color coding and contextual roles
   const modelLevels = [
     {
-      name: "Current Spot Price",
+      name: "Signal / Entry Price",
       price: spot,
       category: "spot",
-      color: "#6CB4FF",
-      tag: "Live Spot",
-      desc: "Reference candle close",
+      color: "#38BDF8",
+      tag: "Signal Entry",
+      desc: "Verified signal entry reference",
       distancePct: 0.0,
       isPrimary: true
     },
@@ -382,6 +383,9 @@ export function TradingViewModal({ isOpen, onClose, setup }: TradingViewModalPro
                     Strike ${strike.toFixed(1)} sits behind {setup.cushion_pct.toFixed(1)}% downside cushion with 1-Sigma limit at ${oneSigmaLow.toFixed(2)}.
                   </div>
                 </div>
+
+                {/* Simple Visual Chart Showing Signal Price and 13 Model Levels */}
+                <ModelLevelsChart setup={setup} className="mt-4" />
               </div>
             )}
 

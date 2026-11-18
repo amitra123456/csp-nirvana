@@ -276,14 +276,14 @@ export function TradingViewLevelsChart({ setup, className = "" }: TradingViewLev
         // MARK ALL MODEL LEVELS AS SOLID / DASHED / DOTTED PRICE LINES
         // =====================================================================
 
-        // 1. Live Spot Reference Line
+        // 1. Signal / Entry Price Reference Line
         candleSeries.createPriceLine({
           price: spot,
-          color: "#6CB4FF",
+          color: "#38BDF8", // Cyan / sky blue for entry signal
           lineWidth: 2,
           lineStyle: LineStyle.Solid,
           axisLabelVisible: true,
-          title: `SPOT $${spot.toFixed(2)}`,
+          title: `ENTRY PRICE $${spot.toFixed(2)}`,
         });
 
         // 2. Put Strike Price Line
