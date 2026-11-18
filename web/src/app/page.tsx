@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { Setup, Snapshot, HeldBack, Position, ActiveSignal, ClosedTrade } from "@/types/snapshot";
 import { formatCurrency, formatPercent, formatNumber } from "@/lib/data";
@@ -14,6 +14,12 @@ export default function SignalsPage() {
   const [skipEarnings, setSkipEarnings] = useState(false);
   const [redDaysOnly, setRedDaysOnly] = useState(false);
   const [hideHeld, setHideHeld] = useState(false);
+
+  // Tree expansion state for Active Positions & Closed Trades
+  const [expandedActiveTrees, setExpandedActiveTrees] = useState<Record<string, boolean>>({});
+  const [expandedClosedTrees, setExpandedClosedTrees] = useState<Record<string, boolean>>({});
+  const [expandAllActive, setExpandAllActive] = useState(false);
+  const [expandAllClosed, setExpandAllClosed] = useState(false);
 
   // Admin Review & Approval State (status: approved | disapproved | none, and comments)
   const [reviewRecords, setReviewRecords] = useState<Record<string, { status: "approved" | "disapproved" | "none"; comment: string }>>({});
@@ -533,6 +539,21 @@ export default function SignalsPage() {
             <span className="px-2.5 py-1 rounded bg-desk-risk/10 border border-desk-risk/30 text-desk-riskText">
               🛡️ Tested: <strong>{activeStats.tested}</strong>
             </span>
+            <button
+              onClick={() => {
+                const next = !expandAllActive;
+                setExpandAllActive(next);
+                const m: Record<string, boolean> = {};
+                activeSignals.forEach((a, i) => {
+                  m[`${a.ticker}-${a.entry_date}-${i}`] = next;
+                });
+                setExpandedActiveTrees(m);
+              }}
+              className="px-2.5 py-1 rounded bg-desk-raised hover:bg-desk-border border border-desk-border text-desk-accent hover:text-white transition-colors font-bold"
+              title="Toggle tree view for all active trades"
+            >
+              {expandAllActive ? "▲ Collapse Trees" : "▼ Expand All Trees"}
+            </button>
           </div>
         </div>
 
@@ -540,14 +561,16 @@ export default function SignalsPage() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-desk-border bg-desk-raised text-xs text-desk-secondary font-medium uppercase tracking-wider">
               <tr>
-                <th className="py-3 px-4">Entry Date</th>
-                <th className="py-3 px-4">Stock</th>
+                <th className="py-3 px-3 text-center">Tree</th>
+                <th className="py-3 px-3">Entry Date</th>
+                <th className="py-3 px-3">Stock</th>
+                <th className="py-3 px-2 text-center">Rolls</th>
                 <th className="py-3 px-3">Put Strike</th>
                 <th className="py-3 px-3">Spot Price</th>
                 <th className="py-3 px-3">Cushion</th>
                 <th className="py-3 px-3">Entry Credit</th>
                 <th className="py-3 px-3">Put Mark</th>
-                <th className="py-3 px-3">P&amp;L %</th>
+                <th className="py-3 px-3">Unrealized P&amp;L</th>
                 <th className="py-3 px-3">Progress</th>
                 <th className="py-3 px-3">Expiry</th>
                 <th className="py-3 px-4 text-right">Action Protocol</th>
@@ -556,98 +579,247 @@ export default function SignalsPage() {
             <tbody className="divide-y divide-desk-border font-mono text-xs">
               {activeSignals.length === 0 ? (
                 <tr>
-                  <td colSpan={11} className="py-8 text-center text-desk-secondary font-sans text-sm">
+                  <td colSpan={13} className="py-8 text-center text-desk-secondary font-sans text-sm">
                     No active positions currently recorded in flight.
                   </td>
                 </tr>
               ) : (
                 activeSignals.map((a, idx) => {
+                  const rowKey = `${a.ticker}-${a.entry_date}-${idx}`;
+                  const isExpanded = expandedActiveTrees[rowKey] ?? expandAllActive;
                   const cushion = a.current_spot > 0 ? ((a.current_spot - a.strike) / a.current_spot) * 100 : 0;
+                  const unrealizedDollars = (a.entry_price - a.current_price) * 100;
                   const pnlColor =
                     a.profit_pct >= 50.0
                       ? "text-emerald-400"
                       : a.profit_pct >= 0
                       ? "text-desk-accent"
                       : "text-desk-riskText";
-                  const prog = Math.min(100, Math.max(0, a.progress_to_target || 0));
 
                   return (
-                    <tr key={`${a.ticker}-${a.entry_date}-${idx}`} className="hover:bg-desk-raised/60 transition-colors">
-                      <td className="py-3.5 px-4 text-desk-secondary">{a.entry_date}</td>
-                      <td className="py-3.5 px-4 font-sans font-bold">
-                        <Link href={`/ticket/${a.ticker}`} className="text-desk-accent hover:underline">
-                          {a.ticker}
-                        </Link>
-                      </td>
-                      <td className="py-3.5 px-3 font-semibold text-desk-text">${a.strike.toFixed(1)}P</td>
-                      <td className="py-3.5 px-3 text-desk-text">${a.current_spot.toFixed(2)}</td>
-                      <td className="py-3.5 px-3">
-                        <span className={cushion > 0 ? "text-desk-accent font-semibold" : "text-desk-riskText font-semibold"}>
-                          {cushion > 0 ? "+" : ""}{cushion.toFixed(1)}%
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-3 text-desk-text">${a.entry_price.toFixed(2)}</td>
-                      <td className="py-3.5 px-3 font-bold text-desk-text">${a.current_price.toFixed(2)}</td>
-                      <td className={`py-3.5 px-3 font-bold ${pnlColor}`}>
-                        {a.profit_pct > 0 ? "+" : ""}{a.profit_pct.toFixed(1)}%
-                      </td>
-                      {/* Bidirectional Progress Bar */}
-                      <td className="py-3.5 px-3 min-w-[130px]">
-                        {(() => {
-                          const isPos = a.profit_pct >= 0;
-                          const rightW = isPos ? Math.min(50, (a.profit_pct / 50.0) * 50) : 0;
-                          const leftW = !isPos ? Math.min(50, (Math.abs(a.profit_pct) / 100.0) * 50) : 0;
-                          const posColor = a.profit_pct >= 50 ? "bg-emerald-500" : "bg-desk-accent";
-                          const labelColor = a.profit_pct >= 50 ? "text-emerald-400" : isPos ? "text-desk-accent" : "text-desk-riskText";
-                          const subLabel = a.profit_pct >= 50 ? "🎯 50% TP" : isPos ? `${((a.profit_pct / 50) * 100).toFixed(0)}% of TP` : "Drawdown";
+                    <React.Fragment key={rowKey}>
+                      <tr className="hover:bg-desk-raised/60 transition-colors">
+                        {/* 1. Tree Expander */}
+                        <td className="py-3 px-2 text-center">
+                          <button
+                            onClick={() =>
+                              setExpandedActiveTrees((prev) => ({
+                                ...prev,
+                                [rowKey]: !isExpanded,
+                              }))
+                            }
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold border transition-colors ${
+                              isExpanded
+                                ? "bg-desk-accent/20 border-desk-accent text-desk-accent"
+                                : "bg-desk-raised border-desk-border text-desk-secondary hover:text-white"
+                            }`}
+                            title="Toggle lifecycle & roll tree"
+                          >
+                            {isExpanded ? "▼ Tree" : "▶ Tree"}
+                          </button>
+                        </td>
 
-                          return (
-                            <div>
-                              <div className="flex items-center justify-between text-[11px] mb-1">
-                                <span className={`font-mono font-semibold ${labelColor}`}>
-                                  {a.profit_pct > 0 ? "+" : ""}{a.profit_pct.toFixed(1)}%
+                        {/* 2. Entry Date */}
+                        <td className="py-3.5 px-3 text-desk-secondary">{a.entry_date}</td>
+
+                        {/* 3. Stock */}
+                        <td className="py-3.5 px-3 font-sans font-bold">
+                          <Link href={`/ticket/${a.ticker}`} className="text-desk-accent hover:underline">
+                            {a.ticker}
+                          </Link>
+                        </td>
+
+                        {/* 4. Rolls Badge */}
+                        <td className="py-3.5 px-2 text-center">
+                          <span
+                            className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap ${
+                              a.rolls === 0
+                                ? "bg-desk-bg border border-desk-border text-desk-secondary"
+                                : a.rolls === 1
+                                ? "bg-purple-500/15 border border-purple-500/30 text-purple-300"
+                                : "bg-amber-500/20 border border-amber-500/40 text-amber-300"
+                            }`}
+                            title={a.rolls >= 2 ? "Hard 2-Roll Cap reached" : `${a.rolls} rolls executed`}
+                          >
+                            {a.rolls === 0 ? "0 Rolls" : a.rolls === 1 ? "1 Roll" : "2 Rolls (Max)"}
+                          </span>
+                        </td>
+
+                        {/* 5. Put Strike */}
+                        <td className="py-3.5 px-3 font-semibold text-desk-text">${a.strike.toFixed(1)}P</td>
+
+                        {/* 6. Spot Price */}
+                        <td className="py-3.5 px-3 text-desk-text">${a.current_spot.toFixed(2)}</td>
+
+                        {/* 7. Cushion */}
+                        <td className="py-3.5 px-3">
+                          <span className={cushion > 0 ? "text-desk-accent font-semibold" : "text-desk-riskText font-semibold"}>
+                            {cushion > 0 ? "+" : ""}{cushion.toFixed(1)}%
+                          </span>
+                        </td>
+
+                        {/* 8. Entry Credit */}
+                        <td className="py-3.5 px-3 text-desk-text">${a.entry_price.toFixed(2)}</td>
+
+                        {/* 9. Put Mark */}
+                        <td className="py-3.5 px-3 font-bold text-desk-text">${a.current_price.toFixed(2)}</td>
+
+                        {/* 10. Unrealized P&L ($ & %) */}
+                        <td className="py-3.5 px-3 font-mono">
+                          <div className={`font-bold ${pnlColor}`}>
+                            {unrealizedDollars >= 0 ? "+" : ""}${unrealizedDollars.toFixed(0)}
+                          </div>
+                          <div className={`text-[10px] ${pnlColor}`}>
+                            {a.profit_pct > 0 ? "+" : ""}{a.profit_pct.toFixed(1)}%
+                          </div>
+                        </td>
+
+                        {/* 11. Progress Bar */}
+                        <td className="py-3.5 px-3 min-w-[130px]">
+                          {(() => {
+                            const isPos = a.profit_pct >= 0;
+                            const rightW = isPos ? Math.min(50, (a.profit_pct / 50.0) * 50) : 0;
+                            const leftW = !isPos ? Math.min(50, (Math.abs(a.profit_pct) / 100.0) * 50) : 0;
+                            const posColor = a.profit_pct >= 50 ? "bg-emerald-500" : "bg-desk-accent";
+                            const labelColor = a.profit_pct >= 50 ? "text-emerald-400" : isPos ? "text-desk-accent" : "text-desk-riskText";
+                            const subLabel = a.profit_pct >= 50 ? "🎯 50% TP" : isPos ? `${((a.profit_pct / 50) * 100).toFixed(0)}% of TP` : "Drawdown";
+
+                            return (
+                              <div>
+                                <div className="flex items-center justify-between text-[11px] mb-1">
+                                  <span className={`font-mono font-semibold ${labelColor}`}>
+                                    {a.profit_pct > 0 ? "+" : ""}{a.profit_pct.toFixed(1)}%
+                                  </span>
+                                  <span className="text-[10px] text-desk-secondary">
+                                    {subLabel}
+                                  </span>
+                                </div>
+                                <div className="relative h-1.5 w-full bg-desk-bg rounded-full overflow-hidden border border-desk-border/60">
+                                  <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-desk-border z-10" />
+                                  {isPos ? (
+                                    <div
+                                      className={`absolute left-1/2 top-0 bottom-0 ${posColor} rounded-r-full transition-all`}
+                                      style={{ width: `${rightW}%` }}
+                                    />
+                                  ) : (
+                                    <div
+                                      className="absolute right-1/2 top-0 bottom-0 bg-desk-riskText rounded-l-full transition-all"
+                                      style={{ width: `${leftW}%` }}
+                                    />
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </td>
+
+                        {/* 12. Expiry */}
+                        <td className="py-3.5 px-3 text-desk-secondary">{a.expiry}</td>
+
+                        {/* 13. Action Protocol */}
+                        <td className="py-3.5 px-4 text-right min-w-[210px]">
+                          <span
+                            className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap"
+                            style={{
+                              backgroundColor: `${a.badge_color || "#38BDF8"}18`,
+                              color: a.badge_color || "#38BDF8",
+                              border: `1px solid ${a.badge_color || "#38BDF8"}40`,
+                            }}
+                          >
+                            {a.status}
+                          </span>
+                          {a.triage_action && (
+                            <div className="text-[10px] text-desk-secondary mt-1 max-w-[240px] ml-auto leading-tight">
+                              {a.triage_action}
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+
+                      {/* Tree Sub-Row */}
+                      {isExpanded && a.lifecycle_tree && a.lifecycle_tree.length > 0 && (
+                        <tr className="bg-[#0B0E14] border-b border-desk-border/80">
+                          <td colSpan={13} className="py-2.5 px-4">
+                            <div className="py-2.5 px-4 bg-[#121821] border-l-4 border-desk-accent rounded-r-lg space-y-2 font-mono text-xs shadow-inner">
+                              <div className="flex items-center justify-between text-[11px] pb-1.5 border-b border-desk-border/50 text-desk-tertiary">
+                                <span className="font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                                  <span>🌿 Campaign Lifecycle &amp; Roll Tree &middot; {a.ticker}</span>
                                 </span>
-                                <span className="text-[10px] text-desk-secondary">
-                                  {subLabel}
+                                <span className="text-desk-secondary">
+                                  Roll Status: <strong className="text-white">{a.rolls} / 2</strong> Max Allowed Rolls Executed
                                 </span>
                               </div>
-                              <div className="relative h-1.5 w-full bg-desk-bg rounded-full overflow-hidden border border-desk-border/60">
-                                <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-desk-border z-10" />
-                                {isPos ? (
-                                  <div
-                                    className={`absolute left-1/2 top-0 bottom-0 ${posColor} rounded-r-full transition-all`}
-                                    style={{ width: `${rightW}%` }}
-                                  />
-                                ) : (
-                                  <div
-                                    className="absolute right-1/2 top-0 bottom-0 bg-desk-riskText rounded-l-full transition-all"
-                                    style={{ width: `${leftW}%` }}
-                                  />
-                                )}
+
+                              <div className="space-y-1.5 pt-0.5">
+                                {a.lifecycle_tree.map((node, i) => {
+                                  const isLast = i === (a.lifecycle_tree?.length || 0) - 1;
+                                  const isInitial = node.step === "initial";
+                                  const isRoll = node.step.startsWith("roll");
+                                  const isAssign = node.step === "exit_assignment";
+
+                                  return (
+                                    <div
+                                      key={i}
+                                      className="flex flex-col md:flex-row md:items-center justify-between gap-2 p-1.5 rounded hover:bg-[#151D28] transition-colors"
+                                    >
+                                      <div className="flex flex-wrap items-center gap-2">
+                                        <span className="text-desk-tertiary select-none font-bold shrink-0">
+                                          {isLast ? "└──" : "├──"}
+                                        </span>
+
+                                        <span
+                                          className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                                            isInitial
+                                              ? "bg-sky-500/15 text-sky-400 border border-sky-500/30"
+                                              : isRoll
+                                              ? "bg-purple-500/15 text-purple-400 border border-purple-500/30"
+                                              : isAssign
+                                              ? "bg-amber-500/15 text-amber-400 border border-amber-500/30"
+                                              : "bg-desk-raised text-desk-secondary border border-desk-border"
+                                          }`}
+                                        >
+                                          {node.title}
+                                        </span>
+
+                                        <span className="text-[11px] text-white font-medium shrink-0">{node.date}</span>
+
+                                        {node.strike && (
+                                          <span className="text-[11px] text-desk-secondary shrink-0">
+                                            Strike: <strong className="text-white">${node.strike.toFixed(1)}P</strong>
+                                          </span>
+                                        )}
+
+                                        <span className="text-[11px] text-desk-tertiary font-sans truncate max-w-[280px] lg:max-w-md" title={node.details}>
+                                          &middot; {node.details}
+                                        </span>
+                                      </div>
+
+                                      {/* Amount $ and % */}
+                                      <div className="flex items-center gap-2 shrink-0 pl-6 md:pl-0 font-mono">
+                                        <span
+                                          className={`text-xs font-bold ${
+                                            node.amount_dollars >= 0 ? "text-emerald-400" : "text-rose-400"
+                                          }`}
+                                        >
+                                          {node.amount_dollars >= 0 ? "+" : ""}${node.amount_dollars.toFixed(0)}
+                                        </span>
+                                        <span
+                                          className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
+                                            node.pnl_pct >= 0 ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"
+                                          }`}
+                                        >
+                                          {node.pnl_pct >= 0 ? "+" : ""}{node.pnl_pct.toFixed(1)}%
+                                        </span>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
                               </div>
                             </div>
-                          );
-                        })()}
-                      </td>
-                      <td className="py-3.5 px-3 text-desk-secondary">{a.expiry}</td>
-                      <td className="py-3.5 px-4 text-right min-w-[210px]">
-                        <span
-                          className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap"
-                          style={{
-                            backgroundColor: `${a.badge_color || "#38BDF8"}18`,
-                            color: a.badge_color || "#38BDF8",
-                            border: `1px solid ${a.badge_color || "#38BDF8"}40`,
-                          }}
-                        >
-                          {a.status}
-                        </span>
-                        {a.triage_action && (
-                          <div className="text-[10px] text-desk-secondary mt-1 max-w-[240px] ml-auto leading-tight">
-                            {a.triage_action}
-                          </div>
-                        )}
-                      </td>
-                    </tr>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   );
                 })
               )}
@@ -669,6 +841,24 @@ export default function SignalsPage() {
             <p className="text-xs text-desk-secondary mt-0.5">
               Audited historical closed trades verified candle-by-candle with Kirsten&apos;s 50% Take-Profit rule, assignment tracking, and net-credit rolls.
             </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                const next = !expandAllClosed;
+                setExpandAllClosed(next);
+                const m: Record<string, boolean> = {};
+                closedTrades.forEach((c, i) => {
+                  m[`${c.ticker}-${c.close_date}-${i}`] = next;
+                });
+                setExpandedClosedTrees(m);
+              }}
+              className="px-2.5 py-1 rounded bg-desk-raised hover:bg-desk-border border border-desk-border text-desk-accent hover:text-white transition-colors font-bold font-mono text-xs"
+              title="Toggle lifecycle & roll tree for all closed trades"
+            >
+              {expandAllClosed ? "▲ Collapse Trees" : "▼ Expand All Trees"}
+            </button>
           </div>
         </div>
 
@@ -701,65 +891,218 @@ export default function SignalsPage() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-desk-border bg-desk-raised text-xs text-desk-secondary font-medium uppercase tracking-wider">
               <tr>
-                <th className="py-3 px-4">Open Date</th>
-                <th className="py-3 px-4">Close Date</th>
+                <th className="py-3 px-3 text-center">Tree</th>
+                <th className="py-3 px-3">Open Date</th>
+                <th className="py-3 px-3">Close Date</th>
                 <th className="py-3 px-3">Stock</th>
+                <th className="py-3 px-2 text-center">Rolls</th>
                 <th className="py-3 px-3">Put Strike</th>
                 <th className="py-3 px-3">Entry &rarr; Exit</th>
-                <th className="py-3 px-3">Realized ($)</th>
-                <th className="py-3 px-3">Return %</th>
+                <th className="py-3 px-3">Realized P&amp;L</th>
                 <th className="py-3 px-3">Days</th>
                 <th className="py-3 px-3">Result</th>
-                <th className="py-3 px-4 text-right">Exit Reason</th>
+                <th className="py-3 px-4 text-right">Exit Reason &amp; Outcome</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-desk-border font-mono text-xs">
               {closedTrades.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="py-8 text-center text-desk-secondary font-sans text-sm">
+                  <td colSpan={11} className="py-8 text-center text-desk-secondary font-sans text-sm">
                     No closed trades found in history.
                   </td>
                 </tr>
               ) : (
                 closedTrades.slice(0, 30).map((c, idx) => {
+                  const rowKey = `${c.ticker}-${c.close_date}-${idx}`;
+                  const isExpanded = expandedClosedTrees[rowKey] ?? expandAllClosed;
                   const gain = c.realized_gain * 100;
                   const isWin = c.result === "WIN";
+                  const rolls = c.rolls ?? (c.exit_type.includes("(2 rolls)") ? 2 : c.exit_type.includes("(1 rolls)") ? 1 : 0);
 
                   return (
-                    <tr key={`${c.ticker}-${c.close_date}-${idx}`} className="hover:bg-desk-raised/60 transition-colors">
-                      <td className="py-3 px-4 text-desk-secondary">{c.open_date}</td>
-                      <td className="py-3 px-4 text-desk-secondary font-semibold">{c.close_date}</td>
-                      <td className="py-3 px-3 font-sans font-bold">
-                        <Link href={`/ticket/${c.ticker}`} className="text-desk-accent hover:underline">
-                          {c.ticker}
-                        </Link>
-                      </td>
-                      <td className="py-3 px-3 font-semibold text-desk-text">${c.strike.toFixed(1)}P</td>
-                      <td className="py-3 px-3 text-desk-secondary">
-                        ${c.entry_credit.toFixed(2)} &rarr; ${c.exit_debit.toFixed(2)}
-                      </td>
-                      <td className={`py-3 px-3 font-bold ${gain >= 0 ? "text-emerald-400" : "text-desk-riskText"}`}>
-                        {gain >= 0 ? "+" : ""}${gain.toFixed(1)}
-                      </td>
-                      <td className={`py-3 px-3 font-bold ${c.profit_pct >= 0 ? "text-emerald-400" : "text-desk-riskText"}`}>
-                        {c.profit_pct > 0 ? "+" : ""}{c.profit_pct.toFixed(1)}%
-                      </td>
-                      <td className="py-3 px-3 text-desk-secondary">{c.days_held}d</td>
-                      <td className="py-3 px-3">
-                        <span
-                          className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                            isWin
-                              ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                              : "bg-desk-risk/15 text-desk-riskText border border-desk-risk/30"
-                          }`}
-                        >
-                          {c.result}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-right text-desk-secondary text-[11px] truncate max-w-[200px]">
-                        {c.exit_type}
-                      </td>
-                    </tr>
+                    <React.Fragment key={rowKey}>
+                      <tr className="hover:bg-desk-raised/60 transition-colors">
+                        {/* 1. Tree Expander */}
+                        <td className="py-3 px-2 text-center">
+                          <button
+                            onClick={() =>
+                              setExpandedClosedTrees((prev) => ({
+                                ...prev,
+                                [rowKey]: !isExpanded,
+                              }))
+                            }
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold border transition-colors ${
+                              isExpanded
+                                ? "bg-desk-accent/20 border-desk-accent text-desk-accent"
+                                : "bg-desk-raised border-desk-border text-desk-secondary hover:text-white"
+                            }`}
+                            title="Toggle lifecycle & roll tree"
+                          >
+                            {isExpanded ? "▼ Tree" : "▶ Tree"}
+                          </button>
+                        </td>
+
+                        {/* 2. Open Date */}
+                        <td className="py-3 px-3 text-desk-secondary">{c.open_date}</td>
+
+                        {/* 3. Close Date */}
+                        <td className="py-3 px-3 text-desk-secondary font-semibold">{c.close_date}</td>
+
+                        {/* 4. Stock */}
+                        <td className="py-3 px-3 font-sans font-bold">
+                          <Link href={`/ticket/${c.ticker}`} className="text-desk-accent hover:underline">
+                            {c.ticker}
+                          </Link>
+                        </td>
+
+                        {/* 5. Rolls Badge */}
+                        <td className="py-3 px-2 text-center">
+                          <span
+                            className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold whitespace-nowrap ${
+                              rolls === 0
+                                ? "bg-desk-bg border border-desk-border text-desk-secondary"
+                                : rolls === 1
+                                ? "bg-purple-500/15 border border-purple-500/30 text-purple-300"
+                                : "bg-amber-500/20 border border-amber-500/40 text-amber-300"
+                            }`}
+                            title={`${rolls} rolls executed in lifecycle`}
+                          >
+                            {rolls === 0 ? "0 Rolls" : rolls === 1 ? "1 Roll" : "2 Rolls (Max)"}
+                          </span>
+                        </td>
+
+                        {/* 6. Put Strike */}
+                        <td className="py-3 px-3 font-semibold text-desk-text">${c.strike.toFixed(1)}P</td>
+
+                        {/* 7. Entry -> Exit */}
+                        <td className="py-3 px-3 text-desk-secondary">
+                          ${c.entry_credit.toFixed(2)} &rarr; ${c.exit_debit.toFixed(2)}
+                        </td>
+
+                        {/* 8. Realized P&L ($ & %) */}
+                        <td className="py-3 px-3 font-mono">
+                          <div className={`font-bold ${gain >= 0 ? "text-emerald-400" : "text-desk-riskText"}`}>
+                            {gain >= 0 ? "+" : ""}${gain.toFixed(1)}
+                          </div>
+                          <div className={`text-[10px] ${c.profit_pct >= 0 ? "text-emerald-400" : "text-desk-riskText"}`}>
+                            {c.profit_pct > 0 ? "+" : ""}{c.profit_pct.toFixed(1)}%
+                          </div>
+                        </td>
+
+                        {/* 9. Days */}
+                        <td className="py-3 px-3 text-desk-secondary">{c.days_held}d</td>
+
+                        {/* 10. Result */}
+                        <td className="py-3 px-3">
+                          <span
+                            className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                              isWin
+                                ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                : "bg-desk-risk/15 text-desk-riskText border border-desk-risk/30"
+                            }`}
+                          >
+                            {c.result}
+                          </span>
+                        </td>
+
+                        {/* 11. Exit Reason */}
+                        <td className="py-3 px-4 text-right text-desk-secondary text-[11px] truncate max-w-[220px]">
+                          <span className={c.exit_type.includes("Stop Loss") ? "text-rose-400 font-bold" : c.exit_type.includes("Assigned") ? "text-amber-400 font-bold" : ""}>
+                            {c.exit_type}
+                          </span>
+                        </td>
+                      </tr>
+
+                      {/* Tree Sub-Row */}
+                      {isExpanded && c.lifecycle_tree && c.lifecycle_tree.length > 0 && (
+                        <tr className="bg-[#0B0E14] border-b border-desk-border/80">
+                          <td colSpan={11} className="py-2.5 px-4">
+                            <div className="py-2.5 px-4 bg-[#121821] border-l-4 border-emerald-500 rounded-r-lg space-y-2 font-mono text-xs shadow-inner">
+                              <div className="flex items-center justify-between text-[11px] pb-1.5 border-b border-desk-border/50 text-desk-tertiary">
+                                <span className="font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                                  <span>🌿 Campaign Lifecycle &amp; Execution Tree &middot; {c.ticker}</span>
+                                </span>
+                                <span className="text-desk-secondary">
+                                  {c.days_held} Days Hold &middot; {rolls} Roll{rolls === 1 ? "" : "s"} &middot; Outcome: <strong className={isWin ? "text-emerald-400" : "text-rose-400"}>{c.result}</strong>
+                                </span>
+                              </div>
+
+                              <div className="space-y-1.5 pt-0.5">
+                                {c.lifecycle_tree.map((node, i) => {
+                                  const isLast = i === (c.lifecycle_tree?.length || 0) - 1;
+                                  const isInitial = node.step === "initial";
+                                  const isRoll = node.step.startsWith("roll");
+                                  const isTP = node.step === "exit_tp";
+                                  const isStop = node.step === "exit_loss";
+                                  const isAssign = node.step === "exit_assignment";
+
+                                  return (
+                                    <div
+                                      key={i}
+                                      className="flex flex-col md:flex-row md:items-center justify-between gap-2 p-1.5 rounded hover:bg-[#151D28] transition-colors"
+                                    >
+                                      <div className="flex flex-wrap items-center gap-2">
+                                        <span className="text-desk-tertiary select-none font-bold shrink-0">
+                                          {isLast ? "└──" : "├──"}
+                                        </span>
+
+                                        <span
+                                          className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                                            isInitial
+                                              ? "bg-sky-500/15 text-sky-400 border border-sky-500/30"
+                                              : isRoll
+                                              ? "bg-purple-500/15 text-purple-400 border border-purple-500/30"
+                                              : isTP
+                                              ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                                              : isStop
+                                              ? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                                              : isAssign
+                                              ? "bg-amber-500/15 text-amber-400 border border-amber-500/30"
+                                              : "bg-desk-raised text-desk-secondary border border-desk-border"
+                                          }`}
+                                        >
+                                          {node.title}
+                                        </span>
+
+                                        <span className="text-[11px] text-white font-medium shrink-0">{node.date}</span>
+
+                                        {node.strike && (
+                                          <span className="text-[11px] text-desk-secondary shrink-0">
+                                            Strike: <strong className="text-white">${node.strike.toFixed(1)}P</strong>
+                                          </span>
+                                        )}
+
+                                        <span className="text-[11px] text-desk-tertiary font-sans truncate max-w-[280px] lg:max-w-md" title={node.details}>
+                                          &middot; {node.details}
+                                        </span>
+                                      </div>
+
+                                      {/* Amount $ and % */}
+                                      <div className="flex items-center gap-2 shrink-0 pl-6 md:pl-0 font-mono">
+                                        <span
+                                          className={`text-xs font-bold ${
+                                            node.amount_dollars >= 0 ? "text-emerald-400" : "text-rose-400"
+                                          }`}
+                                        >
+                                          {node.amount_dollars >= 0 ? "+" : ""}${node.amount_dollars.toFixed(0)}
+                                        </span>
+                                        <span
+                                          className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
+                                            node.pnl_pct >= 0 ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"
+                                          }`}
+                                        >
+                                          {node.pnl_pct >= 0 ? "+" : ""}{node.pnl_pct.toFixed(1)}%
+                                        </span>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   );
                 })
               )}

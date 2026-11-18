@@ -203,6 +203,18 @@ export interface Backtest {
   score_quintiles: ScoreQuintilesData | null;
 }
 
+export interface LifecycleStep {
+  step: "initial" | "roll_1" | "roll_2" | "exit_tp" | "exit_assignment" | "exit_loss" | "in_flight";
+  title: string;
+  date: string;
+  strike: number;
+  expiry: string;
+  credit_or_debit: number;
+  amount_dollars: number;
+  pnl_pct: number;
+  details: string;
+}
+
 export interface ActiveSignal {
   ticker: string;
   strike: number;
@@ -222,6 +234,7 @@ export interface ActiveSignal {
   net_basis?: number;
   itm_pct?: number;
   cushion_pct?: number;
+  lifecycle_tree?: LifecycleStep[];
 }
 
 export interface ClosedTrade {
@@ -237,6 +250,8 @@ export interface ClosedTrade {
   days_held: number;
   exit_type: string;
   result: "WIN" | "LOSS";
+  rolls?: number;
+  lifecycle_tree?: LifecycleStep[];
 }
 
 export interface Snapshot {

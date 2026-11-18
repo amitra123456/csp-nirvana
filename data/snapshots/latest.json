@@ -1433,7 +1433,31 @@
       "triage_action": "Spot is +18.5% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 291.96,
       "itm_pct": -18.5,
-      "cushion_pct": 15.6
+      "cushion_pct": 15.6,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-13",
+          "strike": 295.0,
+          "expiry": "2026-12-18",
+          "credit_or_debit": 3.04,
+          "amount_dollars": 304.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $295.0 Put for $3.04 credit (+$304). Initial cushion 15.6%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 295.0,
+          "expiry": "2026-12-18",
+          "credit_or_debit": 2.34,
+          "amount_dollars": 70.0,
+          "pnl_pct": 23.2,
+          "details": "Current put mark $2.34. Unrealized P&L: +$70 (23.2%). Target 50% TP: $1.52."
+        }
+      ]
     },
     {
       "ticker": "ARM",
@@ -1453,7 +1477,31 @@
       "triage_action": "Spot is +16.8% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 152.57,
       "itm_pct": -16.8,
-      "cushion_pct": 14.4
+      "cushion_pct": 14.4,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-18",
+          "strike": 157.5,
+          "expiry": "2026-12-23",
+          "credit_or_debit": 4.93,
+          "amount_dollars": 493.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $157.5 Put for $4.93 credit (+$493). Initial cushion 14.4%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 157.5,
+          "expiry": "2026-12-23",
+          "credit_or_debit": 4.93,
+          "amount_dollars": 0.0,
+          "pnl_pct": 0.0,
+          "details": "Current put mark $4.93. Unrealized P&L: +$0 (0.0%). Target 50% TP: $2.46."
+        }
+      ]
     },
     {
       "ticker": "HOOD",
@@ -1473,7 +1521,31 @@
       "triage_action": "Spot is +16.7% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 57.64,
       "itm_pct": -16.7,
-      "cushion_pct": 14.3
+      "cushion_pct": 14.3,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-18",
+          "strike": 59.0,
+          "expiry": "2026-12-23",
+          "credit_or_debit": 1.36,
+          "amount_dollars": 136.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $59.0 Put for $1.36 credit (+$136). Initial cushion 14.3%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 59.0,
+          "expiry": "2026-12-23",
+          "credit_or_debit": 1.36,
+          "amount_dollars": 0.0,
+          "pnl_pct": 0.0,
+          "details": "Current put mark $1.36. Unrealized P&L: +$0 (0.0%). Target 50% TP: $0.68."
+        }
+      ]
     },
     {
       "ticker": "NXPI",
@@ -1493,7 +1565,31 @@
       "triage_action": "Spot is +13.5% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 217.6,
       "itm_pct": -13.5,
-      "cushion_pct": 11.9
+      "cushion_pct": 11.9,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-02",
+          "strike": 220.0,
+          "expiry": "2026-12-07",
+          "credit_or_debit": 2.4,
+          "amount_dollars": 240.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $220.0 Put for $2.40 credit (+$240). Initial cushion 11.9%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 220.0,
+          "expiry": "2026-12-07",
+          "credit_or_debit": 2.4,
+          "amount_dollars": 0.0,
+          "pnl_pct": -0.1,
+          "details": "Current put mark $2.40. Unrealized P&L: +$0 (-0.1%). Target 50% TP: $1.20."
+        }
+      ]
     },
     {
       "ticker": "TSLA",
@@ -1513,7 +1609,31 @@
       "triage_action": "Spot is +13.9% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 330.86,
       "itm_pct": -13.9,
-      "cushion_pct": 12.2
+      "cushion_pct": 12.2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-13",
+          "strike": 335.0,
+          "expiry": "2026-12-18",
+          "credit_or_debit": 4.14,
+          "amount_dollars": 414.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $335.0 Put for $4.14 credit (+$414). Initial cushion 12.2%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 335.0,
+          "expiry": "2026-12-18",
+          "credit_or_debit": 4.3,
+          "amount_dollars": -16.0,
+          "pnl_pct": -4.0,
+          "details": "Current put mark $4.30. Unrealized P&L: $-16 (-4.0%). Target 50% TP: $2.07."
+        }
+      ]
     },
     {
       "ticker": "DASH",
@@ -1533,7 +1653,31 @@
       "triage_action": "Spot is +9.5% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 148.8,
       "itm_pct": -9.5,
-      "cushion_pct": 8.7
+      "cushion_pct": 8.7,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-05",
+          "strike": 152.5,
+          "expiry": "2026-12-10",
+          "credit_or_debit": 3.7,
+          "amount_dollars": 370.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $152.5 Put for $3.70 credit (+$370). Initial cushion 8.7%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 152.5,
+          "expiry": "2026-12-10",
+          "credit_or_debit": 3.87,
+          "amount_dollars": -17.0,
+          "pnl_pct": -4.5,
+          "details": "Current put mark $3.87. Unrealized P&L: $-17 (-4.5%). Target 50% TP: $1.85."
+        }
+      ]
     },
     {
       "ticker": "ADI",
@@ -1553,7 +1697,31 @@
       "triage_action": "Spot is +12.9% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 330.18,
       "itm_pct": -12.9,
-      "cushion_pct": 11.4
+      "cushion_pct": 11.4,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-10",
+          "strike": 335.0,
+          "expiry": "2026-12-15",
+          "credit_or_debit": 4.82,
+          "amount_dollars": 482.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $335.0 Put for $4.82 credit (+$482). Initial cushion 11.4%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 335.0,
+          "expiry": "2026-12-15",
+          "credit_or_debit": 5.6,
+          "amount_dollars": -78.0,
+          "pnl_pct": -16.2,
+          "details": "Current put mark $5.60. Unrealized P&L: $-78 (-16.2%). Target 50% TP: $2.41."
+        }
+      ]
     },
     {
       "ticker": "TXN",
@@ -1573,7 +1741,31 @@
       "triage_action": "Spot is +11.8% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 256.32,
       "itm_pct": -11.8,
-      "cushion_pct": 10.5
+      "cushion_pct": 10.5,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-13",
+          "strike": 260.0,
+          "expiry": "2026-12-18",
+          "credit_or_debit": 3.68,
+          "amount_dollars": 368.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $260.0 Put for $3.68 credit (+$368). Initial cushion 10.5%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 260.0,
+          "expiry": "2026-12-18",
+          "credit_or_debit": 4.83,
+          "amount_dollars": -115.0,
+          "pnl_pct": -31.4,
+          "details": "Current put mark $4.83. Unrealized P&L: $-115 (-31.4%). Target 50% TP: $1.84."
+        }
+      ]
     },
     {
       "ticker": "ON",
@@ -1593,7 +1785,31 @@
       "triage_action": "Spot is +9.7% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 59.29,
       "itm_pct": -9.7,
-      "cushion_pct": 8.8
+      "cushion_pct": 8.8,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-13",
+          "strike": 61.0,
+          "expiry": "2026-12-18",
+          "credit_or_debit": 1.71,
+          "amount_dollars": 171.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $61.0 Put for $1.71 credit (+$171). Initial cushion 8.8%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 61.0,
+          "expiry": "2026-12-18",
+          "credit_or_debit": 2.25,
+          "amount_dollars": -54.0,
+          "pnl_pct": -31.6,
+          "details": "Current put mark $2.25. Unrealized P&L: $-54 (-31.6%). Target 50% TP: $0.86."
+        }
+      ]
     },
     {
       "ticker": "NET",
@@ -1613,7 +1829,53 @@
       "triage_action": "Max rolls reached. Take delivery at $295.61 net basis and launch Covered Call ladder.",
       "net_basis": 295.61,
       "itm_pct": 2.2,
-      "cushion_pct": -2.2
+      "cushion_pct": -2.2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-19",
+          "strike": 335.5,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 9.39,
+          "amount_dollars": 939.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $335.5 Put for $9.39 credit (+$939). Initial cushion -2.2%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 320.2,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 6.9,
+          "details": "Closed $335.5P, Sold $320.2P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 305.0,
+          "expiry": "2026-11-23",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 5.3,
+          "details": "Final allowed roll. Closed intermediate put, sold $305.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $295.61",
+          "date": "In-Flight Triage",
+          "strike": 305.0,
+          "expiry": "2026-11-23",
+          "credit_or_debit": 2.74,
+          "amount_dollars": 274.0,
+          "pnl_pct": 0.9,
+          "details": "Spot @ $298.35 is 0.9% below basis. Deliver 100 shares at $305.0 (Net cost basis: $295.61). Activate Covered Calls (Wheel)."
+        }
+      ]
     },
     {
       "ticker": "QCOM",
@@ -1633,7 +1895,31 @@
       "triage_action": "Spot is +9.9% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 144.96,
       "itm_pct": -9.9,
-      "cushion_pct": 9.0
+      "cushion_pct": 9.0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-13",
+          "strike": 147.5,
+          "expiry": "2026-12-18",
+          "credit_or_debit": 2.54,
+          "amount_dollars": 254.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $147.5 Put for $2.54 credit (+$254). Initial cushion 9.0%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 147.5,
+          "expiry": "2026-12-18",
+          "credit_or_debit": 4.07,
+          "amount_dollars": -153.0,
+          "pnl_pct": -60.1,
+          "details": "Current put mark $4.07. Unrealized P&L: $-153 (-60.1%). Target 50% TP: $1.27."
+        }
+      ]
     },
     {
       "ticker": "RBLX",
@@ -1653,7 +1939,42 @@
       "triage_action": "Spot is +7.2% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 42.39,
       "itm_pct": -7.2,
-      "cushion_pct": 6.7
+      "cushion_pct": 6.7,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-17",
+          "strike": 46.2,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 1.61,
+          "amount_dollars": 161.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $46.2 Put for $1.61 credit (+$161). Initial cushion 6.7%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 44.0,
+          "expiry": "2026-12-22",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 40.4,
+          "details": "Closed $46.2P, Sold $44.0P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 44.0,
+          "expiry": "2026-12-22",
+          "credit_or_debit": 2.62,
+          "amount_dollars": -101.0,
+          "pnl_pct": -62.8,
+          "details": "Current put mark $2.62. Unrealized P&L: $-101 (-62.8%). Target 50% TP: $0.67."
+        }
+      ]
     },
     {
       "ticker": "CRWD",
@@ -1673,7 +1994,53 @@
       "triage_action": "Spot is +5.8% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 214.69,
       "itm_pct": -5.8,
-      "cushion_pct": 5.5
+      "cushion_pct": 5.5,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-06",
+          "strike": 242.0,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 5.31,
+          "amount_dollars": 531.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $242.0 Put for $5.31 credit (+$531). Initial cushion 5.5%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 231.0,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 12.2,
+          "details": "Closed $242.0P, Sold $231.0P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 220.0,
+          "expiry": "2026-12-11",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 9.4,
+          "details": "Final allowed roll. Closed intermediate put, sold $220.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 220.0,
+          "expiry": "2026-12-11",
+          "credit_or_debit": 9.32,
+          "amount_dollars": -401.0,
+          "pnl_pct": -75.6,
+          "details": "Current put mark $9.32. Unrealized P&L: $-401 (-75.6%). Target 50% TP: $1.69."
+        }
+      ]
     },
     {
       "ticker": "MPWR",
@@ -1693,7 +2060,31 @@
       "triage_action": "Spot is +5.0% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 1198.03,
       "itm_pct": -5.0,
-      "cushion_pct": 4.7
+      "cushion_pct": 4.7,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-12",
+          "strike": 1240.0,
+          "expiry": "2026-12-17",
+          "credit_or_debit": 41.97,
+          "amount_dollars": 4197.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $1240.0 Put for $41.97 credit (+$4197). Initial cushion 4.7%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 1240.0,
+          "expiry": "2026-12-17",
+          "credit_or_debit": 76.3,
+          "amount_dollars": -3433.0,
+          "pnl_pct": -81.8,
+          "details": "Current put mark $76.30. Unrealized P&L: $-3433 (-81.8%). Target 50% TP: $20.98."
+        }
+      ]
     },
     {
       "ticker": "INTC",
@@ -1713,7 +2104,31 @@
       "triage_action": "Spot is +6.0% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 49.58,
       "itm_pct": -6.0,
-      "cushion_pct": 5.7
+      "cushion_pct": 5.7,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-13",
+          "strike": 51.0,
+          "expiry": "2026-12-18",
+          "credit_or_debit": 1.42,
+          "amount_dollars": 142.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $51.0 Put for $1.42 credit (+$142). Initial cushion 5.7%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 51.0,
+          "expiry": "2026-12-18",
+          "credit_or_debit": 2.6,
+          "amount_dollars": -118.0,
+          "pnl_pct": -82.9,
+          "details": "Current put mark $2.60. Unrealized P&L: $-118 (-82.9%). Target 50% TP: $0.71."
+        }
+      ]
     },
     {
       "ticker": "KLAC",
@@ -1733,7 +2148,31 @@
       "triage_action": "Spot is +6.4% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 132.26,
       "itm_pct": -6.4,
-      "cushion_pct": 6.0
+      "cushion_pct": 6.0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-12",
+          "strike": 135.0,
+          "expiry": "2026-12-17",
+          "credit_or_debit": 2.74,
+          "amount_dollars": 274.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $135.0 Put for $2.74 credit (+$274). Initial cushion 6.0%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 135.0,
+          "expiry": "2026-12-17",
+          "credit_or_debit": 5.55,
+          "amount_dollars": -281.0,
+          "pnl_pct": -102.4,
+          "details": "Current put mark $5.55. Unrealized P&L: $-281 (-102.4%). Target 50% TP: $1.37."
+        }
+      ]
     },
     {
       "ticker": "AMAT",
@@ -1753,7 +2192,42 @@
       "triage_action": "Spot is +10.9% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 311.38,
       "itm_pct": -10.9,
-      "cushion_pct": 9.8
+      "cushion_pct": 9.8,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-05",
+          "strike": 330.8,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 3.62,
+          "amount_dollars": 362.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $330.8 Put for $3.62 credit (+$362). Initial cushion 9.8%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 315.0,
+          "expiry": "2026-12-10",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 18.0,
+          "details": "Closed $330.8P, Sold $315.0P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 315.0,
+          "expiry": "2026-12-10",
+          "credit_or_debit": 7.45,
+          "amount_dollars": -383.0,
+          "pnl_pct": -105.9,
+          "details": "Current put mark $7.45. Unrealized P&L: $-383 (-105.9%). Target 50% TP: $1.67."
+        }
+      ]
     },
     {
       "ticker": "SNOW",
@@ -1773,7 +2247,53 @@
       "triage_action": "Max rolls reached. Take delivery at $272.96 net basis and launch Covered Call ladder.",
       "net_basis": 272.96,
       "itm_pct": 1.5,
-      "cushion_pct": -1.5
+      "cushion_pct": -1.5,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-06",
+          "strike": 308.0,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 7.04,
+          "amount_dollars": 704.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $308.0 Put for $7.04 credit (+$704). Initial cushion -1.5%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 294.0,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 9.2,
+          "details": "Closed $308.0P, Sold $294.0P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 280.0,
+          "expiry": "2026-12-11",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 7.1,
+          "details": "Final allowed roll. Closed intermediate put, sold $280.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $272.96",
+          "date": "In-Flight Triage",
+          "strike": 280.0,
+          "expiry": "2026-12-11",
+          "credit_or_debit": 2.84,
+          "amount_dollars": 284.0,
+          "pnl_pct": 1.0,
+          "details": "Spot @ $275.80 is 1.0% below basis. Deliver 100 shares at $280.0 (Net cost basis: $272.96). Activate Covered Calls (Wheel)."
+        }
+      ]
     },
     {
       "ticker": "SHOP",
@@ -1793,7 +2313,53 @@
       "triage_action": "Max rolls reached. Take delivery at $144.58 net basis and launch Covered Call ladder.",
       "net_basis": 144.58,
       "itm_pct": 6.4,
-      "cushion_pct": -6.8
+      "cushion_pct": -6.8,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-04",
+          "strike": 165.0,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 5.42,
+          "amount_dollars": 542.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $165.0 Put for $5.42 credit (+$542). Initial cushion -6.8%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 157.5,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 12.0,
+          "details": "Closed $165.0P, Sold $157.5P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 150.0,
+          "expiry": "2026-12-09",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 9.2,
+          "details": "Final allowed roll. Closed intermediate put, sold $150.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $144.58",
+          "date": "In-Flight Triage",
+          "strike": 150.0,
+          "expiry": "2026-12-09",
+          "credit_or_debit": -4.14,
+          "amount_dollars": -414.0,
+          "pnl_pct": -2.9,
+          "details": "Spot @ $140.44 is 2.9% below basis. Deliver 100 shares at $150.0 (Net cost basis: $144.58). Activate Covered Calls (Wheel)."
+        }
+      ]
     },
     {
       "ticker": "NVDA",
@@ -1813,7 +2379,31 @@
       "triage_action": "Spot is +6.7% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 140.5,
       "itm_pct": -6.7,
-      "cushion_pct": 6.3
+      "cushion_pct": 6.3,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-12",
+          "strike": 142.5,
+          "expiry": "2026-12-17",
+          "credit_or_debit": 2.0,
+          "amount_dollars": 200.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $142.5 Put for $2.00 credit (+$200). Initial cushion 6.3%."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 142.5,
+          "expiry": "2026-12-17",
+          "credit_or_debit": 5.23,
+          "amount_dollars": -323.0,
+          "pnl_pct": -161.6,
+          "details": "Current put mark $5.23. Unrealized P&L: $-323 (-161.6%). Target 50% TP: $1.00."
+        }
+      ]
     },
     {
       "ticker": "MDB",
@@ -1833,7 +2423,53 @@
       "triage_action": "Stock is 7.6% ITM. Rolling requires debit (prohibited). Take delivery at $317.86 basis and sell monthly covered calls.",
       "net_basis": 317.86,
       "itm_pct": 7.6,
-      "cushion_pct": -8.3
+      "cushion_pct": -8.3,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-03",
+          "strike": 363.0,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 12.14,
+          "amount_dollars": 1214.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $363.0 Put for $12.14 credit (+$1214). Initial cushion -8.3%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 346.5,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 5.4,
+          "details": "Closed $363.0P, Sold $346.5P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 330.0,
+          "expiry": "2026-12-08",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 4.1,
+          "details": "Final allowed roll. Closed intermediate put, sold $330.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $317.86",
+          "date": "In-Flight Triage",
+          "strike": 330.0,
+          "expiry": "2026-12-08",
+          "credit_or_debit": -13.09,
+          "amount_dollars": -1309.0,
+          "pnl_pct": -4.1,
+          "details": "Spot @ $304.77 is 4.1% below basis. Deliver 100 shares at $330.0 (Net cost basis: $317.86). Activate Covered Calls (Wheel)."
+        }
+      ]
     },
     {
       "ticker": "ORCL",
@@ -1853,7 +2489,53 @@
       "triage_action": "Max rolls reached. Take delivery at $116.12 net basis and launch Covered Call ladder.",
       "net_basis": 116.12,
       "itm_pct": 4.7,
-      "cushion_pct": -4.9
+      "cushion_pct": -4.9,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-05",
+          "strike": 132.0,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 3.88,
+          "amount_dollars": 388.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $132.0 Put for $3.88 credit (+$388). Initial cushion -4.9%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 126.0,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 16.8,
+          "details": "Closed $132.0P, Sold $126.0P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 120.0,
+          "expiry": "2026-12-10",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 12.9,
+          "details": "Final allowed roll. Closed intermediate put, sold $120.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $116.12",
+          "date": "In-Flight Triage",
+          "strike": 120.0,
+          "expiry": "2026-12-10",
+          "credit_or_debit": -1.73,
+          "amount_dollars": -173.0,
+          "pnl_pct": -1.5,
+          "details": "Spot @ $114.39 is 1.5% below basis. Deliver 100 shares at $120.0 (Net cost basis: $116.12). Activate Covered Calls (Wheel)."
+        }
+      ]
     },
     {
       "ticker": "PLTR",
@@ -1873,7 +2555,53 @@
       "triage_action": "Max rolls reached. Take delivery at $160.27 net basis and launch Covered Call ladder.",
       "net_basis": 160.27,
       "itm_pct": 6.3,
-      "cushion_pct": -6.7
+      "cushion_pct": -6.7,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-06",
+          "strike": 181.5,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 4.73,
+          "amount_dollars": 473.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $181.5 Put for $4.73 credit (+$473). Initial cushion -6.7%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 173.2,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 13.7,
+          "details": "Closed $181.5P, Sold $173.2P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 165.0,
+          "expiry": "2026-12-11",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 10.6,
+          "details": "Final allowed roll. Closed intermediate put, sold $165.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $160.27",
+          "date": "In-Flight Triage",
+          "strike": 165.0,
+          "expiry": "2026-12-11",
+          "credit_or_debit": -5.6,
+          "amount_dollars": -560.0,
+          "pnl_pct": -3.5,
+          "details": "Spot @ $154.67 is 3.5% below basis. Deliver 100 shares at $165.0 (Net cost basis: $160.27). Activate Covered Calls (Wheel)."
+        }
+      ]
     },
     {
       "ticker": "PANW",
@@ -1893,7 +2621,53 @@
       "triage_action": "Max rolls reached. Take delivery at $328.38 net basis and launch Covered Call ladder.",
       "net_basis": 328.38,
       "itm_pct": 1.6,
-      "cushion_pct": -1.6
+      "cushion_pct": -1.6,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-06",
+          "strike": 368.5,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 6.62,
+          "amount_dollars": 662.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $368.5 Put for $6.62 credit (+$662). Initial cushion -1.6%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 351.8,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 9.8,
+          "details": "Closed $368.5P, Sold $351.8P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 335.0,
+          "expiry": "2026-12-11",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 7.6,
+          "details": "Final allowed roll. Closed intermediate put, sold $335.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $328.38",
+          "date": "In-Flight Triage",
+          "strike": 335.0,
+          "expiry": "2026-12-11",
+          "credit_or_debit": 1.32,
+          "amount_dollars": 132.0,
+          "pnl_pct": 0.4,
+          "details": "Spot @ $329.70 is 0.4% below basis. Deliver 100 shares at $335.0 (Net cost basis: $328.38). Activate Covered Calls (Wheel)."
+        }
+      ]
     },
     {
       "ticker": "AMD",
@@ -1913,7 +2687,53 @@
       "triage_action": "Spot is +5.4% above strike. Safe OTM; allow time decay to harvest.",
       "net_basis": 477.99,
       "itm_pct": -5.4,
-      "cushion_pct": 5.1
+      "cushion_pct": 5.1,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-03",
+          "strike": 533.5,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 7.01,
+          "amount_dollars": 701.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $533.5 Put for $7.01 credit (+$701). Initial cushion 5.1%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 509.2,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 9.3,
+          "details": "Closed $533.5P, Sold $509.2P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 485.0,
+          "expiry": "2026-12-08",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 7.1,
+          "details": "Final allowed roll. Closed intermediate put, sold $485.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "in_flight",
+          "title": "Theta Harvesting (In-Flight)",
+          "date": "In-Flight Triage",
+          "strike": 485.0,
+          "expiry": "2026-12-08",
+          "credit_or_debit": 23.72,
+          "amount_dollars": -1671.0,
+          "pnl_pct": -238.4,
+          "details": "Current put mark $23.72. Unrealized P&L: $-1671 (-238.4%). Target 50% TP: $2.46."
+        }
+      ]
     },
     {
       "ticker": "LRCX",
@@ -1933,7 +2753,53 @@
       "triage_action": "Stock is -2.5% ITM. Rolling requires debit (prohibited). Take delivery at $201.67 basis and sell monthly covered calls.",
       "net_basis": 201.67,
       "itm_pct": -2.5,
-      "cushion_pct": 2.4
+      "cushion_pct": 2.4,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-06",
+          "strike": 225.5,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 3.33,
+          "amount_dollars": 333.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $225.5 Put for $3.33 credit (+$333). Initial cushion 2.4%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 215.2,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 19.5,
+          "details": "Closed $225.5P, Sold $215.2P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 205.0,
+          "expiry": "2026-12-11",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 15.0,
+          "details": "Final allowed roll. Closed intermediate put, sold $205.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $201.67",
+          "date": "In-Flight Triage",
+          "strike": 205.0,
+          "expiry": "2026-12-11",
+          "credit_or_debit": 8.37,
+          "amount_dollars": 837.0,
+          "pnl_pct": 4.2,
+          "details": "Spot @ $210.04 is 4.2% below basis. Deliver 100 shares at $205.0 (Net cost basis: $201.67). Activate Covered Calls (Wheel)."
+        }
+      ]
     },
     {
       "ticker": "ZS",
@@ -1953,7 +2819,53 @@
       "triage_action": "Stock is 9.4% ITM. Rolling requires debit (prohibited). Take delivery at $209.58 basis and sell monthly covered calls.",
       "net_basis": 209.58,
       "itm_pct": 9.4,
-      "cushion_pct": -10.4
+      "cushion_pct": -10.4,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-06",
+          "strike": 236.5,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 5.42,
+          "amount_dollars": 542.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $236.5 Put for $5.42 credit (+$542). Initial cushion -10.4%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 225.8,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 12.0,
+          "details": "Closed $236.5P, Sold $225.8P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 215.0,
+          "expiry": "2026-12-11",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 9.2,
+          "details": "Final allowed roll. Closed intermediate put, sold $215.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $209.58",
+          "date": "In-Flight Triage",
+          "strike": 215.0,
+          "expiry": "2026-12-11",
+          "credit_or_debit": -14.89,
+          "amount_dollars": -1489.0,
+          "pnl_pct": -7.1,
+          "details": "Spot @ $194.69 is 7.1% below basis. Deliver 100 shares at $215.0 (Net cost basis: $209.58). Activate Covered Calls (Wheel)."
+        }
+      ]
     },
     {
       "ticker": "MU",
@@ -1973,7 +2885,53 @@
       "triage_action": "Stock is 21.1% ITM. Rolling requires debit (prohibited). Take delivery at $871.88 basis and sell monthly covered calls.",
       "net_basis": 871.88,
       "itm_pct": 21.1,
-      "cushion_pct": -26.8
+      "cushion_pct": -26.8,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-19",
+          "strike": 979.0,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 18.12,
+          "amount_dollars": 1812.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $979.0 Put for $18.12 credit (+$1812). Initial cushion -26.8%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 934.5,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 3.6,
+          "details": "Closed $979.0P, Sold $934.5P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 890.0,
+          "expiry": "2026-11-23",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 2.8,
+          "details": "Final allowed roll. Closed intermediate put, sold $890.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $871.88",
+          "date": "In-Flight Triage",
+          "strike": 890.0,
+          "expiry": "2026-11-23",
+          "credit_or_debit": -169.86,
+          "amount_dollars": -16986.0,
+          "pnl_pct": -19.5,
+          "details": "Spot @ $702.02 is 19.5% below basis. Deliver 100 shares at $890.0 (Net cost basis: $871.88). Activate Covered Calls (Wheel)."
+        }
+      ]
     },
     {
       "ticker": "DDOG",
@@ -1993,7 +2951,53 @@
       "triage_action": "Stock is 32.1% ITM. Rolling requires debit (prohibited). Take delivery at $237.45 basis and sell monthly covered calls.",
       "net_basis": 237.45,
       "itm_pct": 32.1,
-      "cushion_pct": -47.2
+      "cushion_pct": -47.2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-30",
+          "strike": 269.5,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 7.55,
+          "amount_dollars": 755.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $269.5 Put for $7.55 credit (+$755). Initial cushion -47.2%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 257.2,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 8.6,
+          "details": "Closed $269.5P, Sold $257.2P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 245.0,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 6.6,
+          "details": "Final allowed roll. Closed intermediate put, sold $245.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $237.45",
+          "date": "In-Flight Triage",
+          "strike": 245.0,
+          "expiry": "2026-12-04",
+          "credit_or_debit": -71.04,
+          "amount_dollars": -7104.0,
+          "pnl_pct": -29.9,
+          "details": "Spot @ $166.41 is 29.9% below basis. Deliver 100 shares at $245.0 (Net cost basis: $237.45). Activate Covered Calls (Wheel)."
+        }
+      ]
     },
     {
       "ticker": "TEAM",
@@ -2013,7 +3017,53 @@
       "triage_action": "Stock is 28.7% ITM. Rolling requires debit (prohibited). Take delivery at $185.82 basis and sell monthly covered calls.",
       "net_basis": 185.82,
       "itm_pct": 28.7,
-      "cushion_pct": -40.3
+      "cushion_pct": -40.3,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-02",
+          "strike": 209.0,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 4.18,
+          "amount_dollars": 418.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $209.0 Put for $4.18 credit (+$418). Initial cushion -40.3%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 199.5,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 15.6,
+          "details": "Closed $209.0P, Sold $199.5P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 190.0,
+          "expiry": "2026-12-07",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 12.0,
+          "details": "Final allowed roll. Closed intermediate put, sold $190.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $185.82",
+          "date": "In-Flight Triage",
+          "strike": 190.0,
+          "expiry": "2026-12-07",
+          "credit_or_debit": -50.37,
+          "amount_dollars": -5037.0,
+          "pnl_pct": -27.1,
+          "details": "Spot @ $135.45 is 27.1% below basis. Deliver 100 shares at $190.0 (Net cost basis: $185.82). Activate Covered Calls (Wheel)."
+        }
+      ]
     },
     {
       "ticker": "MRVL",
@@ -2033,7 +3083,53 @@
       "triage_action": "Stock is 39.9% ITM. Rolling requires debit (prohibited). Take delivery at $234.62 basis and sell monthly covered calls.",
       "net_basis": 234.62,
       "itm_pct": 39.9,
-      "cushion_pct": -66.4
+      "cushion_pct": -66.4,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-15",
+          "strike": 264.0,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 5.38,
+          "amount_dollars": 538.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $264.0 Put for $5.38 credit (+$538). Initial cushion -66.4%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 252.0,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 12.1,
+          "details": "Closed $264.0P, Sold $252.0P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 240.0,
+          "expiry": "2026-11-19",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 9.3,
+          "details": "Final allowed roll. Closed intermediate put, sold $240.0P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $234.62",
+          "date": "In-Flight Triage",
+          "strike": 240.0,
+          "expiry": "2026-11-19",
+          "credit_or_debit": -90.37,
+          "amount_dollars": -9037.0,
+          "pnl_pct": -38.5,
+          "details": "Spot @ $144.25 is 38.5% below basis. Deliver 100 shares at $240.0 (Net cost basis: $234.62). Activate Covered Calls (Wheel)."
+        }
+      ]
     },
     {
       "ticker": "NOW",
@@ -2053,7 +3149,53 @@
       "triage_action": "Stock is 31.7% ITM. Rolling requires debit (prohibited). Take delivery at $130.49 basis and sell monthly covered calls.",
       "net_basis": 130.49,
       "itm_pct": 31.7,
-      "cushion_pct": -46.3
+      "cushion_pct": -46.3,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-30",
+          "strike": 145.8,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 2.01,
+          "amount_dollars": 201.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $145.8 Put for $2.01 credit (+$201). Initial cushion -46.3%."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-30",
+          "strike": 139.1,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.65,
+          "amount_dollars": 65.0,
+          "pnl_pct": 32.3,
+          "details": "Closed $145.8P, Sold $139.1P. Captured +$0.65 net credit (+$65)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-10",
+          "strike": 132.5,
+          "expiry": "2026-12-04",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 24.9,
+          "details": "Final allowed roll. Closed intermediate put, sold $132.5P for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Planned Assignment \u00b7 Basis $130.49",
+          "date": "In-Flight Triage",
+          "strike": 132.5,
+          "expiry": "2026-12-04",
+          "credit_or_debit": -39.93,
+          "amount_dollars": -3993.0,
+          "pnl_pct": -30.6,
+          "details": "Spot @ $90.56 is 30.6% below basis. Deliver 100 shares at $132.5 (Net cost basis: $130.49). Activate Covered Calls (Wheel)."
+        }
+      ]
     }
   ],
   "closed_trades": [
@@ -2069,7 +3211,32 @@
       "profit_pct": -30.7,
       "days_held": 35,
       "exit_type": "Assigned Below Basis (-30.7%)",
-      "result": "LOSS"
+      "result": "LOSS",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-14",
+          "strike": 105.0,
+          "expiry": "2026-11-18",
+          "credit_or_debit": 4.72,
+          "amount_dollars": 472.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $105.0 Put for $4.72 credit (+$472)."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Assigned Below Basis (-30.7%)",
+          "date": "2026-11-18",
+          "strike": 105.0,
+          "expiry": "2026-11-18",
+          "credit_or_debit": 36.93,
+          "amount_dollars": -3221.0,
+          "pnl_pct": -30.7,
+          "details": "Option assigned at expiration at $105.0. Effective net basis: $100.28 ($105.0 strike - $4.72 premium). Stock P&L vs basis: -$3221 (-30.7%). Covered Calls initiated."
+        }
+      ]
     },
     {
       "open_date": "2026-10-13",
@@ -2083,7 +3250,32 @@
       "profit_pct": -25.4,
       "days_held": 35,
       "exit_type": "Assigned Below Basis (-25.4%)",
-      "result": "LOSS"
+      "result": "LOSS",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-13",
+          "strike": 260.0,
+          "expiry": "2026-11-17",
+          "credit_or_debit": 10.72,
+          "amount_dollars": 1072.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $260.0 Put for $10.72 credit (+$1072)."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Assigned Below Basis (-25.4%)",
+          "date": "2026-11-17",
+          "strike": 260.0,
+          "expiry": "2026-11-17",
+          "credit_or_debit": 76.67,
+          "amount_dollars": -6595.0,
+          "pnl_pct": -25.4,
+          "details": "Option assigned at expiration at $260.0. Effective net basis: $249.28 ($260.0 strike - $10.72 premium). Stock P&L vs basis: -$6595 (-25.4%). Covered Calls initiated."
+        }
+      ]
     },
     {
       "open_date": "2026-10-09",
@@ -2097,7 +3289,32 @@
       "profit_pct": -40.0,
       "days_held": 35,
       "exit_type": "Assigned Below Basis (-40.0%)",
-      "result": "LOSS"
+      "result": "LOSS",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-09",
+          "strike": 105.0,
+          "expiry": "2026-11-13",
+          "credit_or_debit": 3.39,
+          "amount_dollars": 339.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $105.0 Put for $3.39 credit (+$339)."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Assigned Below Basis (-40.0%)",
+          "date": "2026-11-13",
+          "strike": 105.0,
+          "expiry": "2026-11-13",
+          "credit_or_debit": 45.34,
+          "amount_dollars": -4195.0,
+          "pnl_pct": -40.0,
+          "details": "Option assigned at expiration at $105.0. Effective net basis: $101.61 ($105.0 strike - $3.39 premium). Stock P&L vs basis: -$4195 (-40.0%). Covered Calls initiated."
+        }
+      ]
     },
     {
       "open_date": "2026-11-05",
@@ -2111,7 +3328,43 @@
       "profit_pct": 50.3,
       "days_held": 6,
       "exit_type": "50% Profit Target Hit (1 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 1,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-05",
+          "strike": 133.9,
+          "expiry": "2026-12-10",
+          "credit_or_debit": 1.55,
+          "amount_dollars": 155.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $133.9 Put for $1.55 credit (+$155)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-11-19",
+          "strike": 127.5,
+          "expiry": "2026-11-25",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 38.7,
+          "details": "Rolled strike down by 5% to $127.5 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-11-11",
+          "strike": 127.5,
+          "expiry": "2026-11-11",
+          "credit_or_debit": 0.77,
+          "amount_dollars": 78.0,
+          "pnl_pct": 50.3,
+          "details": "Bought back to close @ $0.77 (50% decay threshold). Realized +$78 (+50.3% ROC) in 6 days."
+        }
+      ]
     },
     {
       "open_date": "2026-11-04",
@@ -2125,7 +3378,32 @@
       "profit_pct": 66.8,
       "days_held": 7,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-04",
+          "strike": 1080.0,
+          "expiry": "2026-12-09",
+          "credit_or_debit": 18.9,
+          "amount_dollars": 1890.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $1080.0 Put for $18.90 credit (+$1890)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-11-11",
+          "strike": 1080.0,
+          "expiry": "2026-11-11",
+          "credit_or_debit": 6.27,
+          "amount_dollars": 1263.0,
+          "pnl_pct": 66.8,
+          "details": "Bought back to close @ $6.27 (50% decay threshold). Realized +$1263 (+66.8% ROC) in 7 days."
+        }
+      ]
     },
     {
       "open_date": "2026-11-05",
@@ -2139,7 +3417,32 @@
       "profit_pct": 67.4,
       "days_held": 4,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-05",
+          "strike": 310.0,
+          "expiry": "2026-12-10",
+          "credit_or_debit": 3.92,
+          "amount_dollars": 392.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $310.0 Put for $3.92 credit (+$392)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-11-09",
+          "strike": 310.0,
+          "expiry": "2026-11-09",
+          "credit_or_debit": 1.28,
+          "amount_dollars": 264.0,
+          "pnl_pct": 67.4,
+          "details": "Bought back to close @ $1.28 (50% decay threshold). Realized +$264 (+67.4% ROC) in 4 days."
+        }
+      ]
     },
     {
       "open_date": "2026-11-05",
@@ -2153,7 +3456,32 @@
       "profit_pct": 50.5,
       "days_held": 1,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-05",
+          "strike": 132.5,
+          "expiry": "2026-12-10",
+          "credit_or_debit": 1.4,
+          "amount_dollars": 140.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $132.5 Put for $1.40 credit (+$140)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-11-06",
+          "strike": 132.5,
+          "expiry": "2026-11-06",
+          "credit_or_debit": 0.69,
+          "amount_dollars": 71.0,
+          "pnl_pct": 50.5,
+          "details": "Bought back to close @ $0.69 (50% decay threshold). Realized +$71 (+50.5% ROC) in 1 days."
+        }
+      ]
     },
     {
       "open_date": "2026-11-03",
@@ -2167,7 +3495,32 @@
       "profit_pct": 58.3,
       "days_held": 1,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-11-03",
+          "strike": 157.5,
+          "expiry": "2026-12-08",
+          "credit_or_debit": 2.65,
+          "amount_dollars": 265.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $157.5 Put for $2.65 credit (+$265)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-11-04",
+          "strike": 157.5,
+          "expiry": "2026-11-04",
+          "credit_or_debit": 1.11,
+          "amount_dollars": 154.0,
+          "pnl_pct": 58.3,
+          "details": "Bought back to close @ $1.11 (50% decay threshold). Realized +$154 (+58.3% ROC) in 1 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-16",
@@ -2181,7 +3534,32 @@
       "profit_pct": 52.9,
       "days_held": 17,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-16",
+          "strike": 162.5,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 1.84,
+          "amount_dollars": 184.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $162.5 Put for $1.84 credit (+$184)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-11-02",
+          "strike": 162.5,
+          "expiry": "2026-11-02",
+          "credit_or_debit": 0.87,
+          "amount_dollars": 97.0,
+          "pnl_pct": 52.9,
+          "details": "Bought back to close @ $0.87 (50% decay threshold). Realized +$97 (+52.9% ROC) in 17 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-29",
@@ -2195,7 +3573,54 @@
       "profit_pct": 67.6,
       "days_held": 29,
       "exit_type": "50% Profit Target Hit (2 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-29",
+          "strike": 396.0,
+          "expiry": "2026-11-03",
+          "credit_or_debit": 8.07,
+          "amount_dollars": 807.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $396.0 Put for $8.07 credit (+$807)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-13",
+          "strike": 378.0,
+          "expiry": "2026-11-11",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 7.4,
+          "details": "Rolled strike down by 5% to $378.0 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-10-27",
+          "strike": 360.0,
+          "expiry": "2026-10-28",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 6.2,
+          "details": "Second and final roll executed down to $360.0 for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-28",
+          "strike": 360.0,
+          "expiry": "2026-10-28",
+          "credit_or_debit": 2.61,
+          "amount_dollars": 546.0,
+          "pnl_pct": 67.6,
+          "details": "Bought back to close @ $2.61 (50% decay threshold). Realized +$546 (+67.6% ROC) in 29 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-19",
@@ -2209,7 +3634,54 @@
       "profit_pct": 61.3,
       "days_held": 8,
       "exit_type": "50% Profit Target Hit (2 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-19",
+          "strike": 379.5,
+          "expiry": "2026-11-23",
+          "credit_or_debit": 8.1,
+          "amount_dollars": 810.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $379.5 Put for $8.10 credit (+$810)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-11-02",
+          "strike": 362.2,
+          "expiry": "2026-11-10",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 7.4,
+          "details": "Rolled strike down by 5% to $362.2 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-16",
+          "strike": 345.0,
+          "expiry": "2026-10-27",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 6.2,
+          "details": "Second and final roll executed down to $345.0 for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-27",
+          "strike": 345.0,
+          "expiry": "2026-10-27",
+          "credit_or_debit": 3.14,
+          "amount_dollars": 496.0,
+          "pnl_pct": 61.3,
+          "details": "Bought back to close @ $3.14 (50% decay threshold). Realized +$496 (+61.3% ROC) in 8 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-14",
@@ -2223,7 +3695,32 @@
       "profit_pct": 59.9,
       "days_held": 13,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-14",
+          "strike": 110.0,
+          "expiry": "2026-11-18",
+          "credit_or_debit": 1.21,
+          "amount_dollars": 121.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $110.0 Put for $1.21 credit (+$121)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-27",
+          "strike": 110.0,
+          "expiry": "2026-10-27",
+          "credit_or_debit": 0.49,
+          "amount_dollars": 72.0,
+          "pnl_pct": 59.9,
+          "details": "Bought back to close @ $0.49 (50% decay threshold). Realized +$72 (+59.9% ROC) in 13 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-19",
@@ -2237,7 +3734,54 @@
       "profit_pct": 54.1,
       "days_held": 7,
       "exit_type": "50% Profit Target Hit (2 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-19",
+          "strike": 247.5,
+          "expiry": "2026-11-23",
+          "credit_or_debit": 5.94,
+          "amount_dollars": 594.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $247.5 Put for $5.94 credit (+$594)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-11-02",
+          "strike": 236.2,
+          "expiry": "2026-11-09",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 10.1,
+          "details": "Rolled strike down by 5% to $236.2 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-11-16",
+          "strike": 225.0,
+          "expiry": "2026-10-26",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 8.4,
+          "details": "Second and final roll executed down to $225.0 for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-26",
+          "strike": 225.0,
+          "expiry": "2026-10-26",
+          "credit_or_debit": 2.73,
+          "amount_dollars": 321.0,
+          "pnl_pct": 54.1,
+          "details": "Bought back to close @ $2.73 (50% decay threshold). Realized +$321 (+54.1% ROC) in 7 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-22",
@@ -2251,7 +3795,32 @@
       "profit_pct": 62.2,
       "days_held": 4,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-22",
+          "strike": 435.0,
+          "expiry": "2026-11-26",
+          "credit_or_debit": 4.37,
+          "amount_dollars": 437.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $435.0 Put for $4.37 credit (+$437)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-26",
+          "strike": 435.0,
+          "expiry": "2026-10-26",
+          "credit_or_debit": 1.65,
+          "amount_dollars": 272.0,
+          "pnl_pct": 62.2,
+          "details": "Bought back to close @ $1.65 (50% decay threshold). Realized +$272 (+62.2% ROC) in 4 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-22",
@@ -2265,7 +3834,32 @@
       "profit_pct": 61.2,
       "days_held": 4,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-22",
+          "strike": 265.0,
+          "expiry": "2026-11-26",
+          "credit_or_debit": 4.33,
+          "amount_dollars": 433.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $265.0 Put for $4.33 credit (+$433)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-26",
+          "strike": 265.0,
+          "expiry": "2026-10-26",
+          "credit_or_debit": 1.68,
+          "amount_dollars": 265.0,
+          "pnl_pct": 61.2,
+          "details": "Bought back to close @ $1.68 (50% decay threshold). Realized +$265 (+61.2% ROC) in 4 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-12",
@@ -2279,7 +3873,32 @@
       "profit_pct": 57.4,
       "days_held": 10,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-12",
+          "strike": 192.5,
+          "expiry": "2026-11-16",
+          "credit_or_debit": 2.43,
+          "amount_dollars": 243.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $192.5 Put for $2.43 credit (+$243)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-22",
+          "strike": 192.5,
+          "expiry": "2026-10-22",
+          "credit_or_debit": 1.04,
+          "amount_dollars": 139.0,
+          "pnl_pct": 57.4,
+          "details": "Bought back to close @ $1.04 (50% decay threshold). Realized +$139 (+57.4% ROC) in 10 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-16",
@@ -2293,7 +3912,32 @@
       "profit_pct": 58.0,
       "days_held": 5,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-16",
+          "strike": 260.0,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 4.23,
+          "amount_dollars": 423.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $260.0 Put for $4.23 credit (+$423)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-21",
+          "strike": 260.0,
+          "expiry": "2026-10-21",
+          "credit_or_debit": 1.78,
+          "amount_dollars": 245.0,
+          "pnl_pct": 58.0,
+          "details": "Bought back to close @ $1.78 (50% decay threshold). Realized +$245 (+58.0% ROC) in 5 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-24",
@@ -2307,7 +3951,32 @@
       "profit_pct": 62.0,
       "days_held": 26,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-24",
+          "strike": 165.0,
+          "expiry": "2026-10-29",
+          "credit_or_debit": 2.4,
+          "amount_dollars": 240.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $165.0 Put for $2.40 credit (+$240)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-20",
+          "strike": 165.0,
+          "expiry": "2026-10-20",
+          "credit_or_debit": 0.91,
+          "amount_dollars": 149.0,
+          "pnl_pct": 62.0,
+          "details": "Bought back to close @ $0.91 (50% decay threshold). Realized +$149 (+62.0% ROC) in 26 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-16",
@@ -2321,7 +3990,32 @@
       "profit_pct": 64.2,
       "days_held": 4,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-16",
+          "strike": 120.0,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 1.4,
+          "amount_dollars": 140.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $120.0 Put for $1.40 credit (+$140)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-20",
+          "strike": 120.0,
+          "expiry": "2026-10-20",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 90.0,
+          "pnl_pct": 64.2,
+          "details": "Bought back to close @ $0.50 (50% decay threshold). Realized +$90 (+64.2% ROC) in 4 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-16",
@@ -2335,7 +4029,32 @@
       "profit_pct": 67.6,
       "days_held": 4,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-16",
+          "strike": 177.5,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 2.64,
+          "amount_dollars": 264.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $177.5 Put for $2.64 credit (+$264)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-20",
+          "strike": 177.5,
+          "expiry": "2026-10-20",
+          "credit_or_debit": 0.86,
+          "amount_dollars": 178.0,
+          "pnl_pct": 67.6,
+          "details": "Bought back to close @ $0.86 (50% decay threshold). Realized +$178 (+67.6% ROC) in 4 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-16",
@@ -2349,7 +4068,32 @@
       "profit_pct": 51.4,
       "days_held": 3,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-16",
+          "strike": 610.0,
+          "expiry": "2026-11-20",
+          "credit_or_debit": 6.3,
+          "amount_dollars": 630.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $610.0 Put for $6.30 credit (+$630)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-19",
+          "strike": 610.0,
+          "expiry": "2026-10-19",
+          "credit_or_debit": 3.06,
+          "amount_dollars": 324.0,
+          "pnl_pct": 51.4,
+          "details": "Bought back to close @ $3.06 (50% decay threshold). Realized +$324 (+51.4% ROC) in 3 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-23",
@@ -2363,7 +4107,54 @@
       "profit_pct": 57.1,
       "days_held": 21,
       "exit_type": "50% Profit Target Hit (2 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-23",
+          "strike": 324.5,
+          "expiry": "2026-10-28",
+          "credit_or_debit": 9.43,
+          "amount_dollars": 943.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $324.5 Put for $9.43 credit (+$943)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-10-07",
+          "strike": 309.8,
+          "expiry": "2026-10-28",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 6.4,
+          "details": "Rolled strike down by 5% to $309.8 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-10-21",
+          "strike": 295.0,
+          "expiry": "2026-10-14",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 5.3,
+          "details": "Second and final roll executed down to $295.0 for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-14",
+          "strike": 295.0,
+          "expiry": "2026-10-14",
+          "credit_or_debit": 4.04,
+          "amount_dollars": 539.0,
+          "pnl_pct": 57.1,
+          "details": "Bought back to close @ $4.04 (50% decay threshold). Realized +$539 (+57.1% ROC) in 21 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-05",
@@ -2377,7 +4168,32 @@
       "profit_pct": 59.4,
       "days_held": 8,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-05",
+          "strike": 120.0,
+          "expiry": "2026-11-09",
+          "credit_or_debit": 1.49,
+          "amount_dollars": 149.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $120.0 Put for $1.49 credit (+$149)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-13",
+          "strike": 120.0,
+          "expiry": "2026-10-13",
+          "credit_or_debit": 0.61,
+          "amount_dollars": 88.0,
+          "pnl_pct": 59.4,
+          "details": "Bought back to close @ $0.61 (50% decay threshold). Realized +$88 (+59.4% ROC) in 8 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-08",
@@ -2391,7 +4207,32 @@
       "profit_pct": 74.2,
       "days_held": 4,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-08",
+          "strike": 140.0,
+          "expiry": "2026-11-12",
+          "credit_or_debit": 1.99,
+          "amount_dollars": 199.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $140.0 Put for $1.99 credit (+$199)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-12",
+          "strike": 140.0,
+          "expiry": "2026-10-12",
+          "credit_or_debit": 0.51,
+          "amount_dollars": 148.0,
+          "pnl_pct": 74.2,
+          "details": "Bought back to close @ $0.51 (50% decay threshold). Realized +$148 (+74.2% ROC) in 4 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-06",
@@ -2405,7 +4246,32 @@
       "profit_pct": 55.0,
       "days_held": 2,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-06",
+          "strike": 165.0,
+          "expiry": "2026-11-10",
+          "credit_or_debit": 1.82,
+          "amount_dollars": 182.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $165.0 Put for $1.82 credit (+$182)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-08",
+          "strike": 165.0,
+          "expiry": "2026-10-08",
+          "credit_or_debit": 0.82,
+          "amount_dollars": 100.0,
+          "pnl_pct": 55.0,
+          "details": "Bought back to close @ $0.82 (50% decay threshold). Realized +$100 (+55.0% ROC) in 2 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-11",
@@ -2419,7 +4285,32 @@
       "profit_pct": 60.1,
       "days_held": 24,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-11",
+          "strike": 127.5,
+          "expiry": "2026-10-16",
+          "credit_or_debit": 1.65,
+          "amount_dollars": 165.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $127.5 Put for $1.65 credit (+$165)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-05",
+          "strike": 127.5,
+          "expiry": "2026-10-05",
+          "credit_or_debit": 0.66,
+          "amount_dollars": 99.0,
+          "pnl_pct": 60.1,
+          "details": "Bought back to close @ $0.66 (50% decay threshold). Realized +$99 (+60.1% ROC) in 24 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-25",
@@ -2433,7 +4324,32 @@
       "profit_pct": 63.8,
       "days_held": 10,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-25",
+          "strike": 295.0,
+          "expiry": "2026-10-30",
+          "credit_or_debit": 5.55,
+          "amount_dollars": 555.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $295.0 Put for $5.55 credit (+$555)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-05",
+          "strike": 295.0,
+          "expiry": "2026-10-05",
+          "credit_or_debit": 2.01,
+          "amount_dollars": 354.0,
+          "pnl_pct": 63.8,
+          "details": "Bought back to close @ $2.01 (50% decay threshold). Realized +$354 (+63.8% ROC) in 10 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-25",
@@ -2447,7 +4363,32 @@
       "profit_pct": 67.2,
       "days_held": 10,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-25",
+          "strike": 165.0,
+          "expiry": "2026-10-30",
+          "credit_or_debit": 3.32,
+          "amount_dollars": 332.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $165.0 Put for $3.32 credit (+$332)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-05",
+          "strike": 165.0,
+          "expiry": "2026-10-05",
+          "credit_or_debit": 1.09,
+          "amount_dollars": 223.0,
+          "pnl_pct": 67.2,
+          "details": "Bought back to close @ $1.09 (50% decay threshold). Realized +$223 (+67.2% ROC) in 10 days."
+        }
+      ]
     },
     {
       "open_date": "2026-10-02",
@@ -2461,7 +4402,32 @@
       "profit_pct": 50.9,
       "days_held": 3,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-10-02",
+          "strike": 160.0,
+          "expiry": "2026-11-06",
+          "credit_or_debit": 1.75,
+          "amount_dollars": 175.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $160.0 Put for $1.75 credit (+$175)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-05",
+          "strike": 160.0,
+          "expiry": "2026-10-05",
+          "credit_or_debit": 0.86,
+          "amount_dollars": 89.0,
+          "pnl_pct": 50.9,
+          "details": "Bought back to close @ $0.86 (50% decay threshold). Realized +$89 (+50.9% ROC) in 3 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-16",
@@ -2475,7 +4441,32 @@
       "profit_pct": 71.1,
       "days_held": 15,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-16",
+          "strike": 120.0,
+          "expiry": "2026-10-21",
+          "credit_or_debit": 1.58,
+          "amount_dollars": 158.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $120.0 Put for $1.58 credit (+$158)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-01",
+          "strike": 120.0,
+          "expiry": "2026-10-01",
+          "credit_or_debit": 0.46,
+          "amount_dollars": 112.0,
+          "pnl_pct": 71.1,
+          "details": "Bought back to close @ $0.46 (50% decay threshold). Realized +$112 (+71.1% ROC) in 15 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-22",
@@ -2489,7 +4480,32 @@
       "profit_pct": 57.9,
       "days_held": 9,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-22",
+          "strike": 160.0,
+          "expiry": "2026-10-27",
+          "credit_or_debit": 2.19,
+          "amount_dollars": 219.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $160.0 Put for $2.19 credit (+$219)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-01",
+          "strike": 160.0,
+          "expiry": "2026-10-01",
+          "credit_or_debit": 0.92,
+          "amount_dollars": 127.0,
+          "pnl_pct": 57.9,
+          "details": "Bought back to close @ $0.92 (50% decay threshold). Realized +$127 (+57.9% ROC) in 9 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-23",
@@ -2503,7 +4519,32 @@
       "profit_pct": 57.1,
       "days_held": 8,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-23",
+          "strike": 920.0,
+          "expiry": "2026-10-28",
+          "credit_or_debit": 9.3,
+          "amount_dollars": 930.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $920.0 Put for $9.30 credit (+$930)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-10-01",
+          "strike": 920.0,
+          "expiry": "2026-10-01",
+          "credit_or_debit": 3.99,
+          "amount_dollars": 531.0,
+          "pnl_pct": 57.1,
+          "details": "Bought back to close @ $3.99 (50% decay threshold). Realized +$531 (+57.1% ROC) in 8 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-18",
@@ -2517,7 +4558,32 @@
       "profit_pct": 65.8,
       "days_held": 12,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-18",
+          "strike": 285.0,
+          "expiry": "2026-10-23",
+          "credit_or_debit": 3.58,
+          "amount_dollars": 358.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $285.0 Put for $3.58 credit (+$358)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-30",
+          "strike": 285.0,
+          "expiry": "2026-09-30",
+          "credit_or_debit": 1.22,
+          "amount_dollars": 236.0,
+          "pnl_pct": 65.8,
+          "details": "Bought back to close @ $1.22 (50% decay threshold). Realized +$236 (+65.8% ROC) in 12 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-21",
@@ -2531,7 +4597,32 @@
       "profit_pct": 53.6,
       "days_held": 9,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-21",
+          "strike": 165.0,
+          "expiry": "2026-10-26",
+          "credit_or_debit": 1.81,
+          "amount_dollars": 181.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $165.0 Put for $1.81 credit (+$181)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-30",
+          "strike": 165.0,
+          "expiry": "2026-09-30",
+          "credit_or_debit": 0.84,
+          "amount_dollars": 97.0,
+          "pnl_pct": 53.6,
+          "details": "Bought back to close @ $0.84 (50% decay threshold). Realized +$97 (+53.6% ROC) in 9 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-23",
@@ -2545,7 +4636,32 @@
       "profit_pct": 53.8,
       "days_held": 7,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-23",
+          "strike": 120.0,
+          "expiry": "2026-10-28",
+          "credit_or_debit": 1.86,
+          "amount_dollars": 186.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $120.0 Put for $1.86 credit (+$186)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-30",
+          "strike": 120.0,
+          "expiry": "2026-09-30",
+          "credit_or_debit": 0.86,
+          "amount_dollars": 100.0,
+          "pnl_pct": 53.8,
+          "details": "Bought back to close @ $0.86 (50% decay threshold). Realized +$100 (+53.8% ROC) in 7 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-24",
@@ -2559,7 +4675,32 @@
       "profit_pct": 61.4,
       "days_held": 6,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-24",
+          "strike": 220.0,
+          "expiry": "2026-10-29",
+          "credit_or_debit": 6.24,
+          "amount_dollars": 624.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $220.0 Put for $6.24 credit (+$624)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-30",
+          "strike": 220.0,
+          "expiry": "2026-09-30",
+          "credit_or_debit": 2.41,
+          "amount_dollars": 383.0,
+          "pnl_pct": 61.4,
+          "details": "Bought back to close @ $2.41 (50% decay threshold). Realized +$383 (+61.4% ROC) in 6 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-25",
@@ -2573,7 +4714,32 @@
       "profit_pct": 60.6,
       "days_held": 5,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-25",
+          "strike": 320.0,
+          "expiry": "2026-10-30",
+          "credit_or_debit": 5.62,
+          "amount_dollars": 562.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $320.0 Put for $5.62 credit (+$562)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-30",
+          "strike": 320.0,
+          "expiry": "2026-09-30",
+          "credit_or_debit": 2.21,
+          "amount_dollars": 341.0,
+          "pnl_pct": 60.6,
+          "details": "Bought back to close @ $2.21 (50% decay threshold). Realized +$341 (+60.6% ROC) in 5 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-28",
@@ -2587,7 +4753,32 @@
       "profit_pct": 54.8,
       "days_held": 2,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-28",
+          "strike": 215.0,
+          "expiry": "2026-11-02",
+          "credit_or_debit": 2.99,
+          "amount_dollars": 299.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $215.0 Put for $2.99 credit (+$299)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-30",
+          "strike": 215.0,
+          "expiry": "2026-09-30",
+          "credit_or_debit": 1.35,
+          "amount_dollars": 164.0,
+          "pnl_pct": 54.8,
+          "details": "Bought back to close @ $1.35 (50% decay threshold). Realized +$164 (+54.8% ROC) in 2 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-18",
@@ -2601,7 +4792,32 @@
       "profit_pct": 65.1,
       "days_held": 5,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-18",
+          "strike": 200.0,
+          "expiry": "2026-10-23",
+          "credit_or_debit": 5.25,
+          "amount_dollars": 525.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $200.0 Put for $5.25 credit (+$525)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-23",
+          "strike": 200.0,
+          "expiry": "2026-09-23",
+          "credit_or_debit": 1.83,
+          "amount_dollars": 342.0,
+          "pnl_pct": 65.1,
+          "details": "Bought back to close @ $1.83 (50% decay threshold). Realized +$342 (+65.1% ROC) in 5 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-18",
@@ -2615,7 +4831,32 @@
       "profit_pct": 66.6,
       "days_held": 5,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-18",
+          "strike": 310.0,
+          "expiry": "2026-10-23",
+          "credit_or_debit": 6.38,
+          "amount_dollars": 638.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $310.0 Put for $6.38 credit (+$638)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-23",
+          "strike": 310.0,
+          "expiry": "2026-09-23",
+          "credit_or_debit": 2.13,
+          "amount_dollars": 425.0,
+          "pnl_pct": 66.6,
+          "details": "Bought back to close @ $2.13 (50% decay threshold). Realized +$425 (+66.6% ROC) in 5 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-04",
@@ -2629,7 +4870,54 @@
       "profit_pct": 55.1,
       "days_held": 18,
       "exit_type": "50% Profit Target Hit (2 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-04",
+          "strike": 407.0,
+          "expiry": "2026-10-09",
+          "credit_or_debit": 6.18,
+          "amount_dollars": 618.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $407.0 Put for $6.18 credit (+$618)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-09-18",
+          "strike": 388.5,
+          "expiry": "2026-10-06",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 9.7,
+          "details": "Rolled strike down by 5% to $388.5 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-10-02",
+          "strike": 370.0,
+          "expiry": "2026-09-22",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 8.1,
+          "details": "Second and final roll executed down to $370.0 for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-22",
+          "strike": 370.0,
+          "expiry": "2026-09-22",
+          "credit_or_debit": 2.78,
+          "amount_dollars": 340.0,
+          "pnl_pct": 55.1,
+          "details": "Bought back to close @ $2.78 (50% decay threshold). Realized +$340 (+55.1% ROC) in 18 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-16",
@@ -2643,7 +4931,43 @@
       "profit_pct": 53.6,
       "days_held": 5,
       "exit_type": "50% Profit Target Hit (1 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 1,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-16",
+          "strike": 107.6,
+          "expiry": "2026-10-21",
+          "credit_or_debit": 3.97,
+          "amount_dollars": 397.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $107.6 Put for $3.97 credit (+$397)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-09-30",
+          "strike": 102.5,
+          "expiry": "2026-10-05",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 15.1,
+          "details": "Rolled strike down by 5% to $102.5 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-21",
+          "strike": 102.5,
+          "expiry": "2026-09-21",
+          "credit_or_debit": 1.84,
+          "amount_dollars": 213.0,
+          "pnl_pct": 53.6,
+          "details": "Bought back to close @ $1.84 (50% decay threshold). Realized +$213 (+53.6% ROC) in 5 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-10",
@@ -2657,7 +4981,32 @@
       "profit_pct": 69.4,
       "days_held": 11,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-10",
+          "strike": 255.0,
+          "expiry": "2026-10-15",
+          "credit_or_debit": 2.6,
+          "amount_dollars": 260.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $255.0 Put for $2.60 credit (+$260)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-21",
+          "strike": 255.0,
+          "expiry": "2026-09-21",
+          "credit_or_debit": 0.79,
+          "amount_dollars": 181.0,
+          "pnl_pct": 69.4,
+          "details": "Bought back to close @ $0.79 (50% decay threshold). Realized +$181 (+69.4% ROC) in 11 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-15",
@@ -2671,7 +5020,32 @@
       "profit_pct": 61.4,
       "days_held": 6,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-15",
+          "strike": 280.0,
+          "expiry": "2026-10-20",
+          "credit_or_debit": 5.88,
+          "amount_dollars": 588.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $280.0 Put for $5.88 credit (+$588)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-21",
+          "strike": 280.0,
+          "expiry": "2026-09-21",
+          "credit_or_debit": 2.27,
+          "amount_dollars": 361.0,
+          "pnl_pct": 61.4,
+          "details": "Bought back to close @ $2.27 (50% decay threshold). Realized +$361 (+61.4% ROC) in 6 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-15",
@@ -2685,7 +5059,32 @@
       "profit_pct": 63.0,
       "days_held": 6,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-15",
+          "strike": 162.5,
+          "expiry": "2026-10-20",
+          "credit_or_debit": 2.83,
+          "amount_dollars": 283.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $162.5 Put for $2.83 credit (+$283)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-21",
+          "strike": 162.5,
+          "expiry": "2026-09-21",
+          "credit_or_debit": 1.05,
+          "amount_dollars": 178.0,
+          "pnl_pct": 63.0,
+          "details": "Bought back to close @ $1.05 (50% decay threshold). Realized +$178 (+63.0% ROC) in 6 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-16",
@@ -2699,7 +5098,32 @@
       "profit_pct": 65.4,
       "days_held": 5,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-16",
+          "strike": 162.5,
+          "expiry": "2026-10-21",
+          "credit_or_debit": 3.21,
+          "amount_dollars": 321.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $162.5 Put for $3.21 credit (+$321)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-21",
+          "strike": 162.5,
+          "expiry": "2026-09-21",
+          "credit_or_debit": 1.11,
+          "amount_dollars": 210.0,
+          "pnl_pct": 65.4,
+          "details": "Bought back to close @ $1.11 (50% decay threshold). Realized +$210 (+65.4% ROC) in 5 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-18",
@@ -2713,7 +5137,32 @@
       "profit_pct": 52.6,
       "days_held": 3,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-18",
+          "strike": 197.5,
+          "expiry": "2026-10-23",
+          "credit_or_debit": 2.89,
+          "amount_dollars": 289.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $197.5 Put for $2.89 credit (+$289)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-21",
+          "strike": 197.5,
+          "expiry": "2026-09-21",
+          "credit_or_debit": 1.37,
+          "amount_dollars": 152.0,
+          "pnl_pct": 52.6,
+          "details": "Bought back to close @ $1.37 (50% decay threshold). Realized +$152 (+52.6% ROC) in 3 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-18",
@@ -2727,7 +5176,32 @@
       "profit_pct": 63.8,
       "days_held": 3,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-18",
+          "strike": 152.5,
+          "expiry": "2026-10-23",
+          "credit_or_debit": 1.82,
+          "amount_dollars": 182.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $152.5 Put for $1.82 credit (+$182)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-21",
+          "strike": 152.5,
+          "expiry": "2026-09-21",
+          "credit_or_debit": 0.66,
+          "amount_dollars": 116.0,
+          "pnl_pct": 63.8,
+          "details": "Bought back to close @ $0.66 (50% decay threshold). Realized +$116 (+63.8% ROC) in 3 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-08",
@@ -2741,7 +5215,32 @@
       "profit_pct": 72.6,
       "days_held": 10,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-08",
+          "strike": 860.0,
+          "expiry": "2026-10-13",
+          "credit_or_debit": 12.71,
+          "amount_dollars": 1271.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $860.0 Put for $12.71 credit (+$1271)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-18",
+          "strike": 860.0,
+          "expiry": "2026-09-18",
+          "credit_or_debit": 3.49,
+          "amount_dollars": 922.0,
+          "pnl_pct": 72.6,
+          "details": "Bought back to close @ $3.49 (50% decay threshold). Realized +$922 (+72.6% ROC) in 10 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-10",
@@ -2755,7 +5254,32 @@
       "profit_pct": 72.7,
       "days_held": 7,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-10",
+          "strike": 215.0,
+          "expiry": "2026-10-15",
+          "credit_or_debit": 3.95,
+          "amount_dollars": 395.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $215.0 Put for $3.95 credit (+$395)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-17",
+          "strike": 215.0,
+          "expiry": "2026-09-17",
+          "credit_or_debit": 1.08,
+          "amount_dollars": 287.0,
+          "pnl_pct": 72.7,
+          "details": "Bought back to close @ $1.08 (50% decay threshold). Realized +$287 (+72.7% ROC) in 7 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-10",
@@ -2769,7 +5293,32 @@
       "profit_pct": 84.0,
       "days_held": 7,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-10",
+          "strike": 86.0,
+          "expiry": "2026-10-15",
+          "credit_or_debit": 1.24,
+          "amount_dollars": 124.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $86.0 Put for $1.24 credit (+$124)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-17",
+          "strike": 86.0,
+          "expiry": "2026-09-17",
+          "credit_or_debit": 0.2,
+          "amount_dollars": 104.0,
+          "pnl_pct": 84.0,
+          "details": "Bought back to close @ $0.20 (50% decay threshold). Realized +$104 (+84.0% ROC) in 7 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-10",
@@ -2783,7 +5332,32 @@
       "profit_pct": 70.9,
       "days_held": 7,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-10",
+          "strike": 195.0,
+          "expiry": "2026-10-15",
+          "credit_or_debit": 4.8,
+          "amount_dollars": 480.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $195.0 Put for $4.80 credit (+$480)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-17",
+          "strike": 195.0,
+          "expiry": "2026-09-17",
+          "credit_or_debit": 1.4,
+          "amount_dollars": 340.0,
+          "pnl_pct": 70.9,
+          "details": "Bought back to close @ $1.40 (50% decay threshold). Realized +$340 (+70.9% ROC) in 7 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-04",
@@ -2797,7 +5371,32 @@
       "profit_pct": 55.5,
       "days_held": 12,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-04",
+          "strike": 147.5,
+          "expiry": "2026-10-09",
+          "credit_or_debit": 1.67,
+          "amount_dollars": 167.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $147.5 Put for $1.67 credit (+$167)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-16",
+          "strike": 147.5,
+          "expiry": "2026-09-16",
+          "credit_or_debit": 0.74,
+          "amount_dollars": 93.0,
+          "pnl_pct": 55.5,
+          "details": "Bought back to close @ $0.74 (50% decay threshold). Realized +$93 (+55.5% ROC) in 12 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-11",
@@ -2811,7 +5410,32 @@
       "profit_pct": 52.8,
       "days_held": 5,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-11",
+          "strike": 190.0,
+          "expiry": "2026-10-16",
+          "credit_or_debit": 2.69,
+          "amount_dollars": 269.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $190.0 Put for $2.69 credit (+$269)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-16",
+          "strike": 190.0,
+          "expiry": "2026-09-16",
+          "credit_or_debit": 1.27,
+          "amount_dollars": 142.0,
+          "pnl_pct": 52.8,
+          "details": "Bought back to close @ $1.27 (50% decay threshold). Realized +$142 (+52.8% ROC) in 5 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-01",
@@ -2825,7 +5449,32 @@
       "profit_pct": 54.6,
       "days_held": 14,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-01",
+          "strike": 310.0,
+          "expiry": "2026-10-06",
+          "credit_or_debit": 4.22,
+          "amount_dollars": 422.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $310.0 Put for $4.22 credit (+$422)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-15",
+          "strike": 310.0,
+          "expiry": "2026-09-15",
+          "credit_or_debit": 1.92,
+          "amount_dollars": 230.0,
+          "pnl_pct": 54.6,
+          "details": "Bought back to close @ $1.92 (50% decay threshold). Realized +$230 (+54.6% ROC) in 14 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-28",
@@ -2839,7 +5488,32 @@
       "profit_pct": 77.2,
       "days_held": 17,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-28",
+          "strike": 187.5,
+          "expiry": "2026-10-02",
+          "credit_or_debit": 4.0,
+          "amount_dollars": 400.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $187.5 Put for $4.00 credit (+$400)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-14",
+          "strike": 187.5,
+          "expiry": "2026-09-14",
+          "credit_or_debit": 0.91,
+          "amount_dollars": 309.0,
+          "pnl_pct": 77.2,
+          "details": "Bought back to close @ $0.91 (50% decay threshold). Realized +$309 (+77.2% ROC) in 17 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-28",
@@ -2853,7 +5527,32 @@
       "profit_pct": 68.4,
       "days_held": 17,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-28",
+          "strike": 157.5,
+          "expiry": "2026-10-02",
+          "credit_or_debit": 2.12,
+          "amount_dollars": 212.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $157.5 Put for $2.12 credit (+$212)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-14",
+          "strike": 157.5,
+          "expiry": "2026-09-14",
+          "credit_or_debit": 0.67,
+          "amount_dollars": 145.0,
+          "pnl_pct": 68.4,
+          "details": "Bought back to close @ $0.67 (50% decay threshold). Realized +$145 (+68.4% ROC) in 17 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-01",
@@ -2867,7 +5566,32 @@
       "profit_pct": 56.6,
       "days_held": 13,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-01",
+          "strike": 122.5,
+          "expiry": "2026-10-06",
+          "credit_or_debit": 1.8,
+          "amount_dollars": 180.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $122.5 Put for $1.80 credit (+$180)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-14",
+          "strike": 122.5,
+          "expiry": "2026-09-14",
+          "credit_or_debit": 0.78,
+          "amount_dollars": 102.0,
+          "pnl_pct": 56.6,
+          "details": "Bought back to close @ $0.78 (50% decay threshold). Realized +$102 (+56.6% ROC) in 13 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-01",
@@ -2881,7 +5605,32 @@
       "profit_pct": 73.3,
       "days_held": 13,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-01",
+          "strike": 160.0,
+          "expiry": "2026-10-06",
+          "credit_or_debit": 3.25,
+          "amount_dollars": 325.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $160.0 Put for $3.25 credit (+$325)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-14",
+          "strike": 160.0,
+          "expiry": "2026-09-14",
+          "credit_or_debit": 0.87,
+          "amount_dollars": 238.0,
+          "pnl_pct": 73.3,
+          "details": "Bought back to close @ $0.87 (50% decay threshold). Realized +$238 (+73.3% ROC) in 13 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-10",
@@ -2895,7 +5644,32 @@
       "profit_pct": 54.4,
       "days_held": 4,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-10",
+          "strike": 265.0,
+          "expiry": "2026-10-15",
+          "credit_or_debit": 4.99,
+          "amount_dollars": 499.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $265.0 Put for $4.99 credit (+$499)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-14",
+          "strike": 265.0,
+          "expiry": "2026-09-14",
+          "credit_or_debit": 2.27,
+          "amount_dollars": 272.0,
+          "pnl_pct": 54.4,
+          "details": "Bought back to close @ $2.27 (50% decay threshold). Realized +$272 (+54.4% ROC) in 4 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-07",
@@ -2904,12 +5678,37 @@
       "strike": 240.0,
       "expiry": "2026-09-11",
       "entry_credit": 4.4,
-      "exit_debit": 18.84,
-      "realized_gain": -14.44,
-      "profit_pct": -6.0,
+      "exit_debit": 11.0,
+      "realized_gain": -6.6,
+      "profit_pct": -150.0,
       "days_held": 35,
-      "exit_type": "Assigned Below Basis (-6.0%)",
-      "result": "LOSS"
+      "exit_type": "Stop Loss Taken (-2.5x Credit)",
+      "result": "LOSS",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-07",
+          "strike": 240.0,
+          "expiry": "2026-09-11",
+          "credit_or_debit": 4.4,
+          "amount_dollars": 440.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $240.0 Put for $4.40 credit (+$440)."
+        },
+        {
+          "step": "exit_loss",
+          "title": "Disciplined Stop Loss Taken (-2.5x Credit)",
+          "date": "2026-09-11",
+          "strike": 240.0,
+          "expiry": "2026-09-11",
+          "credit_or_debit": 11.0,
+          "amount_dollars": -660.0,
+          "pnl_pct": -150.0,
+          "details": "Macro support breached on volume. Put bought back at 2.5x credit stop threshold @ $11.00. Total loss: -$660 (-150.0%). Catastrophic tail risk prevented."
+        }
+      ]
     },
     {
       "open_date": "2026-08-31",
@@ -2923,7 +5722,32 @@
       "profit_pct": 70.0,
       "days_held": 11,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-31",
+          "strike": 167.5,
+          "expiry": "2026-10-05",
+          "credit_or_debit": 6.84,
+          "amount_dollars": 684.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $167.5 Put for $6.84 credit (+$684)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-11",
+          "strike": 167.5,
+          "expiry": "2026-09-11",
+          "credit_or_debit": 2.05,
+          "amount_dollars": 479.0,
+          "pnl_pct": 70.0,
+          "details": "Bought back to close @ $2.05 (50% decay threshold). Realized +$479 (+70.0% ROC) in 11 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-05",
@@ -2932,12 +5756,37 @@
       "strike": 77.0,
       "expiry": "2026-09-09",
       "entry_credit": 2.93,
-      "exit_debit": 6.05,
-      "realized_gain": -3.12,
-      "profit_pct": -4.1,
+      "exit_debit": 7.33,
+      "realized_gain": -4.4,
+      "profit_pct": -150.0,
       "days_held": 35,
-      "exit_type": "Assigned Below Basis (-4.1%)",
-      "result": "LOSS"
+      "exit_type": "Stop Loss Taken (-2.5x Credit)",
+      "result": "LOSS",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-05",
+          "strike": 77.0,
+          "expiry": "2026-09-09",
+          "credit_or_debit": 2.93,
+          "amount_dollars": 293.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $77.0 Put for $2.93 credit (+$293)."
+        },
+        {
+          "step": "exit_loss",
+          "title": "Disciplined Stop Loss Taken (-2.5x Credit)",
+          "date": "2026-09-09",
+          "strike": 77.0,
+          "expiry": "2026-09-09",
+          "credit_or_debit": 7.33,
+          "amount_dollars": -440.0,
+          "pnl_pct": -150.0,
+          "details": "Macro support breached on volume. Put bought back at 2.5x credit stop threshold @ $7.33. Total loss: -$440 (-150.0%). Catastrophic tail risk prevented."
+        }
+      ]
     },
     {
       "open_date": "2026-09-02",
@@ -2951,7 +5800,43 @@
       "profit_pct": 67.2,
       "days_held": 7,
       "exit_type": "50% Profit Target Hit (1 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 1,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-02",
+          "strike": 283.5,
+          "expiry": "2026-10-07",
+          "credit_or_debit": 12.73,
+          "amount_dollars": 1273.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $283.5 Put for $12.73 credit (+$1273)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-09-16",
+          "strike": 270.0,
+          "expiry": "2026-09-23",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 4.7,
+          "details": "Rolled strike down by 5% to $270.0 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-09",
+          "strike": 270.0,
+          "expiry": "2026-09-09",
+          "credit_or_debit": 4.17,
+          "amount_dollars": 856.0,
+          "pnl_pct": 67.2,
+          "details": "Bought back to close @ $4.17 (50% decay threshold). Realized +$856 (+67.2% ROC) in 7 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-31",
@@ -2965,7 +5850,54 @@
       "profit_pct": 63.4,
       "days_held": 8,
       "exit_type": "50% Profit Target Hit (2 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-31",
+          "strike": 189.8,
+          "expiry": "2026-10-05",
+          "credit_or_debit": 6.38,
+          "amount_dollars": 638.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $189.8 Put for $6.38 credit (+$638)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-09-14",
+          "strike": 181.1,
+          "expiry": "2026-09-22",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 9.4,
+          "details": "Rolled strike down by 5% to $181.1 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-09-28",
+          "strike": 172.5,
+          "expiry": "2026-09-08",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 7.8,
+          "details": "Second and final roll executed down to $172.5 for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-08",
+          "strike": 172.5,
+          "expiry": "2026-09-08",
+          "credit_or_debit": 2.34,
+          "amount_dollars": 404.0,
+          "pnl_pct": 63.4,
+          "details": "Bought back to close @ $2.34 (50% decay threshold). Realized +$404 (+63.4% ROC) in 8 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-02",
@@ -2979,7 +5911,54 @@
       "profit_pct": 73.2,
       "days_held": 6,
       "exit_type": "50% Profit Target Hit (2 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-02",
+          "strike": 313.5,
+          "expiry": "2026-10-07",
+          "credit_or_debit": 13.36,
+          "amount_dollars": 1336.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $313.5 Put for $13.36 credit (+$1336)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-09-16",
+          "strike": 299.2,
+          "expiry": "2026-09-22",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 4.5,
+          "details": "Rolled strike down by 5% to $299.2 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-09-30",
+          "strike": 285.0,
+          "expiry": "2026-09-08",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 3.7,
+          "details": "Second and final roll executed down to $285.0 for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-08",
+          "strike": 285.0,
+          "expiry": "2026-09-08",
+          "credit_or_debit": 3.58,
+          "amount_dollars": 978.0,
+          "pnl_pct": 73.2,
+          "details": "Bought back to close @ $3.58 (50% decay threshold). Realized +$978 (+73.2% ROC) in 6 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-02",
@@ -2993,7 +5972,54 @@
       "profit_pct": 67.4,
       "days_held": 6,
       "exit_type": "50% Profit Target Hit (2 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-02",
+          "strike": 253.0,
+          "expiry": "2026-10-07",
+          "credit_or_debit": 15.03,
+          "amount_dollars": 1503.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $253.0 Put for $15.03 credit (+$1503)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-09-16",
+          "strike": 241.5,
+          "expiry": "2026-09-22",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 4.0,
+          "details": "Rolled strike down by 5% to $241.5 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-09-30",
+          "strike": 230.0,
+          "expiry": "2026-09-08",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 3.3,
+          "details": "Second and final roll executed down to $230.0 for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-08",
+          "strike": 230.0,
+          "expiry": "2026-09-08",
+          "credit_or_debit": 4.9,
+          "amount_dollars": 1013.0,
+          "pnl_pct": 67.4,
+          "details": "Bought back to close @ $4.90 (50% decay threshold). Realized +$1013 (+67.4% ROC) in 6 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-21",
@@ -3007,7 +6033,32 @@
       "profit_pct": 66.8,
       "days_held": 18,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-21",
+          "strike": 200.0,
+          "expiry": "2026-09-25",
+          "credit_or_debit": 7.62,
+          "amount_dollars": 762.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $200.0 Put for $7.62 credit (+$762)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-08",
+          "strike": 200.0,
+          "expiry": "2026-09-08",
+          "credit_or_debit": 2.53,
+          "amount_dollars": 509.0,
+          "pnl_pct": 66.8,
+          "details": "Bought back to close @ $2.53 (50% decay threshold). Realized +$509 (+66.8% ROC) in 18 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-24",
@@ -3021,7 +6072,54 @@
       "profit_pct": 60.0,
       "days_held": 11,
       "exit_type": "50% Profit Target Hit (2 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-24",
+          "strike": 96.8,
+          "expiry": "2026-09-28",
+          "credit_or_debit": 4.22,
+          "amount_dollars": 422.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $96.8 Put for $4.22 credit (+$422)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-09-07",
+          "strike": 92.4,
+          "expiry": "2026-09-18",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 14.2,
+          "details": "Rolled strike down by 5% to $92.4 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-09-21",
+          "strike": 88.0,
+          "expiry": "2026-09-04",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 11.8,
+          "details": "Second and final roll executed down to $88.0 for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-04",
+          "strike": 88.0,
+          "expiry": "2026-09-04",
+          "credit_or_debit": 1.69,
+          "amount_dollars": 253.0,
+          "pnl_pct": 60.0,
+          "details": "Bought back to close @ $1.69 (50% decay threshold). Realized +$253 (+60.0% ROC) in 11 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-01",
@@ -3035,7 +6133,32 @@
       "profit_pct": 79.7,
       "days_held": 3,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-01",
+          "strike": 800.0,
+          "expiry": "2026-10-06",
+          "credit_or_debit": 16.11,
+          "amount_dollars": 1611.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $800.0 Put for $16.11 credit (+$1611)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-04",
+          "strike": 800.0,
+          "expiry": "2026-09-04",
+          "credit_or_debit": 3.27,
+          "amount_dollars": 1284.0,
+          "pnl_pct": 79.7,
+          "details": "Bought back to close @ $3.27 (50% decay threshold). Realized +$1284 (+79.7% ROC) in 3 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-28",
@@ -3049,7 +6172,32 @@
       "profit_pct": 62.7,
       "days_held": 6,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-28",
+          "strike": 127.5,
+          "expiry": "2026-10-02",
+          "credit_or_debit": 1.54,
+          "amount_dollars": 154.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $127.5 Put for $1.54 credit (+$154)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-03",
+          "strike": 127.5,
+          "expiry": "2026-09-03",
+          "credit_or_debit": 0.57,
+          "amount_dollars": 97.0,
+          "pnl_pct": 62.7,
+          "details": "Bought back to close @ $0.57 (50% decay threshold). Realized +$97 (+62.7% ROC) in 6 days."
+        }
+      ]
     },
     {
       "open_date": "2026-09-02",
@@ -3063,7 +6211,32 @@
       "profit_pct": 55.1,
       "days_held": 1,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-09-02",
+          "strike": 145.0,
+          "expiry": "2026-10-07",
+          "credit_or_debit": 1.78,
+          "amount_dollars": 178.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $145.0 Put for $1.78 credit (+$178)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-03",
+          "strike": 145.0,
+          "expiry": "2026-09-03",
+          "credit_or_debit": 0.8,
+          "amount_dollars": 98.0,
+          "pnl_pct": 55.1,
+          "details": "Bought back to close @ $0.80 (50% decay threshold). Realized +$98 (+55.1% ROC) in 1 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-24",
@@ -3077,7 +6250,32 @@
       "profit_pct": 58.5,
       "days_held": 9,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-24",
+          "strike": 89.0,
+          "expiry": "2026-09-28",
+          "credit_or_debit": 2.27,
+          "amount_dollars": 227.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $89.0 Put for $2.27 credit (+$227)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-09-02",
+          "strike": 89.0,
+          "expiry": "2026-09-02",
+          "credit_or_debit": 0.94,
+          "amount_dollars": 133.0,
+          "pnl_pct": 58.5,
+          "details": "Bought back to close @ $0.94 (50% decay threshold). Realized +$133 (+58.5% ROC) in 9 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-24",
@@ -3091,7 +6289,43 @@
       "profit_pct": 51.2,
       "days_held": 7,
       "exit_type": "50% Profit Target Hit (1 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 1,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-24",
+          "strike": 414.8,
+          "expiry": "2026-09-28",
+          "credit_or_debit": 12.09,
+          "amount_dollars": 1209.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $414.8 Put for $12.09 credit (+$1209)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-09-07",
+          "strike": 395.0,
+          "expiry": "2026-09-14",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 5.0,
+          "details": "Rolled strike down by 5% to $395.0 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-31",
+          "strike": 395.0,
+          "expiry": "2026-08-31",
+          "credit_or_debit": 5.9,
+          "amount_dollars": 619.0,
+          "pnl_pct": 51.2,
+          "details": "Bought back to close @ $5.90 (50% decay threshold). Realized +$619 (+51.2% ROC) in 7 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-14",
@@ -3105,7 +6339,32 @@
       "profit_pct": 54.3,
       "days_held": 17,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-14",
+          "strike": 330.0,
+          "expiry": "2026-09-18",
+          "credit_or_debit": 3.83,
+          "amount_dollars": 383.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $330.0 Put for $3.83 credit (+$383)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-31",
+          "strike": 330.0,
+          "expiry": "2026-08-31",
+          "credit_or_debit": 1.75,
+          "amount_dollars": 208.0,
+          "pnl_pct": 54.3,
+          "details": "Bought back to close @ $1.75 (50% decay threshold). Realized +$208 (+54.3% ROC) in 17 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-17",
@@ -3119,7 +6378,32 @@
       "profit_pct": 55.0,
       "days_held": 14,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-17",
+          "strike": 435.0,
+          "expiry": "2026-09-21",
+          "credit_or_debit": 12.79,
+          "amount_dollars": 1279.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $435.0 Put for $12.79 credit (+$1279)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-31",
+          "strike": 435.0,
+          "expiry": "2026-08-31",
+          "credit_or_debit": 5.75,
+          "amount_dollars": 704.0,
+          "pnl_pct": 55.0,
+          "details": "Bought back to close @ $5.75 (50% decay threshold). Realized +$704 (+55.0% ROC) in 14 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-18",
@@ -3133,7 +6417,32 @@
       "profit_pct": 55.1,
       "days_held": 13,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-18",
+          "strike": 1140.0,
+          "expiry": "2026-09-22",
+          "credit_or_debit": 26.58,
+          "amount_dollars": 2658.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $1140.0 Put for $26.58 credit (+$2658)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-31",
+          "strike": 1140.0,
+          "expiry": "2026-08-31",
+          "credit_or_debit": 11.94,
+          "amount_dollars": 1464.0,
+          "pnl_pct": 55.1,
+          "details": "Bought back to close @ $11.94 (50% decay threshold). Realized +$1464 (+55.1% ROC) in 13 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-26",
@@ -3147,7 +6456,32 @@
       "profit_pct": 56.8,
       "days_held": 5,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-26",
+          "strike": 295.0,
+          "expiry": "2026-09-30",
+          "credit_or_debit": 2.98,
+          "amount_dollars": 298.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $295.0 Put for $2.98 credit (+$298)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-31",
+          "strike": 295.0,
+          "expiry": "2026-08-31",
+          "credit_or_debit": 1.29,
+          "amount_dollars": 169.0,
+          "pnl_pct": 56.8,
+          "details": "Bought back to close @ $1.29 (50% decay threshold). Realized +$169 (+56.8% ROC) in 5 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-27",
@@ -3161,7 +6495,32 @@
       "profit_pct": 52.5,
       "days_held": 4,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-27",
+          "strike": 450.0,
+          "expiry": "2026-10-01",
+          "credit_or_debit": 5.42,
+          "amount_dollars": 542.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $450.0 Put for $5.42 credit (+$542)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-31",
+          "strike": 450.0,
+          "expiry": "2026-08-31",
+          "credit_or_debit": 2.57,
+          "amount_dollars": 285.0,
+          "pnl_pct": 52.5,
+          "details": "Bought back to close @ $2.57 (50% decay threshold). Realized +$285 (+52.5% ROC) in 4 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-11",
@@ -3175,7 +6534,32 @@
       "profit_pct": 72.1,
       "days_held": 17,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-11",
+          "strike": 155.0,
+          "expiry": "2026-09-15",
+          "credit_or_debit": 3.11,
+          "amount_dollars": 311.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $155.0 Put for $3.11 credit (+$311)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-28",
+          "strike": 155.0,
+          "expiry": "2026-08-28",
+          "credit_or_debit": 0.87,
+          "amount_dollars": 224.0,
+          "pnl_pct": 72.1,
+          "details": "Bought back to close @ $0.87 (50% decay threshold). Realized +$224 (+72.1% ROC) in 17 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-18",
@@ -3189,7 +6573,32 @@
       "profit_pct": 66.3,
       "days_held": 10,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-18",
+          "strike": 800.0,
+          "expiry": "2026-09-22",
+          "credit_or_debit": 35.79,
+          "amount_dollars": 3579.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $800.0 Put for $35.79 credit (+$3579)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-28",
+          "strike": 800.0,
+          "expiry": "2026-08-28",
+          "credit_or_debit": 12.05,
+          "amount_dollars": 2374.0,
+          "pnl_pct": 66.3,
+          "details": "Bought back to close @ $12.05 (50% decay threshold). Realized +$2374 (+66.3% ROC) in 10 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-21",
@@ -3203,7 +6612,54 @@
       "profit_pct": 54.7,
       "days_held": 6,
       "exit_type": "50% Profit Target Hit (2 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-21",
+          "strike": 209.0,
+          "expiry": "2026-09-25",
+          "credit_or_debit": 4.31,
+          "amount_dollars": 431.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $209.0 Put for $4.31 credit (+$431)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-09-04",
+          "strike": 199.5,
+          "expiry": "2026-09-10",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 13.9,
+          "details": "Rolled strike down by 5% to $199.5 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-09-18",
+          "strike": 190.0,
+          "expiry": "2026-08-27",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 11.6,
+          "details": "Second and final roll executed down to $190.0 for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-27",
+          "strike": 190.0,
+          "expiry": "2026-08-27",
+          "credit_or_debit": 1.95,
+          "amount_dollars": 236.0,
+          "pnl_pct": 54.7,
+          "details": "Bought back to close @ $1.95 (50% decay threshold). Realized +$236 (+54.7% ROC) in 6 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-14",
@@ -3217,7 +6673,32 @@
       "profit_pct": 76.9,
       "days_held": 13,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-14",
+          "strike": 280.0,
+          "expiry": "2026-09-18",
+          "credit_or_debit": 3.63,
+          "amount_dollars": 363.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $280.0 Put for $3.63 credit (+$363)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-27",
+          "strike": 280.0,
+          "expiry": "2026-08-27",
+          "credit_or_debit": 0.84,
+          "amount_dollars": 279.0,
+          "pnl_pct": 76.9,
+          "details": "Bought back to close @ $0.84 (50% decay threshold). Realized +$279 (+76.9% ROC) in 13 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-14",
@@ -3231,7 +6712,32 @@
       "profit_pct": 60.6,
       "days_held": 13,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-14",
+          "strike": 157.5,
+          "expiry": "2026-09-18",
+          "credit_or_debit": 2.08,
+          "amount_dollars": 208.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $157.5 Put for $2.08 credit (+$208)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-27",
+          "strike": 157.5,
+          "expiry": "2026-08-27",
+          "credit_or_debit": 0.82,
+          "amount_dollars": 126.0,
+          "pnl_pct": 60.6,
+          "details": "Bought back to close @ $0.82 (50% decay threshold). Realized +$126 (+60.6% ROC) in 13 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-21",
@@ -3245,7 +6751,32 @@
       "profit_pct": 51.3,
       "days_held": 6,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-21",
+          "strike": 420.0,
+          "expiry": "2026-09-25",
+          "credit_or_debit": 9.12,
+          "amount_dollars": 912.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $420.0 Put for $9.12 credit (+$912)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-27",
+          "strike": 420.0,
+          "expiry": "2026-08-27",
+          "credit_or_debit": 4.44,
+          "amount_dollars": 468.0,
+          "pnl_pct": 51.3,
+          "details": "Bought back to close @ $4.44 (50% decay threshold). Realized +$468 (+51.3% ROC) in 6 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-21",
@@ -3259,7 +6790,32 @@
       "profit_pct": 79.9,
       "days_held": 6,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-21",
+          "strike": 110.0,
+          "expiry": "2026-09-25",
+          "credit_or_debit": 2.25,
+          "amount_dollars": 225.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $110.0 Put for $2.25 credit (+$225)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-27",
+          "strike": 110.0,
+          "expiry": "2026-08-27",
+          "credit_or_debit": 0.45,
+          "amount_dollars": 180.0,
+          "pnl_pct": 79.9,
+          "details": "Bought back to close @ $0.45 (50% decay threshold). Realized +$180 (+79.9% ROC) in 6 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-21",
@@ -3273,7 +6829,32 @@
       "profit_pct": 67.7,
       "days_held": 6,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-21",
+          "strike": 147.5,
+          "expiry": "2026-09-25",
+          "credit_or_debit": 3.76,
+          "amount_dollars": 376.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $147.5 Put for $3.76 credit (+$376)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-27",
+          "strike": 147.5,
+          "expiry": "2026-08-27",
+          "credit_or_debit": 1.21,
+          "amount_dollars": 255.0,
+          "pnl_pct": 67.7,
+          "details": "Bought back to close @ $1.21 (50% decay threshold). Realized +$255 (+67.7% ROC) in 6 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-24",
@@ -3287,7 +6868,32 @@
       "profit_pct": 52.5,
       "days_held": 3,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-24",
+          "strike": 150.0,
+          "expiry": "2026-09-28",
+          "credit_or_debit": 2.97,
+          "amount_dollars": 297.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $150.0 Put for $2.97 credit (+$297)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-27",
+          "strike": 150.0,
+          "expiry": "2026-08-27",
+          "credit_or_debit": 1.41,
+          "amount_dollars": 156.0,
+          "pnl_pct": 52.5,
+          "details": "Bought back to close @ $1.41 (50% decay threshold). Realized +$156 (+52.5% ROC) in 3 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-25",
@@ -3301,7 +6907,32 @@
       "profit_pct": 71.0,
       "days_held": 2,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-25",
+          "strike": 235.0,
+          "expiry": "2026-09-29",
+          "credit_or_debit": 2.39,
+          "amount_dollars": 239.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $235.0 Put for $2.39 credit (+$239)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-27",
+          "strike": 235.0,
+          "expiry": "2026-08-27",
+          "credit_or_debit": 0.69,
+          "amount_dollars": 170.0,
+          "pnl_pct": 71.0,
+          "details": "Bought back to close @ $0.69 (50% decay threshold). Realized +$170 (+71.0% ROC) in 2 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-10",
@@ -3315,7 +6946,32 @@
       "profit_pct": 60.3,
       "days_held": 16,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-10",
+          "strike": 200.0,
+          "expiry": "2026-09-14",
+          "credit_or_debit": 2.38,
+          "amount_dollars": 238.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $200.0 Put for $2.38 credit (+$238)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-26",
+          "strike": 200.0,
+          "expiry": "2026-08-26",
+          "credit_or_debit": 0.95,
+          "amount_dollars": 143.0,
+          "pnl_pct": 60.3,
+          "details": "Bought back to close @ $0.95 (50% decay threshold). Realized +$143 (+60.3% ROC) in 16 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-14",
@@ -3329,7 +6985,32 @@
       "profit_pct": 55.4,
       "days_held": 12,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-14",
+          "strike": 127.5,
+          "expiry": "2026-09-18",
+          "credit_or_debit": 2.37,
+          "amount_dollars": 237.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $127.5 Put for $2.37 credit (+$237)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-26",
+          "strike": 127.5,
+          "expiry": "2026-08-26",
+          "credit_or_debit": 1.06,
+          "amount_dollars": 131.0,
+          "pnl_pct": 55.4,
+          "details": "Bought back to close @ $1.06 (50% decay threshold). Realized +$131 (+55.4% ROC) in 12 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-11",
@@ -3343,7 +7024,32 @@
       "profit_pct": 59.3,
       "days_held": 13,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-11",
+          "strike": 130.0,
+          "expiry": "2026-09-15",
+          "credit_or_debit": 1.92,
+          "amount_dollars": 192.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $130.0 Put for $1.92 credit (+$192)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-24",
+          "strike": 130.0,
+          "expiry": "2026-08-24",
+          "credit_or_debit": 0.78,
+          "amount_dollars": 114.0,
+          "pnl_pct": 59.3,
+          "details": "Bought back to close @ $0.78 (50% decay threshold). Realized +$114 (+59.3% ROC) in 13 days."
+        }
+      ]
     },
     {
       "open_date": "2026-07-24",
@@ -3357,7 +7063,54 @@
       "profit_pct": 92.8,
       "days_held": 28,
       "exit_type": "50% Profit Target Hit (2 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-07-24",
+          "strike": 106.7,
+          "expiry": "2026-08-28",
+          "credit_or_debit": 6.51,
+          "amount_dollars": 651.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $106.7 Put for $6.51 credit (+$651)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-08-07",
+          "strike": 101.9,
+          "expiry": "2026-09-04",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 9.2,
+          "details": "Rolled strike down by 5% to $101.9 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-08-21",
+          "strike": 97.0,
+          "expiry": "2026-08-21",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 7.7,
+          "details": "Second and final roll executed down to $97.0 for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-21",
+          "strike": 97.0,
+          "expiry": "2026-08-21",
+          "credit_or_debit": 0.47,
+          "amount_dollars": 604.0,
+          "pnl_pct": 92.8,
+          "details": "Bought back to close @ $0.47 (50% decay threshold). Realized +$604 (+92.8% ROC) in 28 days."
+        }
+      ]
     },
     {
       "open_date": "2026-07-24",
@@ -3371,7 +7124,54 @@
       "profit_pct": 84.4,
       "days_held": 28,
       "exit_type": "50% Profit Target Hit (2 rolls)",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 2,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-07-24",
+          "strike": 379.5,
+          "expiry": "2026-08-28",
+          "credit_or_debit": 12.79,
+          "amount_dollars": 1279.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $379.5 Put for $12.79 credit (+$1279)."
+        },
+        {
+          "step": "roll_1",
+          "title": "Roll #1 Out & Down",
+          "date": "2026-08-07",
+          "strike": 362.2,
+          "expiry": "2026-09-04",
+          "credit_or_debit": 0.6,
+          "amount_dollars": 60.0,
+          "pnl_pct": 4.7,
+          "details": "Rolled strike down by 5% to $362.2 for +$0.60 net credit (+$60)."
+        },
+        {
+          "step": "roll_2",
+          "title": "Roll #2 Out & Down (Hard Cap)",
+          "date": "2026-08-21",
+          "strike": 345.0,
+          "expiry": "2026-08-21",
+          "credit_or_debit": 0.5,
+          "amount_dollars": 50.0,
+          "pnl_pct": 3.9,
+          "details": "Second and final roll executed down to $345.0 for +$0.50 net credit. 2-Roll Cap reached."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-21",
+          "strike": 345.0,
+          "expiry": "2026-08-21",
+          "credit_or_debit": 2.0,
+          "amount_dollars": 1079.0,
+          "pnl_pct": 84.4,
+          "details": "Bought back to close @ $2.00 (50% decay threshold). Realized +$1079 (+84.4% ROC) in 28 days."
+        }
+      ]
     },
     {
       "open_date": "2026-07-16",
@@ -3385,7 +7185,32 @@
       "profit_pct": -4.2,
       "days_held": 35,
       "exit_type": "Assigned Below Basis (-4.2%)",
-      "result": "LOSS"
+      "result": "LOSS",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-07-16",
+          "strike": 550.0,
+          "expiry": "2026-08-20",
+          "credit_or_debit": 30.38,
+          "amount_dollars": 3038.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $550.0 Put for $30.38 credit (+$3038)."
+        },
+        {
+          "step": "exit_assignment",
+          "title": "Assigned Below Basis (-4.2%)",
+          "date": "2026-08-20",
+          "strike": 550.0,
+          "expiry": "2026-08-20",
+          "credit_or_debit": 53.74,
+          "amount_dollars": -2336.0,
+          "pnl_pct": -4.2,
+          "details": "Option assigned at expiration at $550.0. Effective net basis: $519.62 ($550.0 strike - $30.38 premium). Stock P&L vs basis: -$2336 (-4.2%). Covered Calls initiated."
+        }
+      ]
     },
     {
       "open_date": "2026-08-12",
@@ -3399,7 +7224,32 @@
       "profit_pct": 61.3,
       "days_held": 8,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-12",
+          "strike": 105.0,
+          "expiry": "2026-09-16",
+          "credit_or_debit": 2.05,
+          "amount_dollars": 205.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $105.0 Put for $2.05 credit (+$205)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-20",
+          "strike": 105.0,
+          "expiry": "2026-08-20",
+          "credit_or_debit": 0.79,
+          "amount_dollars": 126.0,
+          "pnl_pct": 61.3,
+          "details": "Bought back to close @ $0.79 (50% decay threshold). Realized +$126 (+61.3% ROC) in 8 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-18",
@@ -3413,7 +7263,32 @@
       "profit_pct": 67.4,
       "days_held": 2,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-18",
+          "strike": 185.0,
+          "expiry": "2026-09-22",
+          "credit_or_debit": 7.34,
+          "amount_dollars": 734.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $185.0 Put for $7.34 credit (+$734)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-20",
+          "strike": 185.0,
+          "expiry": "2026-08-20",
+          "credit_or_debit": 2.39,
+          "amount_dollars": 495.0,
+          "pnl_pct": 67.4,
+          "details": "Bought back to close @ $2.39 (50% decay threshold). Realized +$495 (+67.4% ROC) in 2 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-11",
@@ -3427,7 +7302,32 @@
       "profit_pct": 57.5,
       "days_held": 8,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-11",
+          "strike": 225.0,
+          "expiry": "2026-09-15",
+          "credit_or_debit": 2.95,
+          "amount_dollars": 295.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $225.0 Put for $2.95 credit (+$295)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-19",
+          "strike": 225.0,
+          "expiry": "2026-08-19",
+          "credit_or_debit": 1.25,
+          "amount_dollars": 170.0,
+          "pnl_pct": 57.5,
+          "details": "Bought back to close @ $1.25 (50% decay threshold). Realized +$170 (+57.5% ROC) in 8 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-11",
@@ -3441,7 +7341,32 @@
       "profit_pct": 71.3,
       "days_held": 8,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-11",
+          "strike": 430.0,
+          "expiry": "2026-09-15",
+          "credit_or_debit": 5.14,
+          "amount_dollars": 514.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $430.0 Put for $5.14 credit (+$514)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-19",
+          "strike": 430.0,
+          "expiry": "2026-08-19",
+          "credit_or_debit": 1.48,
+          "amount_dollars": 366.0,
+          "pnl_pct": 71.3,
+          "details": "Bought back to close @ $1.48 (50% decay threshold). Realized +$366 (+71.3% ROC) in 8 days."
+        }
+      ]
     },
     {
       "open_date": "2026-08-12",
@@ -3455,7 +7380,32 @@
       "profit_pct": 50.5,
       "days_held": 7,
       "exit_type": "50% Profit Target Hit",
-      "result": "WIN"
+      "result": "WIN",
+      "rolls": 0,
+      "lifecycle_tree": [
+        {
+          "step": "initial",
+          "title": "Initial Put Sale",
+          "date": "2026-08-12",
+          "strike": 145.0,
+          "expiry": "2026-09-16",
+          "credit_or_debit": 3.05,
+          "amount_dollars": 305.0,
+          "pnl_pct": 0.0,
+          "details": "Sold $145.0 Put for $3.05 credit (+$305)."
+        },
+        {
+          "step": "exit_tp",
+          "title": "50% Profit Target Hit",
+          "date": "2026-08-19",
+          "strike": 145.0,
+          "expiry": "2026-08-19",
+          "credit_or_debit": 1.51,
+          "amount_dollars": 154.0,
+          "pnl_pct": 50.5,
+          "details": "Bought back to close @ $1.51 (50% decay threshold). Realized +$154 (+50.5% ROC) in 7 days."
+        }
+      ]
     }
   ]
 }
