@@ -463,7 +463,7 @@ export default function RulesPage() {
           <div>
             <div className="flex items-center gap-2">
               <Calculator className="w-5 h-5 text-accent-favorable" />
-              <h2 className="text-lg font-bold text-text-primary">3. Flowchart: Win Rate, Avg Win, Avg Loss &amp; Payoff Calculation Engine</h2>
+              <h2 className="text-lg font-bold text-text-primary">Win Rate, Avg Win, Avg Loss &amp; Payoff Calculation Engine</h2>
             </div>
             <p className="text-xs text-text-muted mt-1">
               Step-by-step mathematical flowchart showing how multi-leg campaigns are classified into Wins, Losses, and Wheel Conversions to compute institutional expectancy.
