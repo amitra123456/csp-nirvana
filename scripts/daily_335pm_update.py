@@ -361,7 +361,7 @@ def run_daily_pipeline(force_alpaca_fail: bool = False) -> Snapshot:
         avg_loss=avg_loss,
         net_pnl=net_pnl,
         monthly_pnl=monthly_pnl_list,
-        score_quintiles=None
+        score_quintiles=sim_data.get("score_quintiles")
     )
 
     # Step 5: Overall Status determination

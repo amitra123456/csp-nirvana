@@ -133,6 +133,61 @@ export interface MonthlyPnl {
   pnl: number;
 }
 
+export interface ScoreQuintileItem {
+  quintile: string;
+  score_range: string;
+  trades: number;
+  win_rate: number;
+  tp_50_rate: number;
+  avg_days_to_tp: number;
+  gross_win: number;
+  gross_loss: number;
+  net_pnl: number;
+  profit_factor: number;
+  avg_win: number;
+  avg_loss: number;
+  avg_mae: number;
+}
+
+export interface ScoreTierItem {
+  tier: string;
+  score_range: string;
+  trades: number;
+  win_rate: number;
+  tp_50_rate: number;
+  avg_days_to_tp: number;
+  gross_win: number;
+  gross_loss: number;
+  net_pnl: number;
+  profit_factor: number;
+  avg_win: number;
+  avg_loss: number;
+}
+
+export interface FactorAttributionItem {
+  factor: string;
+  condition: string;
+  trades: number;
+  win_rate: number;
+  profit_factor: number;
+  net_pnl: number;
+}
+
+export interface ScoreQuintilesSummary {
+  top_40_win_rate: number;
+  top_40_profit_factor: number;
+  macro_shelf_loss_reduction_pct: number;
+  golden_cross_profit_contribution_pct: number;
+  avg_days_top_vs_bottom: string;
+}
+
+export interface ScoreQuintilesData {
+  quintiles: ScoreQuintileItem[];
+  tiers: ScoreTierItem[];
+  factors: FactorAttributionItem[];
+  summary: ScoreQuintilesSummary;
+}
+
 export interface Backtest {
   as_of: string;
   label: string;
@@ -143,7 +198,7 @@ export interface Backtest {
   avg_loss: number;
   net_pnl: number;
   monthly_pnl: MonthlyPnl[];
-  score_quintiles: any | null;
+  score_quintiles: ScoreQuintilesData | null;
 }
 
 export interface ActiveSignal {

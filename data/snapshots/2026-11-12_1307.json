@@ -1,0 +1,2568 @@
+{
+  "run": {
+    "run_id": "RUN_20261112T130704",
+    "as_of_et": "2026-11-12T13:07:04.213059-05:00",
+    "status": "ok",
+    "sources": {
+      "bars": "alpaca:iex",
+      "options": "alpaca:indicative",
+      "fundamentals": "yfinance"
+    },
+    "errors": []
+  },
+  "rules": {
+    "preset": "core",
+    "target_dte": 35,
+    "cushion_min_pct": 12.0,
+    "min_credit": 1.5,
+    "min_roc_pct": 1.2
+  },
+  "setups": [
+    {
+      "ticker": "CRM",
+      "name": "Salesforce Inc.",
+      "spot": 218.3,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 190.0,
+      "bid": 3.65,
+      "ask": 4.05,
+      "mid": 3.85,
+      "iv": 0.524,
+      "delta": -0.17,
+      "open_interest": 2843,
+      "cushion_pct": 13.0,
+      "credit": 365.0,
+      "collateral": 19000.0,
+      "roc_cycle_pct": 1.92,
+      "roc_annual_pct": 19.5,
+      "cost_basis": 186.35,
+      "odds_otm_market_pct": 83.0,
+      "odds_touch_market_pct": 34.0,
+      "odds_model_pct": 99.0,
+      "one_sigma_low": 185.17,
+      "levels": {
+        "sma50": 236.15,
+        "sma200": 197.38,
+        "avwap": 241.27,
+        "vwap20": 232.44,
+        "ote_618": 225.21,
+        "ote_786": 213.67
+      },
+      "score": 88.6,
+      "score_parts": {
+        "cushion": [
+          18.2,
+          20.0
+        ],
+        "valuation": [
+          20.0,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.6,
+          8.0
+        ],
+        "yield": [
+          3.8,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $190.00 is higher than the 1-standard-deviation move floor ($185.17)."
+        }
+      ],
+      "plan": {
+        "tp50": 1.82,
+        "tp60": 1.46,
+        "roll_trigger_price": 193.8,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -3354.0
+      }
+    },
+    {
+      "ticker": "ADBE",
+      "name": "Adobe Inc.",
+      "spot": 239.56,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 210.0,
+      "bid": 3.75,
+      "ask": 4.1,
+      "mid": 3.92,
+      "iv": 0.501,
+      "delta": -0.173,
+      "open_interest": 3981,
+      "cushion_pct": 12.3,
+      "credit": 375.0,
+      "collateral": 21000.0,
+      "roc_cycle_pct": 1.79,
+      "roc_annual_pct": 18.1,
+      "cost_basis": 206.25,
+      "odds_otm_market_pct": 82.7,
+      "odds_touch_market_pct": 34.6,
+      "odds_model_pct": 94.9,
+      "one_sigma_low": 204.69,
+      "levels": {
+        "sma50": 247.24,
+        "sma200": 247.9,
+        "avwap": 244.94,
+        "vwap20": 250.14,
+        "ote_618": 251.34,
+        "ote_786": 239.62
+      },
+      "score": 87.4,
+      "score_parts": {
+        "cushion": [
+          17.2,
+          20.0
+        ],
+        "valuation": [
+          20.0,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.6,
+          8.0
+        ],
+        "yield": [
+          3.6,
+          7.0
+        ]
+      },
+      "trend": "downtrend",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $210.00 is higher than the 1-standard-deviation move floor ($204.69)."
+        }
+      ],
+      "plan": {
+        "tp50": 1.88,
+        "tp60": 1.5,
+        "roll_trigger_price": 214.2,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -3856.0
+      }
+    },
+    {
+      "ticker": "INTU",
+      "name": "Intuit Inc.",
+      "spot": 342.49,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 300.0,
+      "bid": 7.3,
+      "ask": 7.8,
+      "mid": 7.55,
+      "iv": 0.559,
+      "delta": -0.193,
+      "open_interest": 1811,
+      "cushion_pct": 12.4,
+      "credit": 730.0,
+      "collateral": 30000.0,
+      "roc_cycle_pct": 2.43,
+      "roc_annual_pct": 24.6,
+      "cost_basis": 292.7,
+      "odds_otm_market_pct": 80.7,
+      "odds_touch_market_pct": 38.6,
+      "odds_model_pct": 87.5,
+      "one_sigma_low": 287.32,
+      "levels": {
+        "sma50": 317.11,
+        "sma200": 348.91,
+        "avwap": 321.94,
+        "vwap20": 341.02,
+        "ote_618": 303.3,
+        "ote_786": 284.89
+      },
+      "score": 86.2,
+      "score_parts": {
+        "cushion": [
+          17.4,
+          20.0
+        ],
+        "valuation": [
+          17.4,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.5,
+          8.0
+        ],
+        "yield": [
+          4.9,
+          7.0
+        ]
+      },
+      "trend": "test_200",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $300.00 is higher than the 1-standard-deviation move floor ($287.32)."
+        },
+        {
+          "severity": "high",
+          "title": "Earnings Blackout",
+          "detail": "Option spans earnings report on 2026-11-19."
+        }
+      ],
+      "plan": {
+        "tp50": 3.65,
+        "tp60": 2.92,
+        "roll_trigger_price": 306.0,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -5296.0
+      }
+    },
+    {
+      "ticker": "HOOD",
+      "name": "Robinhood Mkts",
+      "spot": 83.23,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 70.0,
+      "bid": 1.66,
+      "ask": 1.7,
+      "mid": 1.68,
+      "iv": 0.636,
+      "delta": -0.161,
+      "open_interest": 4727,
+      "cushion_pct": 15.9,
+      "credit": 166.0,
+      "collateral": 7000.0,
+      "roc_cycle_pct": 2.37,
+      "roc_annual_pct": 24.0,
+      "cost_basis": 68.34,
+      "odds_otm_market_pct": 83.9,
+      "odds_touch_market_pct": 32.2,
+      "odds_model_pct": 96.5,
+      "one_sigma_low": 68.16,
+      "levels": {
+        "sma50": 104.23,
+        "sma200": 91.53,
+        "avwap": 81.6,
+        "vwap20": 89.31,
+        "ote_618": 95.07,
+        "ote_786": 86.47
+      },
+      "score": 81.5,
+      "score_parts": {
+        "cushion": [
+          20.0,
+          20.0
+        ],
+        "valuation": [
+          10.1,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.7,
+          8.0
+        ],
+        "yield": [
+          4.7,
+          7.0
+        ]
+      },
+      "trend": "range",
+      "held_position": {
+        "strike": 70.0,
+        "expiry": "2026-12-18",
+        "itm": false
+      },
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $70.00 is higher than the 1-standard-deviation move floor ($68.16)."
+        }
+      ],
+      "plan": {
+        "tp50": 0.83,
+        "tp60": 0.66,
+        "roll_trigger_price": 71.4,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -1008.0
+      }
+    },
+    {
+      "ticker": "TEAM",
+      "name": "Atlassian Corp",
+      "spot": 153.71,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 135.0,
+      "bid": 3.5,
+      "ask": 3.8,
+      "mid": 3.65,
+      "iv": 0.571,
+      "delta": -0.201,
+      "open_interest": 268,
+      "cushion_pct": 12.2,
+      "credit": 350.0,
+      "collateral": 13500.0,
+      "roc_cycle_pct": 2.59,
+      "roc_annual_pct": 26.3,
+      "cost_basis": 131.5,
+      "odds_otm_market_pct": 79.9,
+      "odds_touch_market_pct": 40.2,
+      "odds_model_pct": 99.0,
+      "one_sigma_low": 128.46,
+      "levels": {
+        "sma50": 193.06,
+        "sma200": 119.58,
+        "avwap": 150.81,
+        "vwap20": 187.49,
+        "ote_618": 177.19,
+        "ote_786": 163.14
+      },
+      "score": 81.5,
+      "score_parts": {
+        "cushion": [
+          17.1,
+          20.0
+        ],
+        "valuation": [
+          12.8,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.4,
+          8.0
+        ],
+        "yield": [
+          5.2,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $135.00 is higher than the 1-standard-deviation move floor ($128.46)."
+        }
+      ],
+      "plan": {
+        "tp50": 1.75,
+        "tp60": 1.4,
+        "roll_trigger_price": 137.7,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -2390.0
+      }
+    },
+    {
+      "ticker": "QCOM",
+      "name": "Qualcomm Inc.",
+      "spot": 177.97,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 155.0,
+      "bid": 2.73,
+      "ask": 2.89,
+      "mid": 2.81,
+      "iv": 0.5,
+      "delta": -0.162,
+      "open_interest": 4356,
+      "cushion_pct": 12.9,
+      "credit": 273.0,
+      "collateral": 15500.0,
+      "roc_cycle_pct": 1.76,
+      "roc_annual_pct": 17.8,
+      "cost_basis": 152.27,
+      "odds_otm_market_pct": 83.8,
+      "odds_touch_market_pct": 32.4,
+      "odds_model_pct": 99.0,
+      "one_sigma_low": 152.1,
+      "levels": {
+        "sma50": 178.7,
+        "sma200": 169.06,
+        "avwap": 164.84,
+        "vwap20": 169.89,
+        "ote_618": 170.43,
+        "ote_786": 160.81
+      },
+      "score": 80.3,
+      "score_parts": {
+        "cushion": [
+          18.1,
+          20.0
+        ],
+        "valuation": [
+          12.0,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.7,
+          8.0
+        ],
+        "yield": [
+          3.5,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $155.00 is higher than the 1-standard-deviation move floor ($152.10)."
+        }
+      ],
+      "plan": {
+        "tp50": 1.36,
+        "tp60": 1.09,
+        "roll_trigger_price": 158.1,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -2769.0
+      }
+    },
+    {
+      "ticker": "MU",
+      "name": "Micron Tech",
+      "spot": 791.4,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 690.0,
+      "bid": 23.45,
+      "ask": 24.2,
+      "mid": 23.82,
+      "iv": 0.658,
+      "delta": -0.215,
+      "open_interest": 1584,
+      "cushion_pct": 12.8,
+      "credit": 2345.0,
+      "collateral": 69000.0,
+      "roc_cycle_pct": 3.4,
+      "roc_annual_pct": 34.5,
+      "cost_basis": 666.55,
+      "odds_otm_market_pct": 78.5,
+      "odds_touch_market_pct": 43.0,
+      "odds_model_pct": 96.9,
+      "one_sigma_low": 643.58,
+      "levels": {
+        "sma50": 947.2,
+        "sma200": 763.57,
+        "avwap": 722.89,
+        "vwap20": 819.48,
+        "ote_618": 826.67,
+        "ote_786": 750.08
+      },
+      "score": 79.1,
+      "score_parts": {
+        "cushion": [
+          17.9,
+          20.0
+        ],
+        "valuation": [
+          8.1,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.3,
+          8.0
+        ],
+        "yield": [
+          6.8,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $690.00 is higher than the 1-standard-deviation move floor ($643.58)."
+        }
+      ],
+      "plan": {
+        "tp50": 11.72,
+        "tp60": 9.38,
+        "roll_trigger_price": 703.8,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -11257.0
+      }
+    },
+    {
+      "ticker": "ZS",
+      "name": "Zscaler Inc.",
+      "spot": 193.73,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 170.0,
+      "bid": 8.25,
+      "ask": 8.85,
+      "mid": 8.55,
+      "iv": 0.781,
+      "delta": -0.25,
+      "open_interest": 311,
+      "cushion_pct": 12.2,
+      "credit": 825.0,
+      "collateral": 17000.0,
+      "roc_cycle_pct": 4.85,
+      "roc_annual_pct": 49.2,
+      "cost_basis": 161.75,
+      "odds_otm_market_pct": 75.0,
+      "odds_touch_market_pct": 50.0,
+      "odds_model_pct": 90.6,
+      "one_sigma_low": 151.57,
+      "levels": {
+        "sma50": 209.18,
+        "sma200": 166.61,
+        "avwap": 211.15,
+        "vwap20": 227.44,
+        "ote_618": 200.51,
+        "ote_786": 182.41
+      },
+      "score": 78.6,
+      "score_parts": {
+        "cushion": [
+          17.1,
+          20.0
+        ],
+        "valuation": [
+          8.5,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.0,
+          8.0
+        ],
+        "yield": [
+          7.0,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $170.00 is higher than the 1-standard-deviation move floor ($151.57)."
+        }
+      ],
+      "plan": {
+        "tp50": 4.12,
+        "tp60": 3.3,
+        "roll_trigger_price": 173.4,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -2614.0
+      }
+    },
+    {
+      "ticker": "MDB",
+      "name": "MongoDB Inc.",
+      "spot": 340.14,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 290.0,
+      "bid": 13.45,
+      "ask": 14.5,
+      "mid": 13.97,
+      "iv": 0.834,
+      "delta": -0.225,
+      "open_interest": 320,
+      "cushion_pct": 14.7,
+      "credit": 1345.0,
+      "collateral": 29000.0,
+      "roc_cycle_pct": 4.64,
+      "roc_annual_pct": 47.0,
+      "cost_basis": 276.55,
+      "odds_otm_market_pct": 77.5,
+      "odds_touch_market_pct": 45.0,
+      "odds_model_pct": 92.0,
+      "one_sigma_low": 261.79,
+      "levels": {
+        "sma50": 365.88,
+        "sma200": 334.45,
+        "avwap": 318.23,
+        "vwap20": 352.19,
+        "ote_618": 358.14,
+        "ote_786": 331.14
+      },
+      "score": 78.3,
+      "score_parts": {
+        "cushion": [
+          20.0,
+          20.0
+        ],
+        "valuation": [
+          5.1,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.2,
+          8.0
+        ],
+        "yield": [
+          7.0,
+          7.0
+        ]
+      },
+      "trend": "test_200",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $290.00 is higher than the 1-standard-deviation move floor ($261.79)."
+        }
+      ],
+      "plan": {
+        "tp50": 6.72,
+        "tp60": 5.38,
+        "roll_trigger_price": 295.8,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -3845.0
+      }
+    },
+    {
+      "ticker": "SNOW",
+      "name": "Snowflake Inc.",
+      "spot": 300.34,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 260.0,
+      "bid": 10.45,
+      "ask": 11.0,
+      "mid": 10.72,
+      "iv": 0.736,
+      "delta": -0.224,
+      "open_interest": 717,
+      "cushion_pct": 13.4,
+      "credit": 1045.0,
+      "collateral": 26000.0,
+      "roc_cycle_pct": 4.02,
+      "roc_annual_pct": 40.8,
+      "cost_basis": 249.55,
+      "odds_otm_market_pct": 77.6,
+      "odds_touch_market_pct": 44.8,
+      "odds_model_pct": 94.1,
+      "one_sigma_low": 238.36,
+      "levels": {
+        "sma50": 326.14,
+        "sma200": 242.71,
+        "avwap": 291.92,
+        "vwap20": 305.0,
+        "ote_618": 311.25,
+        "ote_786": 291.64
+      },
+      "score": 76.1,
+      "score_parts": {
+        "cushion": [
+          18.8,
+          20.0
+        ],
+        "valuation": [
+          4.1,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.2,
+          8.0
+        ],
+        "yield": [
+          7.0,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $260.00 is higher than the 1-standard-deviation move floor ($238.36)."
+        }
+      ],
+      "plan": {
+        "tp50": 5.22,
+        "tp60": 4.18,
+        "roll_trigger_price": 265.2,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -3931.0
+      }
+    },
+    {
+      "ticker": "LRCX",
+      "name": "Lam Research",
+      "spot": 233.53,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 200.0,
+      "bid": 4.8,
+      "ask": 5.1,
+      "mid": 4.95,
+      "iv": 0.605,
+      "delta": -0.175,
+      "open_interest": 2059,
+      "cushion_pct": 14.4,
+      "credit": 480.0,
+      "collateral": 20000.0,
+      "roc_cycle_pct": 2.4,
+      "roc_annual_pct": 24.3,
+      "cost_basis": 195.2,
+      "odds_otm_market_pct": 82.5,
+      "odds_touch_market_pct": 35.0,
+      "odds_model_pct": 95.7,
+      "one_sigma_low": 193.12,
+      "levels": {
+        "sma50": 278.89,
+        "sma200": 283.61,
+        "avwap": 208.64,
+        "vwap20": 230.36,
+        "ote_618": 248.5,
+        "ote_786": 220.25
+      },
+      "score": 75.3,
+      "score_parts": {
+        "cushion": [
+          20.0,
+          20.0
+        ],
+        "valuation": [
+          3.9,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.6,
+          8.0
+        ],
+        "yield": [
+          4.8,
+          7.0
+        ]
+      },
+      "trend": "downtrend",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $200.00 is higher than the 1-standard-deviation move floor ($193.12)."
+        }
+      ],
+      "plan": {
+        "tp50": 2.4,
+        "tp60": 1.92,
+        "roll_trigger_price": 204.0,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -3173.0
+      }
+    },
+    {
+      "ticker": "DDOG",
+      "name": "Datadog Inc.",
+      "spot": 186.04,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 160.0,
+      "bid": 3.95,
+      "ask": 4.3,
+      "mid": 4.12,
+      "iv": 0.606,
+      "delta": -0.181,
+      "open_interest": 912,
+      "cushion_pct": 14.0,
+      "credit": 395.0,
+      "collateral": 16000.0,
+      "roc_cycle_pct": 2.47,
+      "roc_annual_pct": 25.0,
+      "cost_basis": 156.05,
+      "odds_otm_market_pct": 81.9,
+      "odds_touch_market_pct": 36.2,
+      "odds_model_pct": 96.4,
+      "one_sigma_low": 153.79,
+      "levels": {
+        "sma50": 244.17,
+        "sma200": 201.09,
+        "avwap": 178.79,
+        "vwap20": 219.65,
+        "ote_618": 219.93,
+        "ote_786": 198.36
+      },
+      "score": 75.1,
+      "score_parts": {
+        "cushion": [
+          19.6,
+          20.0
+        ],
+        "valuation": [
+          4.0,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.6,
+          8.0
+        ],
+        "yield": [
+          4.9,
+          7.0
+        ]
+      },
+      "trend": "range",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $160.00 is higher than the 1-standard-deviation move floor ($153.79)."
+        }
+      ],
+      "plan": {
+        "tp50": 1.98,
+        "tp60": 1.58,
+        "roll_trigger_price": 163.2,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -2582.0
+      }
+    },
+    {
+      "ticker": "AVGO",
+      "name": "Broadcom Inc.",
+      "spot": 363.24,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 310.0,
+      "bid": 6.15,
+      "ask": 6.3,
+      "mid": 6.22,
+      "iv": 0.564,
+      "delta": -0.157,
+      "open_interest": 7780,
+      "cushion_pct": 14.7,
+      "credit": 615.0,
+      "collateral": 31000.0,
+      "roc_cycle_pct": 1.98,
+      "roc_annual_pct": 20.1,
+      "cost_basis": 303.85,
+      "odds_otm_market_pct": 84.3,
+      "odds_touch_market_pct": 31.4,
+      "odds_model_pct": 99.0,
+      "one_sigma_low": 304.3,
+      "levels": {
+        "sma50": 345.46,
+        "sma200": 366.37,
+        "avwap": 332.14,
+        "vwap20": 329.42,
+        "ote_618": 324.56,
+        "ote_786": 309.28
+      },
+      "score": 75.1,
+      "score_parts": {
+        "cushion": [
+          20.0,
+          20.0
+        ],
+        "valuation": [
+          4.4,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.7,
+          8.0
+        ],
+        "yield": [
+          4.0,
+          7.0
+        ]
+      },
+      "trend": "test_200",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $310.00 is higher than the 1-standard-deviation move floor ($304.30)."
+        }
+      ],
+      "plan": {
+        "tp50": 3.08,
+        "tp60": 2.46,
+        "roll_trigger_price": 316.2,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -4958.0
+      }
+    },
+    {
+      "ticker": "ADI",
+      "name": "Analog Devices",
+      "spot": 408.33,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 350.0,
+      "bid": 5.3,
+      "ask": 6.5,
+      "mid": 5.9,
+      "iv": 0.519,
+      "delta": -0.146,
+      "open_interest": 827,
+      "cushion_pct": 14.3,
+      "credit": 530.0,
+      "collateral": 35000.0,
+      "roc_cycle_pct": 1.51,
+      "roc_annual_pct": 15.3,
+      "cost_basis": 344.7,
+      "odds_otm_market_pct": 85.4,
+      "odds_touch_market_pct": 29.2,
+      "odds_model_pct": 99.0,
+      "one_sigma_low": 346.89,
+      "levels": {
+        "sma50": 393.96,
+        "sma200": 374.89,
+        "avwap": 393.55,
+        "vwap20": 399.47,
+        "ote_618": 380.78,
+        "ote_786": 366.43
+      },
+      "score": 75.0,
+      "score_parts": {
+        "cushion": [
+          20.0,
+          20.0
+        ],
+        "valuation": [
+          5.2,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.8,
+          8.0
+        ],
+        "yield": [
+          3.0,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $350.00 is higher than the 1-standard-deviation move floor ($346.89)."
+        },
+        {
+          "severity": "high",
+          "title": "Earnings Blackout",
+          "detail": "Option spans earnings report on 2026-11-24."
+        }
+      ],
+      "plan": {
+        "tp50": 2.65,
+        "tp60": 2.12,
+        "roll_trigger_price": 357.0,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -5887.0
+      }
+    },
+    {
+      "ticker": "PANW",
+      "name": "Palo Alto Networks",
+      "spot": 325.21,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 285.0,
+      "bid": 9.85,
+      "ask": 11.0,
+      "mid": 10.43,
+      "iv": 0.665,
+      "delta": -0.224,
+      "open_interest": 635,
+      "cushion_pct": 12.4,
+      "credit": 985.0,
+      "collateral": 28500.0,
+      "roc_cycle_pct": 3.46,
+      "roc_annual_pct": 35.1,
+      "cost_basis": 275.15,
+      "odds_otm_market_pct": 77.6,
+      "odds_touch_market_pct": 44.8,
+      "odds_model_pct": 90.9,
+      "one_sigma_low": 263.94,
+      "levels": {
+        "sma50": 367.72,
+        "sma200": 276.5,
+        "avwap": 323.8,
+        "vwap20": 350.92,
+        "ote_618": 358.03,
+        "ote_786": 337.92
+      },
+      "score": 74.5,
+      "score_parts": {
+        "cushion": [
+          17.4,
+          20.0
+        ],
+        "valuation": [
+          4.0,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.2,
+          8.0
+        ],
+        "yield": [
+          6.9,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $285.00 is higher than the 1-standard-deviation move floor ($263.94)."
+        },
+        {
+          "severity": "high",
+          "title": "Earnings Blackout",
+          "detail": "Option spans earnings report on 2026-11-18."
+        }
+      ],
+      "plan": {
+        "tp50": 4.92,
+        "tp60": 3.94,
+        "roll_trigger_price": 290.7,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -4750.0
+      }
+    },
+    {
+      "ticker": "MRVL",
+      "name": "Marvell Tech",
+      "spot": 165.13,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 145.0,
+      "bid": 6.65,
+      "ask": 6.9,
+      "mid": 6.78,
+      "iv": 0.749,
+      "delta": -0.245,
+      "open_interest": 13271,
+      "cushion_pct": 12.2,
+      "credit": 665.0,
+      "collateral": 14500.0,
+      "roc_cycle_pct": 4.59,
+      "roc_annual_pct": 46.5,
+      "cost_basis": 138.35,
+      "odds_otm_market_pct": 75.5,
+      "odds_touch_market_pct": 49.0,
+      "odds_model_pct": 86.0,
+      "one_sigma_low": 130.51,
+      "levels": {
+        "sma50": 230.23,
+        "sma200": 186.56,
+        "avwap": 149.98,
+        "vwap20": 185.0,
+        "ote_618": 196.95,
+        "ote_786": 168.68
+      },
+      "score": 74.2,
+      "score_parts": {
+        "cushion": [
+          17.1,
+          20.0
+        ],
+        "valuation": [
+          4.1,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.0,
+          8.0
+        ],
+        "yield": [
+          7.0,
+          7.0
+        ]
+      },
+      "trend": "range",
+      "held_position": {
+        "strike": 140.0,
+        "expiry": "2026-12-18",
+        "itm": false
+      },
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $145.00 is higher than the 1-standard-deviation move floor ($130.51)."
+        }
+      ],
+      "plan": {
+        "tp50": 3.33,
+        "tp60": 2.66,
+        "roll_trigger_price": 147.9,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -2276.0
+      }
+    },
+    {
+      "ticker": "KLAC",
+      "name": "KLA Corp",
+      "spot": 158.82,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 138.0,
+      "bid": 3.8,
+      "ask": 4.1,
+      "mid": 3.95,
+      "iv": 0.611,
+      "delta": -0.197,
+      "open_interest": 4941,
+      "cushion_pct": 13.1,
+      "credit": 380.0,
+      "collateral": 13800.0,
+      "roc_cycle_pct": 2.75,
+      "roc_annual_pct": 27.9,
+      "cost_basis": 134.2,
+      "odds_otm_market_pct": 80.3,
+      "odds_touch_market_pct": 39.4,
+      "odds_model_pct": 87.0,
+      "one_sigma_low": 131.09,
+      "levels": {
+        "sma50": 173.41,
+        "sma200": 181.63,
+        "avwap": 144.94,
+        "vwap20": 153.7,
+        "ote_618": 158.9,
+        "ote_786": 145.39
+      },
+      "score": 73.6,
+      "score_parts": {
+        "cushion": [
+          18.3,
+          20.0
+        ],
+        "valuation": [
+          3.4,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.4,
+          8.0
+        ],
+        "yield": [
+          5.5,
+          7.0
+        ]
+      },
+      "trend": "downtrend",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $138.00 is higher than the 1-standard-deviation move floor ($131.09)."
+        }
+      ],
+      "plan": {
+        "tp50": 1.9,
+        "tp60": 1.52,
+        "roll_trigger_price": 140.76,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -2303.0
+      }
+    },
+    {
+      "ticker": "CRWD",
+      "name": "CrowdStrike",
+      "spot": 229.24,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 200.0,
+      "bid": 7.45,
+      "ask": 7.85,
+      "mid": 7.65,
+      "iv": 0.69,
+      "delta": -0.224,
+      "open_interest": 2734,
+      "cushion_pct": 12.8,
+      "credit": 745.0,
+      "collateral": 20000.0,
+      "roc_cycle_pct": 3.72,
+      "roc_annual_pct": 37.7,
+      "cost_basis": 192.55,
+      "odds_otm_market_pct": 77.6,
+      "odds_touch_market_pct": 44.8,
+      "odds_model_pct": 93.1,
+      "one_sigma_low": 184.55,
+      "levels": {
+        "sma50": 244.68,
+        "sma200": 172.46,
+        "avwap": 239.55,
+        "vwap20": 239.59,
+        "ote_618": 221.73,
+        "ote_786": 204.0
+      },
+      "score": 73.2,
+      "score_parts": {
+        "cushion": [
+          17.9,
+          20.0
+        ],
+        "valuation": [
+          2.1,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.2,
+          8.0
+        ],
+        "yield": [
+          7.0,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $200.00 is higher than the 1-standard-deviation move floor ($184.55)."
+        }
+      ],
+      "plan": {
+        "tp50": 3.73,
+        "tp60": 2.98,
+        "roll_trigger_price": 204.0,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -3208.0
+      }
+    },
+    {
+      "ticker": "AMD",
+      "name": "AMD",
+      "spot": 578.58,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 500.0,
+      "bid": 14.3,
+      "ask": 14.65,
+      "mid": 14.48,
+      "iv": 0.626,
+      "delta": -0.194,
+      "open_interest": 5133,
+      "cushion_pct": 13.6,
+      "credit": 1430.0,
+      "collateral": 50000.0,
+      "roc_cycle_pct": 2.86,
+      "roc_annual_pct": 29.0,
+      "cost_basis": 485.7,
+      "odds_otm_market_pct": 80.6,
+      "odds_touch_market_pct": 38.8,
+      "odds_model_pct": 88.7,
+      "one_sigma_low": 475.25,
+      "levels": {
+        "sma50": 552.82,
+        "sma200": 421.65,
+        "avwap": 496.52,
+        "vwap20": 507.65,
+        "ote_618": 500.03,
+        "ote_786": 456.96
+      },
+      "score": 73.1,
+      "score_parts": {
+        "cushion": [
+          19.0,
+          20.0
+        ],
+        "valuation": [
+          2.0,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.4,
+          8.0
+        ],
+        "yield": [
+          5.7,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $500.00 is higher than the 1-standard-deviation move floor ($475.25)."
+        }
+      ],
+      "plan": {
+        "tp50": 7.15,
+        "tp60": 5.72,
+        "roll_trigger_price": 510.0,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -8069.0
+      }
+    },
+    {
+      "ticker": "AMAT",
+      "name": "Applied Materials",
+      "spot": 390.85,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 340.0,
+      "bid": 9.45,
+      "ask": 10.25,
+      "mid": 9.85,
+      "iv": 0.612,
+      "delta": -0.199,
+      "open_interest": 1284,
+      "cushion_pct": 13.0,
+      "credit": 945.0,
+      "collateral": 34000.0,
+      "roc_cycle_pct": 2.78,
+      "roc_annual_pct": 28.2,
+      "cost_basis": 330.55,
+      "odds_otm_market_pct": 80.1,
+      "odds_touch_market_pct": 39.8,
+      "odds_model_pct": 79.3,
+      "one_sigma_low": 322.54,
+      "levels": {
+        "sma50": 439.39,
+        "sma200": 445.87,
+        "avwap": 354.3,
+        "vwap20": 380.49,
+        "ote_618": 404.8,
+        "ote_786": 366.18
+      },
+      "score": 72.7,
+      "score_parts": {
+        "cushion": [
+          18.2,
+          20.0
+        ],
+        "valuation": [
+          2.5,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.4,
+          8.0
+        ],
+        "yield": [
+          5.6,
+          7.0
+        ]
+      },
+      "trend": "downtrend",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $340.00 is higher than the 1-standard-deviation move floor ($322.54)."
+        },
+        {
+          "severity": "high",
+          "title": "Earnings Blackout",
+          "detail": "Option spans earnings report on 2026-11-12."
+        }
+      ],
+      "plan": {
+        "tp50": 4.72,
+        "tp60": 3.78,
+        "roll_trigger_price": 346.8,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -5696.0
+      }
+    },
+    {
+      "ticker": "TXN",
+      "name": "Texas Instruments",
+      "spot": 312.43,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 270.0,
+      "bid": 3.3,
+      "ask": 3.7,
+      "mid": 3.5,
+      "iv": 0.466,
+      "delta": -0.136,
+      "open_interest": 604,
+      "cushion_pct": 13.6,
+      "credit": 330.0,
+      "collateral": 27000.0,
+      "roc_cycle_pct": 1.22,
+      "roc_annual_pct": 12.4,
+      "cost_basis": 266.7,
+      "odds_otm_market_pct": 86.4,
+      "odds_touch_market_pct": 27.2,
+      "odds_model_pct": 99.0,
+      "one_sigma_low": 269.88,
+      "levels": {
+        "sma50": 281.78,
+        "sma200": 261.94,
+        "avwap": 283.3,
+        "vwap20": 293.36,
+        "ote_618": 273.88,
+        "ote_786": 262.1
+      },
+      "score": 72.5,
+      "score_parts": {
+        "cushion": [
+          19.0,
+          20.0
+        ],
+        "valuation": [
+          4.2,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.9,
+          8.0
+        ],
+        "yield": [
+          2.4,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $270.00 is higher than the 1-standard-deviation move floor ($269.88)."
+        }
+      ],
+      "plan": {
+        "tp50": 1.65,
+        "tp60": 1.32,
+        "roll_trigger_price": 275.4,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -4800.0
+      }
+    },
+    {
+      "ticker": "ORCL",
+      "name": "Oracle Corp",
+      "spot": 127.29,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 110.0,
+      "bid": 3.75,
+      "ask": 3.9,
+      "mid": 3.83,
+      "iv": 0.681,
+      "delta": -0.209,
+      "open_interest": 14905,
+      "cushion_pct": 13.6,
+      "credit": 375.0,
+      "collateral": 11000.0,
+      "roc_cycle_pct": 3.41,
+      "roc_annual_pct": 34.6,
+      "cost_basis": 106.25,
+      "odds_otm_market_pct": 79.1,
+      "odds_touch_market_pct": 41.8,
+      "odds_model_pct": 87.9,
+      "one_sigma_low": 102.77,
+      "levels": {
+        "sma50": 136.97,
+        "sma200": 153.37,
+        "avwap": 120.33,
+        "vwap20": 126.38,
+        "ote_618": 132.46,
+        "ote_786": 122.26
+      },
+      "score": 72.1,
+      "score_parts": {
+        "cushion": [
+          19.0,
+          20.0
+        ],
+        "valuation": [
+          0.0,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.3,
+          8.0
+        ],
+        "yield": [
+          6.8,
+          7.0
+        ]
+      },
+      "trend": "downtrend",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $110.00 is higher than the 1-standard-deviation move floor ($102.77)."
+        }
+      ],
+      "plan": {
+        "tp50": 1.88,
+        "tp60": 1.5,
+        "roll_trigger_price": 112.2,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -1715.0
+      }
+    },
+    {
+      "ticker": "ARM",
+      "name": "Arm Holdings",
+      "spot": 199.91,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 175.0,
+      "bid": 6.8,
+      "ask": 7.35,
+      "mid": 7.07,
+      "iv": 0.702,
+      "delta": -0.231,
+      "open_interest": 1199,
+      "cushion_pct": 12.5,
+      "credit": 680.0,
+      "collateral": 17500.0,
+      "roc_cycle_pct": 3.89,
+      "roc_annual_pct": 39.4,
+      "cost_basis": 168.2,
+      "odds_otm_market_pct": 76.9,
+      "odds_touch_market_pct": 46.2,
+      "odds_model_pct": 85.1,
+      "one_sigma_low": 160.37,
+      "levels": {
+        "sma50": 249.19,
+        "sma200": 232.41,
+        "avwap": 180.28,
+        "vwap20": 199.35,
+        "ote_618": 229.42,
+        "ote_786": 200.33
+      },
+      "score": 72.0,
+      "score_parts": {
+        "cushion": [
+          17.5,
+          20.0
+        ],
+        "valuation": [
+          1.3,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.2,
+          8.0
+        ],
+        "yield": [
+          7.0,
+          7.0
+        ]
+      },
+      "trend": "range",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $175.00 is higher than the 1-standard-deviation move floor ($160.37)."
+        }
+      ],
+      "plan": {
+        "tp50": 3.4,
+        "tp60": 2.72,
+        "roll_trigger_price": 178.5,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -2826.0
+      }
+    },
+    {
+      "ticker": "NET",
+      "name": "Cloudflare Inc.",
+      "spot": 320.76,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 280.0,
+      "bid": 8.4,
+      "ask": 8.75,
+      "mid": 8.57,
+      "iv": 0.619,
+      "delta": -0.206,
+      "open_interest": 355,
+      "cushion_pct": 12.7,
+      "credit": 840.0,
+      "collateral": 28000.0,
+      "roc_cycle_pct": 3.0,
+      "roc_annual_pct": 30.4,
+      "cost_basis": 271.6,
+      "odds_otm_market_pct": 79.4,
+      "odds_touch_market_pct": 41.2,
+      "odds_model_pct": 93.4,
+      "one_sigma_low": 264.06,
+      "levels": {
+        "sma50": 319.62,
+        "sma200": 252.65,
+        "avwap": 285.47,
+        "vwap20": 291.97,
+        "ote_618": 285.91,
+        "ote_786": 263.07
+      },
+      "score": 72.0,
+      "score_parts": {
+        "cushion": [
+          17.8,
+          20.0
+        ],
+        "valuation": [
+          1.8,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.4,
+          8.0
+        ],
+        "yield": [
+          6.0,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $280.00 is higher than the 1-standard-deviation move floor ($264.06)."
+        },
+        {
+          "severity": "high",
+          "title": "Earnings Blackout",
+          "detail": "Option spans earnings report on 2026-11-05."
+        }
+      ],
+      "plan": {
+        "tp50": 4.2,
+        "tp60": 3.36,
+        "roll_trigger_price": 285.6,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -4707.0
+      }
+    },
+    {
+      "ticker": "ASML",
+      "name": "ASML Holding",
+      "spot": 1512.77,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 1320.0,
+      "bid": 17.8,
+      "ask": 19.7,
+      "mid": 18.75,
+      "iv": 0.461,
+      "delta": -0.148,
+      "open_interest": 302,
+      "cushion_pct": 12.7,
+      "credit": 1780.0,
+      "collateral": 132000.0,
+      "roc_cycle_pct": 1.35,
+      "roc_annual_pct": 13.7,
+      "cost_basis": 1302.2,
+      "odds_otm_market_pct": 85.2,
+      "odds_touch_market_pct": 29.6,
+      "odds_model_pct": 99.0,
+      "one_sigma_low": 1308.94,
+      "levels": {
+        "sma50": 1662.46,
+        "sma200": 1598.59,
+        "avwap": 1466.78,
+        "vwap20": 1547.78,
+        "ote_618": 1552.19,
+        "ote_786": 1465.52
+      },
+      "score": 71.8,
+      "score_parts": {
+        "cushion": [
+          17.8,
+          20.0
+        ],
+        "valuation": [
+          4.5,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.8,
+          8.0
+        ],
+        "yield": [
+          2.7,
+          7.0
+        ]
+      },
+      "trend": "range",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $1320.00 is higher than the 1-standard-deviation move floor ($1308.94)."
+        }
+      ],
+      "plan": {
+        "tp50": 8.9,
+        "tp60": 7.12,
+        "roll_trigger_price": 1346.4,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -24326.0
+      }
+    },
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA Corp",
+      "spot": 165.15,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 145.0,
+      "bid": 4.1,
+      "ask": 4.25,
+      "mid": 4.17,
+      "iv": 0.589,
+      "delta": -0.206,
+      "open_interest": 17887,
+      "cushion_pct": 12.2,
+      "credit": 410.0,
+      "collateral": 14500.0,
+      "roc_cycle_pct": 2.83,
+      "roc_annual_pct": 28.7,
+      "cost_basis": 140.9,
+      "odds_otm_market_pct": 79.4,
+      "odds_touch_market_pct": 41.2,
+      "odds_model_pct": 83.7,
+      "one_sigma_low": 137.27,
+      "levels": {
+        "sma50": 215.93,
+        "sma200": 204.06,
+        "avwap": 160.35,
+        "vwap20": 186.81,
+        "ote_618": 184.91,
+        "ote_786": 169.03
+      },
+      "score": 71.8,
+      "score_parts": {
+        "cushion": [
+          17.1,
+          20.0
+        ],
+        "valuation": [
+          2.6,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.4,
+          8.0
+        ],
+        "yield": [
+          5.7,
+          7.0
+        ]
+      },
+      "trend": "range",
+      "held_position": {
+        "strike": 150.0,
+        "expiry": "2026-12-18",
+        "itm": false
+      },
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $145.00 is higher than the 1-standard-deviation move floor ($137.27)."
+        },
+        {
+          "severity": "high",
+          "title": "Earnings Blackout",
+          "detail": "Option spans earnings report on 2026-11-17."
+        }
+      ],
+      "plan": {
+        "tp50": 2.05,
+        "tp60": 1.64,
+        "roll_trigger_price": 147.9,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -2530.0
+      }
+    },
+    {
+      "ticker": "PLTR",
+      "name": "Palantir Tech",
+      "spot": 172.07,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 150.0,
+      "bid": 2.63,
+      "ask": 2.69,
+      "mid": 2.66,
+      "iv": 0.496,
+      "delta": -0.162,
+      "open_interest": 8501,
+      "cushion_pct": 12.8,
+      "credit": 263.0,
+      "collateral": 15000.0,
+      "roc_cycle_pct": 1.75,
+      "roc_annual_pct": 17.7,
+      "cost_basis": 147.37,
+      "odds_otm_market_pct": 83.8,
+      "odds_touch_market_pct": 32.4,
+      "odds_model_pct": 99.0,
+      "one_sigma_low": 147.25,
+      "levels": {
+        "sma50": 185.09,
+        "sma200": 153.64,
+        "avwap": 163.61,
+        "vwap20": 179.83,
+        "ote_618": 175.67,
+        "ote_786": 165.55
+      },
+      "score": 69.7,
+      "score_parts": {
+        "cushion": [
+          17.9,
+          20.0
+        ],
+        "valuation": [
+          1.6,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.7,
+          8.0
+        ],
+        "yield": [
+          3.5,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $150.00 is higher than the 1-standard-deviation move floor ($147.25)."
+        }
+      ],
+      "plan": {
+        "tp50": 1.31,
+        "tp60": 1.05,
+        "roll_trigger_price": 153.0,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -2692.0
+      }
+    },
+    {
+      "ticker": "SHOP",
+      "name": "Shopify Inc.",
+      "spot": 148.24,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 130.0,
+      "bid": 2.42,
+      "ask": 2.85,
+      "mid": 2.63,
+      "iv": 0.508,
+      "delta": -0.176,
+      "open_interest": 2416,
+      "cushion_pct": 12.3,
+      "credit": 242.0,
+      "collateral": 13000.0,
+      "roc_cycle_pct": 1.86,
+      "roc_annual_pct": 18.9,
+      "cost_basis": 127.58,
+      "odds_otm_market_pct": 82.4,
+      "odds_touch_market_pct": 35.2,
+      "odds_model_pct": 99.0,
+      "one_sigma_low": 126.39,
+      "levels": {
+        "sma50": 152.8,
+        "sma200": 130.16,
+        "avwap": 152.93,
+        "vwap20": 157.7,
+        "ote_618": 145.85,
+        "ote_786": 136.33
+      },
+      "score": 69.6,
+      "score_parts": {
+        "cushion": [
+          17.2,
+          20.0
+        ],
+        "valuation": [
+          2.1,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.6,
+          8.0
+        ],
+        "yield": [
+          3.7,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $130.00 is higher than the 1-standard-deviation move floor ($126.39)."
+        }
+      ],
+      "plan": {
+        "tp50": 1.21,
+        "tp60": 0.97,
+        "roll_trigger_price": 132.6,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -2381.0
+      }
+    },
+    {
+      "ticker": "TSLA",
+      "name": "Tesla Inc.",
+      "spot": 391.44,
+      "spot_ts": "2026-11-12T13:07:04.213059-05:00",
+      "expiry": "2026-12-18",
+      "dte": 36,
+      "strike": 340.0,
+      "bid": 4.7,
+      "ask": 4.9,
+      "mid": 4.8,
+      "iv": 0.465,
+      "delta": -0.143,
+      "open_interest": 7817,
+      "cushion_pct": 13.1,
+      "credit": 470.0,
+      "collateral": 34000.0,
+      "roc_cycle_pct": 1.38,
+      "roc_annual_pct": 14.0,
+      "cost_basis": 335.3,
+      "odds_otm_market_pct": 85.7,
+      "odds_touch_market_pct": 28.6,
+      "odds_model_pct": 99.0,
+      "one_sigma_low": 338.29,
+      "levels": {
+        "sma50": 374.35,
+        "sma200": 382.81,
+        "avwap": 364.0,
+        "vwap20": 378.81,
+        "ote_618": 367.22,
+        "ote_786": 354.45
+      },
+      "score": 68.8,
+      "score_parts": {
+        "cushion": [
+          18.3,
+          20.0
+        ],
+        "valuation": [
+          0.8,
+          20.0
+        ],
+        "levels": [
+          18.0,
+          20.0
+        ],
+        "news_flow": [
+          14.0,
+          15.0
+        ],
+        "candles": [
+          8.0,
+          10.0
+        ],
+        "probability": [
+          6.9,
+          8.0
+        ],
+        "yield": [
+          2.8,
+          7.0
+        ]
+      },
+      "trend": "pullback",
+      "held_position": null,
+      "watchouts": [
+        {
+          "severity": "medium",
+          "title": "Strike Above 1σ Low",
+          "detail": "Put strike $340.00 is higher than the 1-standard-deviation move floor ($338.29)."
+        }
+      ],
+      "plan": {
+        "tp50": 2.35,
+        "tp60": 1.88,
+        "roll_trigger_price": 346.8,
+        "stress_drop_pct": 30.0,
+        "stress_loss": -6129.0
+      }
+    }
+  ],
+  "held_back": [
+    {
+      "ticker": "NXPI",
+      "reason": "Excessive spread (26.3% > 25% of mid)"
+    },
+    {
+      "ticker": "DASH",
+      "reason": "Excessive spread (40.4% > 25% of mid)"
+    },
+    {
+      "ticker": "WDAY",
+      "reason": "Low liquidity (open interest 72 < 100)"
+    },
+    {
+      "ticker": "MPWR",
+      "reason": "Low liquidity (open interest 10 < 100)"
+    }
+  ],
+  "positions": [
+    {
+      "ticker": "INTC",
+      "strike": 105.0,
+      "expiry": "2026-11-13",
+      "dte": 30,
+      "contracts": 1,
+      "rolls": 2,
+      "rolls_max": 2,
+      "open_credit": 3.47,
+      "mark_bid": 44.56,
+      "mark_ask": 44.73,
+      "mark_mid": 44.64,
+      "mark_source": "alpaca:indicative",
+      "spot": 61.83,
+      "spot_vs_strike_pct": -41.1,
+      "pnl": -4117.0,
+      "status": "itm",
+      "next_step": "plan_assignment"
+    },
+    {
+      "ticker": "NOW",
+      "strike": 132.5,
+      "expiry": "2026-12-04",
+      "dte": 30,
+      "contracts": 1,
+      "rolls": 1,
+      "rolls_max": 2,
+      "open_credit": 4.2,
+      "mark_bid": 32.48,
+      "mark_ask": 32.69,
+      "mark_mid": 32.58,
+      "mark_source": "alpaca:indicative",
+      "spot": 101.7,
+      "spot_vs_strike_pct": -23.2,
+      "pnl": -2838.0,
+      "status": "itm",
+      "next_step": "decide"
+    },
+    {
+      "ticker": "HOOD",
+      "strike": 70.0,
+      "expiry": "2026-12-18",
+      "dte": 30,
+      "contracts": 2,
+      "rolls": 0,
+      "rolls_max": 2,
+      "open_credit": 2.6,
+      "mark_bid": 0.05,
+      "mark_ask": 0.1,
+      "mark_mid": 0.08,
+      "mark_source": "alpaca:indicative",
+      "spot": 83.25,
+      "spot_vs_strike_pct": 18.9,
+      "pnl": 504.0,
+      "status": "otm",
+      "next_step": "hold"
+    },
+    {
+      "ticker": "NVDA",
+      "strike": 150.0,
+      "expiry": "2026-12-18",
+      "dte": 30,
+      "contracts": 1,
+      "rolls": 0,
+      "rolls_max": 2,
+      "open_credit": 3.15,
+      "mark_bid": 0.05,
+      "mark_ask": 0.1,
+      "mark_mid": 0.08,
+      "mark_source": "alpaca:indicative",
+      "spot": 165.12,
+      "spot_vs_strike_pct": 10.1,
+      "pnl": 307.0,
+      "status": "otm",
+      "next_step": "hold"
+    },
+    {
+      "ticker": "MRVL",
+      "strike": 140.0,
+      "expiry": "2026-12-18",
+      "dte": 30,
+      "contracts": 1,
+      "rolls": 0,
+      "rolls_max": 2,
+      "open_credit": 3.8,
+      "mark_bid": 0.05,
+      "mark_ask": 0.1,
+      "mark_mid": 0.08,
+      "mark_source": "alpaca:indicative",
+      "spot": 165.77,
+      "spot_vs_strike_pct": 18.4,
+      "pnl": 372.0,
+      "status": "otm",
+      "next_step": "hold"
+    }
+  ],
+  "portfolio": {
+    "open_count": 5,
+    "collateral": 66750.0,
+    "credit_collected": 1982.0,
+    "unrealized": -5772.0,
+    "out_of_rolls": 1,
+    "itm_assignment_value": 23750.0
+  },
+  "backtest": {
+    "as_of": "2026-11-12T13:07:04.213059-05:00",
+    "label": "Simulated",
+    "trades": 757,
+    "win_rate": 95.5,
+    "breakeven_win_rate": 89.9,
+    "avg_win": 297.6,
+    "avg_loss": -2637.5,
+    "net_pnl": 125498.0,
+    "monthly_pnl": [
+      {
+        "month": "2025-12",
+        "pnl": -2498.0
+      },
+      {
+        "month": "2026-01",
+        "pnl": 2591.0
+      },
+      {
+        "month": "2026-02",
+        "pnl": 6349.0
+      },
+      {
+        "month": "2026-03",
+        "pnl": -1078.0
+      },
+      {
+        "month": "2026-04",
+        "pnl": 9080.0
+      },
+      {
+        "month": "2026-05",
+        "pnl": 17975.0
+      },
+      {
+        "month": "2026-06",
+        "pnl": 30228.0
+      },
+      {
+        "month": "2026-07",
+        "pnl": -5277.0
+      },
+      {
+        "month": "2026-08",
+        "pnl": 22648.0
+      },
+      {
+        "month": "2026-09",
+        "pnl": 11371.0
+      },
+      {
+        "month": "2026-10",
+        "pnl": 5507.0
+      },
+      {
+        "month": "2026-11",
+        "pnl": 1926.0
+      }
+    ],
+    "score_quintiles": null
+  }
+}
