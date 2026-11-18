@@ -52,7 +52,8 @@ from core.derive import derive_setup, derive_position
 from core.portfolio_tracker import (
     run_candle_by_candle_population_sim,
     load_real_positions_ledger,
-    get_candle_simulated_closed_trades
+    get_candle_simulated_closed_trades,
+    get_active_previous_signals
 )
 from core.options_scanner import run_screener
 
@@ -387,6 +388,10 @@ def run_daily_pipeline(force_alpaca_fail: bool = False) -> Snapshot:
         min_roc_pct=DEFAULTS["min_roc_pct"]
     )
 
+    # Get active signals and closed trades
+    formatted_active = get_active_previous_signals()
+    formatted_closed = get_candle_simulated_closed_trades(limit=100)
+
     snapshot_obj = Snapshot(
         run=run_meta,
         rules=rules_config,
@@ -394,7 +399,9 @@ def run_daily_pipeline(force_alpaca_fail: bool = False) -> Snapshot:
         held_back=held_back,
         positions=derived_positions,
         portfolio=portfolio_model,
-        backtest=backtest_model
+        backtest=backtest_model,
+        active_signals=formatted_active,
+        closed_trades=formatted_closed
     )
 
     # Step 6: Validate and Publish Snapshot

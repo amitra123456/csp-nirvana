@@ -147,3 +147,5 @@ class Snapshot(BaseModel):
     positions: List[PositionModel] = Field(default_factory=list)
     portfolio: PortfolioModel
     backtest: BacktestModel
+    active_signals: List[Dict[str, Any]] = Field(default_factory=list)
+    closed_trades: List[Dict[str, Any]] = Field(default_factory=list)

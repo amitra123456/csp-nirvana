@@ -146,6 +146,37 @@ export interface Backtest {
   score_quintiles: any | null;
 }
 
+export interface ActiveSignal {
+  ticker: string;
+  strike: number;
+  expiry: string;
+  entry_date: string;
+  entry_price: number;
+  current_price: number;
+  current_spot: number;
+  tp_50_price: number;
+  profit_pct: number;
+  progress_to_target: number;
+  status: string;
+  badge_color: string;
+  rolls: number;
+}
+
+export interface ClosedTrade {
+  open_date: string;
+  close_date: string;
+  ticker: string;
+  strike: number;
+  expiry: string;
+  entry_credit: number;
+  exit_debit: number;
+  realized_gain: number;
+  profit_pct: number;
+  days_held: number;
+  exit_type: string;
+  result: "WIN" | "LOSS";
+}
+
 export interface Snapshot {
   run: RunMetadata;
   rules: RulesConfig;
@@ -154,6 +185,8 @@ export interface Snapshot {
   positions: Position[];
   portfolio: Portfolio;
   backtest: Backtest;
+  active_signals?: ActiveSignal[];
+  closed_trades?: ClosedTrade[];
 }
 
 export type SetupModel = Setup;

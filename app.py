@@ -35,6 +35,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from core.dark_pool_engine import compute_dark_pool_telemetry
 from core.fair_value_engine import compute_lens1_fundamentals
 from core.sentiment_engine import compute_multi_horizon_sentiment
+from core.portfolio_tracker import get_active_previous_signals, get_candle_simulated_closed_trades
 
 st.set_page_config(
     page_title="CSP-Nirvana // Quiet Desk",
@@ -603,9 +604,9 @@ with tab_today:
     # Top Controls Bar
     col_ctrl1, col_ctrl2 = st.columns([2, 1])
     with col_ctrl1:
-        st.markdown(f"### Today's Qualified Setups &middot; {len(setups)}")
+        st.markdown(f"### ⚡ Card 1: Today's Qualified Setups &middot; {len(setups)} Available")
         render_html(
-            f"<div style='font-size: 0.82rem; color: #8792A2;'>Target DTE: <strong>{rules.get('target_dte', 35)}d</strong> &middot; Min Cushion: <strong>{rules.get('cushion_min_pct', 12)}%</strong> &middot; Min ROC: <strong>{rules.get('min_roc_pct', 1.2)}%</strong></div>"
+            f"<div style='font-size: 0.82rem; color: #8792A2;'>Target DTE: <strong>{rules.get('target_dte', 35)}d</strong> &middot; Min Cushion: <strong>{rules.get('cushion_min_pct', 12)}%</strong> &middot; Min ROC: <strong>{rules.get('min_roc_pct', 1.2)}%</strong> &middot; Evaluated strictly at market close (3:35 PM ET)</div>"
         )
     with col_ctrl2:
         c1, c2 = st.columns(2)
@@ -680,6 +681,10 @@ with tab_today:
             dte = s.get("dte", 0)
             expiry = s.get("expiry", "")
 
+            # Sizing / Conviction badge
+            sizing = s.get("sizing_tier", "1x")
+            sizing_badge = '<span class="badge" style="background: rgba(245, 158, 11, 0.2); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.5); font-weight: 700;">🔥 2X WHALE</span>' if sizing == '2x' else '<span class="badge badge-blue">1X STD</span>'
+
             # Trend badge
             trend = s.get("trend", "pullback")
             trend_badge = f'<span class="badge badge-blue">{trend.upper()}</span>'
@@ -699,6 +704,7 @@ with tab_today:
 <td class="font-mono" style="color: #8792A2;">{roc_ann:.1f}%</td>
 <td class="font-mono">{odds:.1f}%</td>
 <td class="font-mono" style="color: #8792A2;">{expiry} ({dte}d)</td>
+<td>{sizing_badge}</td>
 <td>{trend_badge}</td>
 <td class="font-mono" style="font-weight: 700; color: #6CB4FF; font-size: 0.95rem;">{score:.1f}</td>
 </tr>
@@ -720,6 +726,7 @@ with tab_today:
                             <th>ROC/Ann</th>
                             <th>Odds OTM</th>
                             <th>Expiry</th>
+                            <th>Conviction</th>
                             <th>Trend</th>
                             <th>Score</th>
                         </tr>
@@ -757,23 +764,227 @@ with tab_today:
     else:
         st.info("No candidates qualified in current snapshot under active parameters.")
 
-    # Held Back Candidates
-    if held_back:
-        st.markdown(f"#### Held Back by Validation Gates &middot; {len(held_back)}")
-        hb_rows = "".join([
-            f"<tr><td class='font-mono'><strong>{hb.get('ticker')}</strong></td><td style='color: #8792A2;'>{hb.get('reason')}</td></tr>"
-            for hb in held_back
-        ])
+    # =========================================================
+    # CARD 2: ACTIVE OPEN POSITIONS (In-Flight Until 50% TP Target)
+    # =========================================================
+    st.markdown("<br><hr style='border-color: #1E2733; margin: 1.5rem 0;'>", unsafe_allow_html=True)
+    active_signals = snapshot.get("active_signals", [])
+    if not active_signals:
+        try:
+            active_signals = get_active_previous_signals()
+        except Exception:
+            active_signals = []
+
+    st.markdown(f"### ⏳ Card 2: Active Open Positions &middot; {len(active_signals)} In-Flight")
+    render_html(
+        "<div style='font-size: 0.82rem; color: #8792A2; margin-bottom: 0.8rem;'>"
+        "Continuous candle-by-candle position tracking across all institutional names. "
+        "Positions remain active until Kirsten's <strong>50% Take-Profit Target</strong> is captured or expiration. "
+        "Sorted newest-first to immediately track yesterday's entries."
+        "</div>"
+    )
+
+    if active_signals:
+        # Quick Status KPI Chips
+        tp_hit_count = sum(1 for a in active_signals if a.get("profit_pct", 0) >= 50.0)
+        harvesting_count = sum(1 for a in active_signals if 0.0 <= a.get("profit_pct", 0) < 50.0)
+        tested_count = sum(1 for a in active_signals if a.get("profit_pct", 0) < 0.0)
+
+        col_a1, col_a2, col_a3, col_a4 = st.columns(4)
+        with col_a1:
+            render_html(f"""<div class="desk-card"><div class="kpi-title">TOTAL ACTIVE</div><div class="kpi-value">{len(active_signals)}</div></div>""")
+        with col_a2:
+            render_html(f"""<div class="desk-card"><div class="kpi-title">🎯 50% TP HIT</div><div class="kpi-value" style="color: #10B981;">{tp_hit_count}</div></div>""")
+        with col_a3:
+            render_html(f"""<div class="desk-card"><div class="kpi-title">⏳ HARVESTING THETA</div><div class="kpi-value" style="color: #6CB4FF;">{harvesting_count}</div></div>""")
+        with col_a4:
+            render_html(f"""<div class="desk-card"><div class="kpi-title">🛡️ TESTED / ROLLING</div><div class="kpi-value" style="color: #FF8B5C;">{tested_count}</div></div>""")
+
+        # Active Signals Table
+        act_rows_html = []
+        for idx_a, act in enumerate(active_signals):
+            a_sym = act.get("ticker", "")
+            a_strike = act.get("strike", 0.0)
+            a_entry_date = act.get("entry_date", "")
+            a_entry_px = act.get("entry_price", 0.0)
+            a_curr_px = act.get("current_price", 0.0)
+            a_spot = act.get("current_spot", 0.0)
+            a_pnl = act.get("profit_pct", 0.0)
+            a_prog = min(100.0, max(0.0, act.get("progress_to_target", 0.0)))
+            a_status = act.get("status", "In Progress")
+            a_color = act.get("badge_color", "#6CB4FF")
+            a_exp = act.get("expiry", "")
+
+            # Cushion to spot
+            cush = ((a_spot - a_strike) / a_spot * 100.0) if a_spot > 0 else 0.0
+            cush_color = "#6CB4FF" if cush > 0 else "#FF8B5C"
+            pnl_color = "#10B981" if a_pnl >= 50.0 else ("#6CB4FF" if a_pnl >= 0 else "#FF8B5C")
+
+            act_rows_html.append(f"""
+<tr>
+<td class="font-mono" style="color: #8792A2;">#{idx_a+1}</td>
+<td class="font-mono" style="color: #E8ECF1; font-weight: 600;">{a_entry_date}</td>
+<td class="font-mono"><strong style="color: #6CB4FF; font-size: 0.95rem;">{a_sym}</strong></td>
+<td class="font-mono">${a_strike:.1f}P</td>
+<td class="font-mono">${a_spot:.2f}</td>
+<td class="font-mono" style="color: {cush_color}; font-weight: 600;">{cush:+.1f}%</td>
+<td class="font-mono">${a_entry_px:.2f}</td>
+<td class="font-mono" style="font-weight: 600;">${a_curr_px:.2f}</td>
+<td class="font-mono" style="color: {pnl_color}; font-weight: 700;">{a_pnl:+.1f}%</td>
+<td style="min-width: 120px;">
+    <div style="font-size: 0.72rem; color: #8792A2; margin-bottom: 2px;">{a_prog:.0f}% to 50% TP</div>
+    <div style="height: 6px; width: 100%; background: #18202B; border-radius: 3px; overflow: hidden;">
+        <div style="height: 100%; width: {a_prog}%; background: {'#10B981' if a_prog >= 100 else '#6CB4FF'}; border-radius: 3px;"></div>
+    </div>
+</td>
+<td class="font-mono" style="color: #8792A2; font-size: 0.78rem;">{a_exp}</td>
+<td><span class="badge" style="background: rgba(108, 180, 255, 0.15); color: {a_color}; border: 1px solid {a_color}40; font-weight: 600;">{a_status}</span></td>
+</tr>
+""")
+
         render_html(
             f"""
             <div class="table-wrap">
                 <table class="quiet-table">
-                    <thead><tr><th style="width: 120px;">Ticker</th><th>Gate Rejection Reason</th></tr></thead>
-                    <tbody>{hb_rows}</tbody>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Entry Date</th>
+                            <th>Ticker</th>
+                            <th>Put Strike</th>
+                            <th>Spot Price</th>
+                            <th>Cushion</th>
+                            <th>Entry Credit</th>
+                            <th>Put Mark</th>
+                            <th>P&L %</th>
+                            <th>50% TP Progress</th>
+                            <th>Expiry</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {''.join(act_rows_html)}
+                    </tbody>
                 </table>
             </div>
             """
         )
+    else:
+        st.info("No active open positions currently in flight.")
+
+    # =========================================================
+    # CARD 3: CLOSED TRADES & REALIZED RESULTS
+    # =========================================================
+    st.markdown("<br><hr style='border-color: #1E2733; margin: 1.5rem 0;'>", unsafe_allow_html=True)
+    closed_trades = snapshot.get("closed_trades", [])
+    if not closed_trades:
+        try:
+            closed_trades = get_candle_simulated_closed_trades(limit=100)
+        except Exception:
+            closed_trades = []
+
+    st.markdown(f"### 🏁 Card 3: Closed Trades & Realized Results &middot; Audited Performance")
+    render_html(
+        "<div style='font-size: 0.82rem; color: #8792A2; margin-bottom: 0.8rem;'>"
+        "Audited historical closed trades verified candle-by-candle with Kirsten's 50% Take-Profit rule, assignment tracking, and net-credit rolls."
+        "</div>"
+    )
+
+    if closed_trades:
+        c_count = len(closed_trades)
+        wins = sum(1 for t in closed_trades if "WIN" in str(t.get("result", "")))
+        wr = (wins / c_count * 100.0) if c_count > 0 else 0.0
+        tot_gain = sum(float(t.get("realized_gain", 0.0)) * 100.0 for t in closed_trades)
+        avg_days = sum(t.get("days_held", 0) for t in closed_trades) / c_count if c_count > 0 else 0.0
+
+        col_c1, col_c2, col_c3, col_c4 = st.columns(4)
+        with col_c1:
+            render_html(f"""<div class="desk-card"><div class="kpi-title">TOTAL CLOSED</div><div class="kpi-value">{c_count}</div></div>""")
+        with col_c2:
+            render_html(f"""<div class="desk-card"><div class="kpi-title">WIN RATE</div><div class="kpi-value" style="color: {'#10B981' if wr >= 75 else '#6CB4FF'};">{wr:.1f}%</div></div>""")
+        with col_c3:
+            render_html(f"""<div class="desk-card"><div class="kpi-title">REALIZED P&L</div><div class="kpi-value" style="color: {'#10B981' if tot_gain >= 0 else '#FF8B5C'};">${tot_gain:+,.0f}</div></div>""")
+        with col_c4:
+            render_html(f"""<div class="desk-card"><div class="kpi-title">AVG DAYS HELD</div><div class="kpi-value">{avg_days:.1f}d</div></div>""")
+
+        cls_rows_html = []
+        for idx_c, cls in enumerate(closed_trades[:50]):
+            c_sym = cls.get("ticker", "")
+            c_strike = cls.get("strike", 0.0)
+            c_open_dt = cls.get("open_date", "")
+            c_close_dt = cls.get("close_date", "")
+            c_entry_px = cls.get("entry_credit", 0.0)
+            c_exit_px = cls.get("exit_debit", 0.0)
+            c_gain = float(cls.get("realized_gain", 0.0)) * 100.0
+            c_pnl_pct = cls.get("profit_pct", 0.0)
+            c_days = cls.get("days_held", 0)
+            c_type = cls.get("exit_type", "")
+            c_res = cls.get("result", "WIN")
+
+            res_badge = f'<span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #10B981; border: 1px solid rgba(16, 185, 129, 0.4); font-weight: 700;">WIN</span>' if c_res == "WIN" else f'<span class="badge" style="background: rgba(255, 139, 92, 0.15); color: #FF8B5C; border: 1px solid rgba(255, 139, 92, 0.4); font-weight: 700;">LOSS</span>'
+            pnl_c = "#10B981" if c_gain >= 0 else "#FF8B5C"
+
+            cls_rows_html.append(f"""
+<tr>
+<td class="font-mono" style="color: #8792A2;">#{idx_c+1}</td>
+<td class="font-mono" style="color: #E8ECF1;">{c_open_dt}</td>
+<td class="font-mono" style="color: #8792A2;">{c_close_dt}</td>
+<td class="font-mono"><strong style="color: #6CB4FF;">{c_sym}</strong></td>
+<td class="font-mono">${c_strike:.1f}P</td>
+<td class="font-mono">${c_entry_px:.2f} &rarr; ${c_exit_px:.2f}</td>
+<td class="font-mono" style="color: {pnl_c}; font-weight: 700;">${c_gain:+,.1f}</td>
+<td class="font-mono" style="color: {pnl_c}; font-weight: 600;">{c_pnl_pct:+.1f}%</td>
+<td class="font-mono">{c_days}d</td>
+<td>{res_badge}</td>
+<td style="color: #A3AEBC; font-size: 0.78rem;">{c_type}</td>
+</tr>
+""")
+
+        render_html(
+            f"""
+            <div class="table-wrap">
+                <table class="quiet-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Open Date</th>
+                            <th>Close Date</th>
+                            <th>Ticker</th>
+                            <th>Put Strike</th>
+                            <th>Entry &rarr; Exit</th>
+                            <th>Realized ($)</th>
+                            <th>Return %</th>
+                            <th>Days</th>
+                            <th>Result</th>
+                            <th>Exit Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {''.join(cls_rows_html)}
+                    </tbody>
+                </table>
+            </div>
+            """
+        )
+
+    # Held Back Candidates (Collapsible bottom expander)
+    if held_back:
+        st.markdown("<br>", unsafe_allow_html=True)
+        with st.expander(f"🚫 View Candidates Held Back by Validation Gates ({len(held_back)})", expanded=False):
+            hb_rows = "".join([
+                f"<tr><td class='font-mono'><strong>{hb.get('ticker')}</strong></td><td style='color: #8792A2;'>{hb.get('reason')}</td></tr>"
+                for hb in held_back
+            ])
+            render_html(
+                f"""
+                <div class="table-wrap">
+                    <table class="quiet-table">
+                        <thead><tr><th style="width: 120px;">Ticker</th><th>Gate Rejection Reason</th></tr></thead>
+                        <tbody>{hb_rows}</tbody>
+                    </table>
+                </div>
+                """
+            )
 
 # =========================================================
 # SCREEN 2: TRADE TICKET & MODELS

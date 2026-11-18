@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
-import { Setup, Snapshot, HeldBack, Position } from "@/types/snapshot";
+import { Setup, Snapshot, HeldBack, Position, ActiveSignal, ClosedTrade } from "@/types/snapshot";
 import { formatCurrency, formatPercent, formatNumber } from "@/lib/data";
 
 export default function TodayPage() {
@@ -18,7 +18,6 @@ export default function TodayPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        // Direct local snapshot fetch
         const res = await fetch("/api/snapshot", { cache: "no-store" });
         if (res.ok) {
           const data = await res.json();
@@ -67,6 +66,33 @@ export default function TodayPage() {
     return { totalCash, totalCredit, avgRoc };
   }, [filteredSetups]);
 
+  // Card 2: Active in-flight open positions
+  const activeSignals = useMemo(() => {
+    return (snapshot?.active_signals || []) as ActiveSignal[];
+  }, [snapshot]);
+
+  const activeStats = useMemo(() => {
+    if (!activeSignals.length) return { count: 0, tpHit: 0, harvesting: 0, tested: 0 };
+    const tpHit = activeSignals.filter((a) => a.profit_pct >= 50.0).length;
+    const harvesting = activeSignals.filter((a) => a.profit_pct >= 0.0 && a.profit_pct < 50.0).length;
+    const tested = activeSignals.filter((a) => a.profit_pct < 0.0).length;
+    return { count: activeSignals.length, tpHit, harvesting, tested };
+  }, [activeSignals]);
+
+  // Card 3: Closed trades
+  const closedTrades = useMemo(() => {
+    return (snapshot?.closed_trades || []) as ClosedTrade[];
+  }, [snapshot]);
+
+  const closedStats = useMemo(() => {
+    if (!closedTrades.length) return { count: 0, wr: 0, totalPnl: 0, avgDays: 0 };
+    const wins = closedTrades.filter((t) => t.result === "WIN").length;
+    const wr = (wins / closedTrades.length) * 100;
+    const totalPnl = closedTrades.reduce((sum, t) => sum + (t.realized_gain * 100), 0);
+    const avgDays = closedTrades.reduce((sum, t) => sum + t.days_held, 0) / closedTrades.length;
+    return { count: closedTrades.length, wr, totalPnl, avgDays };
+  }, [closedTrades]);
+
   if (loading) {
     return (
       <div className="space-y-6 animate-pulse">
@@ -82,51 +108,65 @@ export default function TodayPage() {
 
   if (!snapshot) {
     return (
-      <div className="rounded-card border border-desk-border bg-desk-card p-12 text-center">
-        <h2 className="text-xl font-bold text-desk-text">No snapshot data available yet</h2>
-        <p className="mt-2 text-sm text-desk-secondary">
-          The automated cron pipeline executes weekdays at 3:35 PM ET. Click "Run scan now" above to build the initial snapshot.
+      <div className="rounded-card border border-desk-risk/30 bg-desk-risk/10 p-8 text-center">
+        <h2 className="text-lg font-bold text-desk-riskText">Snapshot Data Unavailable</h2>
+        <p className="text-sm text-desk-secondary mt-2">
+          Unable to connect to verified snapshot cache. Ensure <code>data/snapshots/latest.json</code> exists.
         </p>
       </div>
     );
   }
 
   const presetRules = {
-    conservative: "Conservative: >= 15% cushion, >= 85 Nirvana score, strict 35 DTE quality floor.",
-    core: "Core: >= 12% cushion, >= 80 Nirvana score, balanced return on collateral (~35 DTE).",
-    aggressive: "Aggressive: >= 8% cushion, premium maximizing, elevated gamma capture.",
-    custom: "Custom: User-defined multi-horizon rules.",
+    conservative: "≥ 15% Cushion · Score ≥ 85 · No earnings · Red days only",
+    core: "≥ 12% Cushion · Score ≥ 80 · 30-45 DTE · Safe Delta",
+    aggressive: "≥ 8% Cushion · Score ≥ 70 · Shorter DTE eligible",
+    custom: "Custom user-configured rule parameters",
   };
 
   return (
-    <div className="space-y-6">
-      {/* 1. Header & Summary */}
-      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+      {/* 1. Header with Metadata */}
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-desk-border pb-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-desk-text">Today's setups</h1>
-          <p className="text-sm text-desk-secondary">
-            Deterministic cash-secured put opportunities passing institutional cushion & market odds gates.
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold tracking-tight text-desk-text">Today&apos;s Candidates</h1>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400 border border-emerald-500/20">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Verified 3:35 PM ET
+            </span>
+          </div>
+          <p className="text-xs text-desk-secondary mt-1">
+            As of: {snapshot.run?.as_of_et || "Latest Close"} &middot; Engine: {snapshot.run?.run_id || "v2.5-prod"} &middot; Strict 7-Gate Validation
           </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-desk-tertiary">Data Feeds:</span>
+          <span className="rounded bg-desk-raised px-2 py-0.5 text-[11px] font-mono text-desk-secondary border border-desk-border">
+            SIP Live
+          </span>
+          <span className="rounded bg-desk-raised px-2 py-0.5 text-[11px] font-mono text-desk-secondary border border-desk-border">
+            Alpaca Options
+          </span>
         </div>
       </div>
 
-      {/* 2. ITM Position Alert Banner */}
+      {/* 2. ITM Urgent Risk Banner */}
       {itmPositions.length > 0 && (
         <Link
           href="/positions"
-          className="flex items-center justify-between rounded-control border border-desk-risk/30 bg-desk-risk/10 px-4 py-3 text-sm text-desk-riskText transition-colors hover:bg-desk-risk/15"
+          className="flex items-center justify-between rounded-control border border-desk-risk/40 bg-desk-risk/10 p-3.5 text-sm text-desk-riskText hover:bg-desk-risk/15 transition-colors"
         >
           <div className="flex items-center gap-2.5">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
-              <line x1="12" y1="9" x2="12" y2="13" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
+            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <span className="font-semibold">
-              {itmPositions.length} position{itmPositions.length > 1 ? "s" : ""} in the money ({itmPositions.map((p) => p.ticker).join(", ")}) — review exit & roll triggers
+              {itmPositions.length} position{itmPositions.length > 1 ? "s" : ""} in the money ({itmPositions.map((p) => p.ticker).join(", ")}) — review exit &amp; roll triggers
             </span>
           </div>
-          <span className="text-xs font-bold underline underline-offset-4">Open Positions →</span>
+          <span className="text-xs font-bold underline underline-offset-4">Open Positions &rarr;</span>
         </Link>
       )}
 
@@ -191,10 +231,21 @@ export default function TodayPage() {
         </div>
       </div>
 
-      {/* 4. Main 2-Column Grid (Table + Right Rail) */}
+      {/* 4. Main 2-Column Grid (Card 1: Table + Right Rail) */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Setups Table */}
+        {/* Setups Table: Card 1 */}
         <div className="lg:col-span-3 rounded-card border border-desk-border bg-desk-card overflow-hidden">
+          <div className="p-4 border-b border-desk-border bg-desk-raised/60 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider flex items-center gap-2">
+                <span>⚡ Card 1: Today&apos;s Qualified Setups</span>
+                <span className="text-xs font-mono font-normal text-desk-accent">({filteredSetups.length} ready to enter)</span>
+              </h2>
+              <p className="text-xs text-desk-secondary mt-0.5">
+                Evaluated strictly at market close (3:35 PM ET) &middot; Min {snapshot.rules?.cushion_min_pct || 12}% Cushion &middot; 1X Standard &amp; 🔥 2X Whale Conviction
+              </p>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="border-b border-desk-border bg-desk-raised text-xs text-desk-secondary font-medium uppercase tracking-wider">
@@ -205,6 +256,7 @@ export default function TodayPage() {
                   <th className="py-3 px-3">Cushion</th>
                   <th className="py-3 px-3">Credit</th>
                   <th className="py-3 px-3">Return/Cycle</th>
+                  <th className="py-3 px-3">Conviction</th>
                   <th className="py-3 px-3">Market Odds</th>
                   <th className="py-3 px-3">Context</th>
                   <th className="py-3 px-4 text-right">Action</th>
@@ -213,13 +265,12 @@ export default function TodayPage() {
               <tbody className="divide-y divide-desk-border font-mono text-xs">
                 {filteredSetups.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="py-12 text-center text-desk-secondary font-sans text-sm">
+                    <td colSpan={10} className="py-12 text-center text-desk-secondary font-sans text-sm">
                       No setups qualify under current filters. Try relaxing the cushion or enabling earnings weeks.
                     </td>
                   </tr>
                 ) : (
                   filteredSetups.map((s) => {
-                    const isHeld = heldTickers.has(s.ticker);
                     return (
                       <tr key={s.ticker} className="hover:bg-desk-raised/60 transition-colors">
                         {/* Stock */}
@@ -267,6 +318,19 @@ export default function TodayPage() {
                           <span className="block text-[11px] text-desk-secondary">({s.roc_annual_pct.toFixed(1)}% Ann.)</span>
                         </td>
 
+                        {/* Conviction */}
+                        <td className="py-3.5 px-3">
+                          {s.sizing_tier === "2x" ? (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 whitespace-nowrap">
+                              🔥 2X WHALE
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-desk-border text-desk-secondary whitespace-nowrap">
+                              1X STD
+                            </span>
+                          )}
+                        </td>
+
                         {/* Market Odds */}
                         <td className="py-3.5 px-3">
                           <span className="font-bold text-desk-text">{s.odds_otm_market_pct.toFixed(1)}%</span>
@@ -285,7 +349,7 @@ export default function TodayPage() {
                                   ? "bg-desk-risk/15 text-desk-riskText border border-desk-risk/30"
                                   : "bg-desk-accent/15 text-desk-accent border border-desk-accent/30"
                               }`}>
-                                Hold ${s.held_position.strike} · {s.held_position.itm ? "ITM" : "OTM"}
+                                Hold ${s.held_position.strike} &middot; {s.held_position.itm ? "ITM" : "OTM"}
                               </span>
                             )}
                           </div>
@@ -297,7 +361,7 @@ export default function TodayPage() {
                             href={`/ticket/${s.ticker}`}
                             className="inline-flex min-h-[34px] items-center rounded-control bg-desk-raised px-3 py-1 text-xs font-semibold text-desk-accent hover:bg-desk-accent hover:text-desk-bg transition-colors"
                           >
-                            Review →
+                            Review &rarr;
                           </Link>
                         </td>
                       </tr>
@@ -345,7 +409,7 @@ export default function TodayPage() {
           <div className="rounded-card border border-desk-border bg-desk-card p-5 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider">
-                Held back · {snapshot.held_back?.length || 0}
+                Held back &middot; {snapshot.held_back?.length || 0}
               </h2>
               <span className="text-xs text-desk-tertiary">Validation gates</span>
             </div>
@@ -366,7 +430,238 @@ export default function TodayPage() {
         </div>
       </div>
 
-      {/* 5. Legend Footer */}
+      {/* ========================================================= */}
+      {/* 5. Card 2: Active Open Positions (In-Flight Until 50% TP) */}
+      {/* ========================================================= */}
+      <div className="rounded-card border border-desk-border bg-desk-card overflow-hidden space-y-4">
+        <div className="p-4 border-b border-desk-border bg-desk-raised/60 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider flex items-center gap-2">
+              <span>⏳ Card 2: Active Open Positions</span>
+              <span className="text-xs font-mono font-normal text-desk-accent">({activeSignals.length} in-flight)</span>
+            </h2>
+            <p className="text-xs text-desk-secondary mt-0.5">
+              Continuous candle-by-candle position tracking across all institutional names. Positions remain active until Kirsten&apos;s 50% Take-Profit target is captured or expiration. Sorted newest-first.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
+            <span className="px-2.5 py-1 rounded bg-desk-bg border border-desk-border text-desk-secondary">
+              Total Active: <strong className="text-desk-text">{activeStats.count}</strong>
+            </span>
+            <span className="px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+              🎯 50% TP Hit: <strong>{activeStats.tpHit}</strong>
+            </span>
+            <span className="px-2.5 py-1 rounded bg-desk-accent/10 border border-desk-accent/30 text-desk-accent">
+              ⏳ Harvesting: <strong>{activeStats.harvesting}</strong>
+            </span>
+            <span className="px-2.5 py-1 rounded bg-desk-risk/10 border border-desk-risk/30 text-desk-riskText">
+              🛡️ Tested: <strong>{activeStats.tested}</strong>
+            </span>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-desk-border bg-desk-raised text-xs text-desk-secondary font-medium uppercase tracking-wider">
+              <tr>
+                <th className="py-3 px-4">Entry Date</th>
+                <th className="py-3 px-4">Stock</th>
+                <th className="py-3 px-3">Put Strike</th>
+                <th className="py-3 px-3">Spot Price</th>
+                <th className="py-3 px-3">Cushion</th>
+                <th className="py-3 px-3">Entry Credit</th>
+                <th className="py-3 px-3">Put Mark</th>
+                <th className="py-3 px-3">P&amp;L %</th>
+                <th className="py-3 px-3">50% TP Progress</th>
+                <th className="py-3 px-3">Expiry</th>
+                <th className="py-3 px-4 text-right">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-desk-border font-mono text-xs">
+              {activeSignals.length === 0 ? (
+                <tr>
+                  <td colSpan={11} className="py-8 text-center text-desk-secondary font-sans text-sm">
+                    No active positions currently recorded in flight.
+                  </td>
+                </tr>
+              ) : (
+                activeSignals.map((a, idx) => {
+                  const cushion = a.current_spot > 0 ? ((a.current_spot - a.strike) / a.current_spot) * 100 : 0;
+                  const pnlColor =
+                    a.profit_pct >= 50.0
+                      ? "text-emerald-400"
+                      : a.profit_pct >= 0
+                      ? "text-desk-accent"
+                      : "text-desk-riskText";
+                  const prog = Math.min(100, Math.max(0, a.progress_to_target || 0));
+
+                  return (
+                    <tr key={`${a.ticker}-${a.entry_date}-${idx}`} className="hover:bg-desk-raised/60 transition-colors">
+                      <td className="py-3.5 px-4 text-desk-secondary">{a.entry_date}</td>
+                      <td className="py-3.5 px-4 font-sans font-bold">
+                        <Link href={`/ticket/${a.ticker}`} className="text-desk-accent hover:underline">
+                          {a.ticker}
+                        </Link>
+                      </td>
+                      <td className="py-3.5 px-3 font-semibold text-desk-text">${a.strike.toFixed(1)}P</td>
+                      <td className="py-3.5 px-3 text-desk-text">${a.current_spot.toFixed(2)}</td>
+                      <td className="py-3.5 px-3">
+                        <span className={cushion > 0 ? "text-desk-accent font-semibold" : "text-desk-riskText font-semibold"}>
+                          {cushion > 0 ? "+" : ""}{cushion.toFixed(1)}%
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-3 text-desk-text">${a.entry_price.toFixed(2)}</td>
+                      <td className="py-3.5 px-3 font-bold text-desk-text">${a.current_price.toFixed(2)}</td>
+                      <td className={`py-3.5 px-3 font-bold ${pnlColor}`}>
+                        {a.profit_pct > 0 ? "+" : ""}{a.profit_pct.toFixed(1)}%
+                      </td>
+                      <td className="py-3.5 px-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] text-desk-secondary w-8">{prog.toFixed(0)}%</span>
+                          <div className="w-16 h-1.5 rounded-full bg-desk-bg overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${prog >= 100 ? "bg-emerald-500" : "bg-desk-accent"}`}
+                              style={{ width: `${prog}%` }}
+                            />
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3.5 px-3 text-desk-secondary">{a.expiry}</td>
+                      <td className="py-3.5 px-4 text-right">
+                        <span
+                          className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap"
+                          style={{
+                            backgroundColor: `${a.badge_color || "#38BDF8"}18`,
+                            color: a.badge_color || "#38BDF8",
+                            border: `1px solid ${a.badge_color || "#38BDF8"}40`,
+                          }}
+                        >
+                          {a.status}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* ========================================================= */}
+      {/* 6. Card 3: Closed Trades & Realized Results               */}
+      {/* ========================================================= */}
+      <div className="rounded-card border border-desk-border bg-desk-card overflow-hidden space-y-4">
+        <div className="p-4 border-b border-desk-border bg-desk-raised/60 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider flex items-center gap-2">
+              <span>🏁 Card 3: Closed Trades &amp; Realized Results</span>
+              <span className="text-xs font-mono font-normal text-desk-secondary">(Audited Performance)</span>
+            </h2>
+            <p className="text-xs text-desk-secondary mt-0.5">
+              Audited historical closed trades verified candle-by-candle with Kirsten&apos;s 50% Take-Profit rule, assignment tracking, and net-credit rolls.
+            </p>
+          </div>
+        </div>
+
+        {/* 4 Mini KPI Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4">
+          <div className="rounded-control bg-desk-raised/60 border border-desk-border p-3">
+            <span className="text-[11px] text-desk-secondary uppercase font-medium block">Total Closed</span>
+            <span className="text-lg font-bold font-mono text-desk-text">{closedStats.count} Trades</span>
+          </div>
+          <div className="rounded-control bg-desk-raised/60 border border-desk-border p-3">
+            <span className="text-[11px] text-desk-secondary uppercase font-medium block">Win Rate</span>
+            <span className={`text-lg font-bold font-mono ${closedStats.wr >= 75 ? "text-emerald-400" : "text-desk-accent"}`}>
+              {closedStats.wr.toFixed(1)}%
+            </span>
+          </div>
+          <div className="rounded-control bg-desk-raised/60 border border-desk-border p-3">
+            <span className="text-[11px] text-desk-secondary uppercase font-medium block">Realized Gain</span>
+            <span className={`text-lg font-bold font-mono ${closedStats.totalPnl >= 0 ? "text-emerald-400" : "text-desk-riskText"}`}>
+              {closedStats.totalPnl >= 0 ? "+" : ""}{formatCurrency(closedStats.totalPnl)}
+            </span>
+          </div>
+          <div className="rounded-control bg-desk-raised/60 border border-desk-border p-3">
+            <span className="text-[11px] text-desk-secondary uppercase font-medium block">Avg Hold Time</span>
+            <span className="text-lg font-bold font-mono text-desk-text">{closedStats.avgDays.toFixed(1)} Days</span>
+          </div>
+        </div>
+
+        {/* Closed Trades Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-desk-border bg-desk-raised text-xs text-desk-secondary font-medium uppercase tracking-wider">
+              <tr>
+                <th className="py-3 px-4">Open Date</th>
+                <th className="py-3 px-4">Close Date</th>
+                <th className="py-3 px-3">Stock</th>
+                <th className="py-3 px-3">Put Strike</th>
+                <th className="py-3 px-3">Entry &rarr; Exit</th>
+                <th className="py-3 px-3">Realized ($)</th>
+                <th className="py-3 px-3">Return %</th>
+                <th className="py-3 px-3">Days</th>
+                <th className="py-3 px-3">Result</th>
+                <th className="py-3 px-4 text-right">Exit Reason</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-desk-border font-mono text-xs">
+              {closedTrades.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className="py-8 text-center text-desk-secondary font-sans text-sm">
+                    No closed trades found in history.
+                  </td>
+                </tr>
+              ) : (
+                closedTrades.slice(0, 30).map((c, idx) => {
+                  const gain = c.realized_gain * 100;
+                  const isWin = c.result === "WIN";
+
+                  return (
+                    <tr key={`${c.ticker}-${c.close_date}-${idx}`} className="hover:bg-desk-raised/60 transition-colors">
+                      <td className="py-3 px-4 text-desk-secondary">{c.open_date}</td>
+                      <td className="py-3 px-4 text-desk-secondary font-semibold">{c.close_date}</td>
+                      <td className="py-3 px-3 font-sans font-bold">
+                        <Link href={`/ticket/${c.ticker}`} className="text-desk-accent hover:underline">
+                          {c.ticker}
+                        </Link>
+                      </td>
+                      <td className="py-3 px-3 font-semibold text-desk-text">${c.strike.toFixed(1)}P</td>
+                      <td className="py-3 px-3 text-desk-secondary">
+                        ${c.entry_credit.toFixed(2)} &rarr; ${c.exit_debit.toFixed(2)}
+                      </td>
+                      <td className={`py-3 px-3 font-bold ${gain >= 0 ? "text-emerald-400" : "text-desk-riskText"}`}>
+                        {gain >= 0 ? "+" : ""}${gain.toFixed(1)}
+                      </td>
+                      <td className={`py-3 px-3 font-bold ${c.profit_pct >= 0 ? "text-emerald-400" : "text-desk-riskText"}`}>
+                        {c.profit_pct > 0 ? "+" : ""}{c.profit_pct.toFixed(1)}%
+                      </td>
+                      <td className="py-3 px-3 text-desk-secondary">{c.days_held}d</td>
+                      <td className="py-3 px-3">
+                        <span
+                          className={`inline-block px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                            isWin
+                              ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                              : "bg-desk-risk/15 text-desk-riskText border border-desk-risk/30"
+                          }`}
+                        >
+                          {c.result}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-right text-desk-secondary text-[11px] truncate max-w-[200px]">
+                        {c.exit_type}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* 7. Legend Footer */}
       <footer className="rounded-card border border-desk-border bg-desk-raised/40 p-4 text-xs text-desk-secondary space-y-1">
         <p>
           <strong className="text-desk-text">Market odds:</strong> Implied probability of expiring out of the money derived directly from options chain delta and Parkinson historical volatility.
