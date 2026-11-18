@@ -82,6 +82,9 @@ export interface Setup {
   odds_touch_market_pct: number;
   odds_model_pct: number;
   one_sigma_low: number;
+  sizing_tier?: "1x" | "2x";
+  sizing_reason?: string;
+  recommended_contracts?: number;
   levels: Levels;
   score: number;
   score_parts: Record<string, [number, number]>;

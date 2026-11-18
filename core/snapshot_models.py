@@ -81,6 +81,9 @@ class SetupModel(BaseModel):
     odds_touch_market_pct: float
     odds_model_pct: float
     one_sigma_low: float
+    sizing_tier: str = "1x"
+    sizing_reason: str = "Standard 1X allocation"
+    recommended_contracts: int = 1
     levels: Levels
     score: float
     score_parts: Dict[str, List[float]]

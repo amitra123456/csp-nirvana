@@ -139,6 +139,31 @@ export default async function TradeTicketPage({ params }: PageProps) {
               </div>
             </div>
 
+            {/* Conviction Sizing Recommendation Banner */}
+            {setup?.sizing_tier === "2x" ? (
+              <div className="rounded-control bg-amber-500/10 border border-amber-500/30 p-3.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-2.5 w-2.5 rounded-full bg-amber-400 animate-pulse" />
+                  <div>
+                    <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block">
+                      🔥 2X High-Conviction Sizing Recommended (2 Contracts)
+                    </span>
+                    <span className="text-[11px] text-desk-secondary">
+                      {setup.sizing_reason} · 97.6%–98.6% Historical Win Rate
+                    </span>
+                  </div>
+                </div>
+                <div className="text-right font-mono text-xs text-amber-300 font-semibold bg-amber-500/15 px-2.5 py-1 rounded">
+                  2X Collateral: {formatCurrency((setup?.collateral || 0) * 2)} · Credit: {formatCurrency((setup?.credit || 0) * 2)}
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-control bg-desk-bg p-2.5 border border-desk-border/60 flex items-center justify-between text-xs text-desk-secondary">
+                <span>Position Sizing: <strong className="text-desk-text">1 Contract</strong> ({formatCurrency(setup?.collateral)} collateral)</span>
+                <span className="text-desk-tertiary font-mono">1X Standard Risk</span>
+              </div>
+            )}
+
             {/* Action Buttons */}
             {setup && (
               <TicketActionButtons

@@ -812,6 +812,31 @@ with tab_ticket:
             """
         )
 
+        sizing_tier = setup.get('sizing_tier', '1x')
+        sizing_reason = setup.get('sizing_reason', 'Standard 1X Allocation')
+        collateral_val = setup.get('collateral', 0.0)
+        credit_val = setup.get('credit', 0.0)
+
+        if sizing_tier == "2x":
+            sizing_banner_html = f"""
+            <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 6px; padding: 10px 14px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <span style="color: #F59E0B; font-weight: 700; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;">🔥 2X HIGH-CONVICTION SIZING RECOMMENDED (2 CONTRACTS)</span>
+                    <div style="color: #8792A2; font-size: 0.75rem; margin-top: 2px;">{sizing_reason} &middot; 97.6%–98.6% Historical Win Rate</div>
+                </div>
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.80rem; font-weight: 700; color: #F59E0B; background: rgba(245, 158, 11, 0.2); padding: 4px 10px; border-radius: 4px;">
+                    2X Collateral: ${collateral_val * 2:,.0f} &middot; Credit: ${credit_val * 2:,.0f}
+                </div>
+            </div>
+            """
+        else:
+            sizing_banner_html = f"""
+            <div style="background: #0E141D; border: 1px solid #1E2733; border-radius: 6px; padding: 8px 12px; margin-top: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; color: #8792A2;">
+                <span>Position Sizing: <strong style="color: #E8ECF1;">1 Contract</strong> (${collateral_val:,.0f} Collateral)</span>
+                <span style="font-family: 'JetBrains Mono', monospace; color: #6CB4FF;">1X Standard Risk</span>
+            </div>
+            """
+
         # Primary Execution Card
         render_html(
             f"""
@@ -844,6 +869,7 @@ with tab_ticket:
                         <div style="color: #8792A2; font-size: 0.72rem;">If assigned at expiry</div>
                     </div>
                 </div>
+                {sizing_banner_html}
             </div>
             """
         )
