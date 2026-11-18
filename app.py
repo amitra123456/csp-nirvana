@@ -827,6 +827,8 @@ with tab_today:
             prog_sub = f"{(a_pnl / 50.0 * 100.0):.0f}% of TP" if (is_pos and a_pnl < 50.0) else ("🎯 50% TP" if a_pnl >= 50.0 else "Drawdown")
             pos_color = "#10B981" if a_pnl >= 50.0 else "#38BDF8"
 
+            a_triage = act.get("triage_action", "")
+
             act_rows_html.append(f"""
 <tr>
 <td class="font-mono" style="color: #8792A2;">#{idx_a+1}</td>
@@ -850,7 +852,10 @@ with tab_today:
     </div>
 </td>
 <td class="font-mono" style="color: #8792A2; font-size: 0.78rem;">{a_exp}</td>
-<td><span class="badge" style="background: rgba(108, 180, 255, 0.15); color: {a_color}; border: 1px solid {a_color}40; font-weight: 600;">{a_status}</span></td>
+<td style="min-width: 200px;">
+    <span class="badge" style="background: rgba(108, 180, 255, 0.15); color: {a_color}; border: 1px solid {a_color}40; font-weight: 600;">{a_status}</span>
+    <div style="font-size: 0.70rem; color: #8792A2; margin-top: 3px; line-height: 1.2;">{a_triage}</div>
+</td>
 </tr>
 """)
 
@@ -871,7 +876,7 @@ with tab_today:
                             <th>P&L %</th>
                             <th>Progress</th>
                             <th>Expiry</th>
-                            <th>Status</th>
+                            <th>Action Protocol</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -475,7 +475,7 @@ export default function TodayPage() {
                 <th className="py-3 px-3">P&amp;L %</th>
                 <th className="py-3 px-3">Progress</th>
                 <th className="py-3 px-3">Expiry</th>
-                <th className="py-3 px-4 text-right">Status</th>
+                <th className="py-3 px-4 text-right">Action Protocol</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-desk-border font-mono text-xs">
@@ -555,7 +555,7 @@ export default function TodayPage() {
                         })()}
                       </td>
                       <td className="py-3.5 px-3 text-desk-secondary">{a.expiry}</td>
-                      <td className="py-3.5 px-4 text-right">
+                      <td className="py-3.5 px-4 text-right min-w-[210px]">
                         <span
                           className="inline-block px-2 py-0.5 rounded text-[10px] font-semibold whitespace-nowrap"
                           style={{
@@ -566,6 +566,11 @@ export default function TodayPage() {
                         >
                           {a.status}
                         </span>
+                        {a.triage_action && (
+                          <div className="text-[10px] text-desk-secondary mt-1 max-w-[240px] ml-auto leading-tight">
+                            {a.triage_action}
+                          </div>
+                        )}
                       </td>
                     </tr>
                   );

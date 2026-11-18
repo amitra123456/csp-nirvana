@@ -333,18 +333,56 @@ def get_active_previous_signals(
         tp_50_price = sig['tp_50_price']
         progress_to_target = min(100.0, max(0.0, (profit_pct / 50.0) * 100.0))
 
+        # Triage Protocol Metrics
+        strike_val = float(sig['strike'])
+        cushion_pct = ((spot - strike_val) / spot) * 100.0 if spot > 0 else 0.0
+        itm_pct = ((strike_val - spot) / strike_val) * 100.0 if strike_val > 0 else 0.0
+        net_basis = strike_val - entry_px
+        rolls = int(sig.get('rolls', 0))
+        rem_dte = int(sig.get('rem_dte', 30))
+
+        # Systematic 3-Way Triage Protocol State Machine
         if profit_pct >= 50.0:
-            status = "🎯 50% TP Target Reached"
+            protocol = "TAKE_PROFIT"
+            status = "🎯 50% TP Reached — Close"
             badge_color = "#10B981"
-        elif profit_pct >= 30.0:
-            status = "⏳ Theta Harvesting"
+            triage_action = "Target hit. Buy back put to lock in 50% profit and release capital."
+        elif itm_pct <= -3.0:
+            # Spot is > 3% above strike -> Safe OTM
+            protocol = "HOLD_THETA"
+            status = "🟢 Hold (Theta Harvesting)"
             badge_color = "#38BDF8"
-        elif profit_pct >= 0.0:
-            status = "🟢 In Progress"
-            badge_color = "#F59E0B"
+            triage_action = f"Spot is +{abs(itm_pct):.1f}% above strike. Safe OTM; allow time decay to harvest."
+        elif 0.0 <= itm_pct <= 3.0 or (rem_dte <= 21 and -1.5 <= itm_pct <= 3.0):
+            # Optimal Roll Window: Spot is touching strike (0 to 3% ITM)
+            if rolls < 2:
+                protocol = "ROLL_OPTIMAL"
+                status = "🔄 Roll Window (ATM Extrinsic Peak)"
+                badge_color = "#F59E0B"
+                triage_action = f"Extrinsic value peaked at ATM. Roll down 1 strike & out 30d for maximum net credit."
+            else:
+                protocol = "PLAN_ASSIGNMENT"
+                status = f"📦 Plan Assignment (Max Rolls Used)"
+                badge_color = "#818CF8"
+                triage_action = f"Max rolls reached. Take delivery at ${net_basis:.2f} net basis and launch Covered Call ladder."
+        elif 3.0 < itm_pct <= 7.0:
+            # Moderately Tested
+            if rolls < 2:
+                protocol = "ROLL_DEFENSIVE"
+                status = "⚠️ Tested (Roll if Credit Available)"
+                badge_color = "#F97316"
+                triage_action = f"Stock is {itm_pct:.1f}% ITM. Check next cycle for net credit roll; switch to assignment if debit."
+            else:
+                protocol = "PLAN_ASSIGNMENT"
+                status = f"📦 Plan Assignment · Basis: ${net_basis:.2f}"
+                badge_color = "#818CF8"
+                triage_action = f"Max rolls reached. Take delivery at ${net_basis:.2f} net basis and launch Covered Call ladder."
         else:
-            status = "🛡️ Rolling / Tested"
-            badge_color = "#EF4444"
+            # Deep ITM (> 7% ITM, like TEAM at 40% ITM)
+            protocol = "PLAN_ASSIGNMENT"
+            status = f"📦 Plan Assignment · Basis: ${net_basis:.2f}"
+            badge_color = "#A855F7"
+            triage_action = f"Stock is {itm_pct:.1f}% ITM. Rolling requires debit (prohibited). Take delivery at ${net_basis:.2f} basis and sell monthly covered calls."
 
         results.append({
             "ticker": sym,
@@ -359,7 +397,12 @@ def get_active_previous_signals(
             "progress_to_target": progress_to_target,
             "status": status,
             "badge_color": badge_color,
-            "rolls": sig.get('rolls', 0)
+            "rolls": rolls,
+            "protocol": protocol,
+            "triage_action": triage_action,
+            "net_basis": round(net_basis, 2),
+            "itm_pct": round(itm_pct, 1),
+            "cushion_pct": round(cushion_pct, 1)
         })
 
     results.sort(key=lambda x: x['profit_pct'], reverse=True)

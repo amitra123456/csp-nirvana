@@ -160,6 +160,11 @@ export interface ActiveSignal {
   status: string;
   badge_color: string;
   rolls: number;
+  protocol?: string;
+  triage_action?: string;
+  net_basis?: number;
+  itm_pct?: number;
+  cushion_pct?: number;
 }
 
 export interface ClosedTrade {
