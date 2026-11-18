@@ -32,15 +32,18 @@ def compute_bs_put_delta(spot: float, strike: float, dte: int, iv: float, r: flo
     put_delta = cdf_d1 - 1.0
     return round(min(-0.01, max(-0.99, put_delta)), 3)
 
-def derive_levels(bars: pd.DataFrame) -> Dict[str, Optional[float]]:
+def derive_levels(bars: pd.DataFrame) -> Dict[str, Any]:
     """Computes technical indicator levels strictly from completed daily bars."""
     if bars is None or len(bars) < 20:
         return {
             "sma50": None, "sma200": None, "avwap": None,
-            "vwap20": None, "ote_618": None, "ote_786": None
+            "vwap20": None, "ote_618": None, "ote_786": None,
+            "swing_low_252": None, "macro_support": None, "macro_vpoc": None,
+            "is_near_macro_support": False
         }
 
     close = bars['Close']
+    spot = float(close.iloc[-1])
     sma50 = round(float(close.rolling(50).mean().iloc[-1]), 2) if len(bars) >= 50 else None
     sma200 = round(float(close.rolling(200).mean().iloc[-1]), 2) if len(bars) >= 200 else None
 
@@ -73,13 +76,43 @@ def derive_levels(bars: pd.DataFrame) -> Dict[str, Optional[float]]:
     else:
         avwap = round(float(bars['Close'].iloc[-1]), 2)
 
+    # Macro 252-day (52-Week) and 500-day (2-Year) Structural Levels
+    n_bars = len(bars)
+    bars_252 = bars.iloc[-252:] if n_bars >= 252 else bars
+    swing_low_252 = round(float(bars_252['Low'].min()), 2) if 'Low' in bars_252 else None
+
+    # Macro 252-day AVWAP (Macro Volume POC Shelf)
+    if 'Volume' in bars_252 and bars_252['Volume'].sum() > 0:
+        typ_252 = (bars_252['High'] + bars_252['Low'] + bars_252['Close']) / 3.0
+        macro_vpoc = round(float(np.average(typ_252, weights=bars_252['Volume'])), 2)
+    else:
+        macro_vpoc = sma200
+
+    # Macro Historical Pivot Supports below spot (local minima across entire series)
+    macro_support = swing_low_252
+    if 'Low' in bars and n_bars >= 40:
+        lows = bars['Low'].values
+        pivots = []
+        w = 12
+        for i in range(w, n_bars - w):
+            if lows[i] == min(lows[i-w:i+w+1]) and lows[i] < spot * 0.99:
+                pivots.append(lows[i])
+        if pivots:
+            macro_support = round(float(max(pivots)), 2)
+
+    is_near_macro_support = bool(macro_support and abs(spot - macro_support) / spot <= 0.035)
+
     return {
         "sma50": sma50,
         "sma200": sma200,
         "avwap": avwap,
         "vwap20": vwap20,
         "ote_618": ote_618,
-        "ote_786": ote_786
+        "ote_786": ote_786,
+        "swing_low_252": swing_low_252,
+        "macro_support": macro_support,
+        "macro_vpoc": macro_vpoc,
+        "is_near_macro_support": is_near_macro_support
     }
 
 def derive_trend(spot: float, bars: pd.DataFrame, levels: Dict[str, Optional[float]]) -> str:

@@ -66,8 +66,9 @@ def compute_dark_pool_telemetry(ticker: str, df_ohlcv: pd.DataFrame) -> Dict[str
                 whale_vol_pct = 9.2
                 iso_net_buy = 50.0
 
-        # Institutional Dark Pool Shelf / Volume POC
+        # Institutional Dark Pool Shelf / Volume POC (20-day tactical & 252-day macro)
         dp_shelf = float(df_ohlcv['Close'].iloc[-1]) if (df_ohlcv is not None and len(df_ohlcv) > 0) else 100.0
+        macro_shelf = dp_shelf
         if df_ohlcv is not None and len(df_ohlcv) > 0 and 'Volume' in df_ohlcv.columns:
             recent_20 = df_ohlcv.iloc[-20:] if len(df_ohlcv) >= 20 else df_ohlcv
             typical_prices = (recent_20['High'] + recent_20['Low'] + recent_20['Close']) / 3.0
@@ -77,6 +78,15 @@ def compute_dark_pool_telemetry(ticker: str, df_ohlcv: pd.DataFrame) -> Dict[str
             else:
                 dp_shelf = float(typical_prices.mean())
 
+            # 252-day Macro Institutional Volume Point of Control Shelf
+            recent_252 = df_ohlcv.iloc[-252:] if len(df_ohlcv) >= 252 else df_ohlcv
+            typ_252 = (recent_252['High'] + recent_252['Low'] + recent_252['Close']) / 3.0
+            vol_252 = float(recent_252['Volume'].sum())
+            if vol_252 > 0:
+                macro_shelf = float(np.average(typ_252, weights=recent_252['Volume']))
+            else:
+                macro_shelf = dp_shelf
+
         is_accumulating = dp_ratio >= 42.0 and iso_net_buy >= 50.0
 
         return {
@@ -85,7 +95,8 @@ def compute_dark_pool_telemetry(ticker: str, df_ohlcv: pd.DataFrame) -> Dict[str
             'whale_count': int(whale_count),
             'whale_volume_share_pct': float(whale_vol_pct),
             'iso_net_buy_pct': float(iso_net_buy),
-            'dark_pool_shelf_price': float(dp_shelf)
+            'dark_pool_shelf_price': float(dp_shelf),
+            'macro_volume_shelf_price': float(macro_shelf)
         }
     except Exception:
         # Failsafe fallback: unknown (no boost, never assume accumulating)

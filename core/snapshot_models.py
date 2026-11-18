@@ -35,6 +35,10 @@ class Levels(BaseModel):
     vwap20: Optional[float] = None
     ote_618: Optional[float] = None
     ote_786: Optional[float] = None
+    swing_low_252: Optional[float] = None
+    macro_support: Optional[float] = None
+    macro_vpoc: Optional[float] = None
+    is_near_macro_support: Optional[bool] = False
 
 class HeldPositionSummary(BaseModel):
     strike: float

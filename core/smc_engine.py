@@ -100,6 +100,29 @@ def compute_smc_structure(df: pd.DataFrame) -> Dict[str, Any]:
                     'top': c3_low
                 })
 
+    # Macro 252-day (52-Week) and Multi-Year Structural Support Levels
+    n_bars = len(df)
+    df_252 = df.iloc[-252:] if n_bars >= 252 else df
+    swing_low_252 = float(df_252['Low'].min())
+    swing_high_252 = float(df_252['High'].max())
+    macro_lowest_2y = float(df['Low'].min())
+
+    if 'Volume' in df_252 and df_252['Volume'].sum() > 0:
+        typ_252 = (df_252['High'] + df_252['Low'] + df_252['Close']) / 3.0
+        avwap_252 = float((typ_252 * df_252['Volume']).sum() / df_252['Volume'].sum())
+    else:
+        avwap_252 = sma200 if not math.isnan(sma200) else close
+
+    # Historical Pivot Support Shelves below current close
+    lows = df['Low'].values
+    pivots_below = []
+    w = 12
+    for i in range(w, n_bars - w):
+        if lows[i] == min(lows[i-w:i+w+1]) and lows[i] < close * 0.99:
+            pivots_below.append(float(lows[i]))
+    macro_support_shelf = max(pivots_below) if pivots_below else swing_low_252
+    is_near_macro_support = abs(close - macro_support_shelf) / close <= 0.035
+
     return {
         'current_price': close,
         'day_pct_change': day_pct_change,
@@ -108,6 +131,12 @@ def compute_smc_structure(df: pd.DataFrame) -> Dict[str, Any]:
         'sma200': sma200,
         'swing_high': swing_high,
         'swing_low': swing_low,
+        'swing_low_252': swing_low_252,
+        'swing_high_252': swing_high_252,
+        'macro_lowest_2y': macro_lowest_2y,
+        'avwap_252': avwap_252,
+        'macro_support_shelf': macro_support_shelf,
+        'is_near_macro_support': is_near_macro_support,
         'equilibrium': equilibrium,
         'ote_618': ote_618,
         'ote_705': ote_705,

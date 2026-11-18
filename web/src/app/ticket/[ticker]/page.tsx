@@ -55,6 +55,9 @@ export default async function TradeTicketPage({ params }: PageProps) {
     ...(levels.vwap20 ? [{ label: "20-Day VWAP", price: levels.vwap20, color: "#8792A2", isLine: false, isDashed: false }] : []),
     ...(levels.ote_618 ? [{ label: "OTE 61.8% Retracement", price: levels.ote_618, color: "#8792A2", isLine: false, isDashed: false }] : []),
     ...(levels.ote_786 ? [{ label: "OTE 78.6% Retracement", price: levels.ote_786, color: "#8792A2", isLine: false, isDashed: false }] : []),
+    ...(levels.macro_support ? [{ label: "Macro 1-2Y Support Shelf", price: levels.macro_support, color: "#34D399", isLine: false, isDashed: true }] : []),
+    ...(levels.swing_low_252 ? [{ label: "52-Week Macro Low", price: levels.swing_low_252, color: "#10B981", isLine: false, isDashed: true }] : []),
+    ...(levels.macro_vpoc ? [{ label: "Macro 1Y AVWAP", price: levels.macro_vpoc, color: "#818CF8", isLine: false, isDashed: false }] : []),
   ].sort((a, b) => b.price - a.price);
 
   const maxPrice = Math.max(...ladderPoints.map((p) => p.price)) * 1.05;

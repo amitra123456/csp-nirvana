@@ -163,6 +163,10 @@ def scan_single_ticker(
                 'ote_705': smc['ote_705'],
                 'ote_786': smc['ote_786'],
                 'ote_in_range': ote_in_range,
+                'swing_low_252': smc.get('swing_low_252'),
+                'macro_support': smc.get('macro_support_shelf'),
+                'macro_vpoc': smc.get('avwap_252'),
+                'is_near_macro_support': smc.get('is_near_macro_support', False),
                 'is_primary_pick': strike <= strike_ceiling
             })
 

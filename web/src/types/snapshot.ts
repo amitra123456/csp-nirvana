@@ -32,6 +32,10 @@ export interface Levels {
   vwap20: number | null;
   ote_618: number | null;
   ote_786: number | null;
+  swing_low_252?: number | null;
+  macro_support?: number | null;
+  macro_vpoc?: number | null;
+  is_near_macro_support?: boolean | null;
 }
 
 export interface HeldPositionSummary {

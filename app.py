@@ -463,6 +463,19 @@ def render_interactive_chart(
                 annotation_font=dict(color="#C084FC", size=10, family="JetBrains Mono")
             )
 
+        # Macro 1-to-2 Year Support Shelf
+        macro_sup = levels.get("macro_support")
+        if macro_sup and macro_sup > 0 and abs(macro_sup - spot) / spot <= 0.35:
+            fig.add_hline(
+                y=macro_sup,
+                line_dash="dot",
+                line_color="#34D399",
+                line_width=1.5,
+                annotation_text=f"Macro 1-2Y Support ${macro_sup:.2f}",
+                annotation_position="bottom right",
+                annotation_font=dict(color="#34D399", size=10, family="JetBrains Mono")
+            )
+
         # Proposed Put Strike (Horizontal defense line)
         fig.add_hline(
             y=strike,
@@ -989,18 +1002,19 @@ with tab_ticket:
             )
 
             # Lens 4: Technical & SMC Structure
+            macro_tag = '<span class="badge" style="background: rgba(52, 211, 153, 0.15); color: #34D399; margin-left: 6px;">TESTING MACRO 1-2Y SUPPORT</span>' if levels.get('is_near_macro_support') else ''
             render_html(
                 f"""
                 <div class="desk-card">
-                    <div class="kpi-title" style="color: #6CB4FF;">4. SMC DEALING RANGE & TECHNICAL LEVELS</div>
+                    <div class="kpi-title" style="color: #6CB4FF;">4. SMC DEALING RANGE & MACRO TECHNICAL LEVELS</div>
                     <div style="font-size: 0.84rem; line-height: 1.5; margin: 8px 0; color: #E8ECF1;">
-                        <strong>Current Regime:</strong> <span class="badge badge-blue">{setup.get('trend', 'pullback').upper()}</span> in Secular Macro Uptrend<br>
-                        <strong>ICT OTE 61.8% Retracement:</strong> ${levels.get('ote_618', 0.0):.2f}<br>
-                        <strong>ICT OTE 78.6% Retracement:</strong> ${levels.get('ote_786', 0.0):.2f} (Deep Demand Zone)<br>
-                        <strong>20-Day VWAP:</strong> ${levels.get('vwap20', 0.0):.2f} &middot; <strong>SMA 200:</strong> ${levels.get('sma200', 0.0):.2f}
+                        <strong>Current Regime:</strong> <span class="badge badge-blue">{setup.get('trend', 'pullback').upper()}</span> in Secular Macro Uptrend{macro_tag}<br>
+                        <strong>Macro 1-2Y Support Shelf:</strong> ${levels.get('macro_support', 0.0) or 0.0:.2f} &middot; <strong>52-Week Low:</strong> ${levels.get('swing_low_252', 0.0) or 0.0:.2f}<br>
+                        <strong>ICT OTE 61.8% / 78.6%:</strong> ${levels.get('ote_618', 0.0):.2f} &middot; ${levels.get('ote_786', 0.0):.2f} (Demand Pocket)<br>
+                        <strong>20-Day VWAP:</strong> ${levels.get('vwap20', 0.0):.2f} &middot; <strong>Macro 1Y AVWAP:</strong> ${levels.get('macro_vpoc', 0.0) or levels.get('sma200', 0.0):.2f} &middot; <strong>SMA 200:</strong> ${levels.get('sma200', 0.0):.2f}
                     </div>
                     <div style="font-size: 0.78rem; color: #8792A2; border-top: 1px solid #1E2733; padding-top: 8px; margin-top: 8px;">
-                        <em>Technical Thesis:</em> Strike ${setup.get('strike'):.1f} sits underneath both the 200 SMA and the ICT OTE 78.6% Fibonacci pocket, requiring an extraordinary breakdown to threaten the position.
+                        <em>Technical Thesis:</em> Strike ${setup.get('strike'):.1f} sits underneath both the 200 SMA and the confirmed multi-year structural support shelf, anchored safely beneath institutional accumulation zones.
                     </div>
                 </div>
                 """
