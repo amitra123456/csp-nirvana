@@ -89,6 +89,8 @@ export interface Setup {
   score: number;
   score_parts: Record<string, [number, number]>;
   trend: "downtrend" | "pullback" | "test_200" | "range" | "breakout";
+  day_change_pct?: number;
+  is_red_day?: boolean;
   held_position: HeldPositionSummary | null;
   watchouts: WatchoutItem[];
   plan: TradePlan;

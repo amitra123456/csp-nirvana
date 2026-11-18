@@ -10,8 +10,8 @@ export default function SignalsPage() {
   const [loading, setLoading] = useState(true);
   const [preset, setPreset] = useState<"conservative" | "core" | "aggressive" | "custom">("core");
   
-  // Filter toggle states
-  const [skipEarnings, setSkipEarnings] = useState(true);
+  // Filter toggle states (all start inactive so full qualified universe is visible, then filter dynamically)
+  const [skipEarnings, setSkipEarnings] = useState(false);
   const [redDaysOnly, setRedDaysOnly] = useState(false);
   const [hideHeld, setHideHeld] = useState(false);
 
@@ -56,26 +56,33 @@ export default function SignalsPage() {
     loadData();
   }, []);
 
-  const itmPositions = useMemo(() => {
-    return snapshot?.positions?.filter((p) => p.status === "itm") || [];
-  }, [snapshot]);
-
   const heldTickers = useMemo(() => {
     return new Set(snapshot?.positions?.map((p) => p.ticker.toUpperCase()) || []);
   }, [snapshot]);
+
+  // Counts for toggle chips
+  const earningsHoldCount = useMemo(() => {
+    if (!snapshot?.setups) return 0;
+    return snapshot.setups.filter((s) => s.watchouts?.some((w) => w.title.toLowerCase().includes("earning"))).length;
+  }, [snapshot]);
+
+  const heldInUniverseCount = useMemo(() => {
+    if (!snapshot?.setups) return 0;
+    return snapshot.setups.filter((s) => heldTickers.has(s.ticker.toUpperCase())).length;
+  }, [snapshot, heldTickers]);
 
   // Filter setups based on preset and toggles
   const filteredSetups = useMemo(() => {
     if (!snapshot?.setups) return [];
     return snapshot.setups.filter((s) => {
       // Preset gates
-      if (preset === "conservative" && (s.cushion_pct < 15.0 || s.score < 85)) return false;
-      if (preset === "core" && (s.cushion_pct < 12.0 || s.score < 80)) return false;
+      if (preset === "conservative" && (s.cushion_pct < 15.0 || s.score < 70)) return false;
+      if (preset === "core" && (s.cushion_pct < 12.0 || s.score < 65)) return false;
       if (preset === "aggressive" && s.cushion_pct < 8.0) return false;
 
       // Toggle chips
-      if (skipEarnings && s.watchouts.some((w) => w.title.includes("Earnings"))) return false;
-      if (redDaysOnly && s.trend === "breakout") return false;
+      if (skipEarnings && s.watchouts?.some((w) => w.title.toLowerCase().includes("earning") || w.detail.toLowerCase().includes("earning"))) return false;
+      if (redDaysOnly && (s.is_red_day === false || (typeof s.day_change_pct === "number" && s.day_change_pct >= 0))) return false;
       if (hideHeld && heldTickers.has(s.ticker.toUpperCase())) return false;
 
       return true;
@@ -142,9 +149,9 @@ export default function SignalsPage() {
   }
 
   const presetRules = {
-    conservative: "≥ 15% Cushion · Score ≥ 85 · No earnings · Red days only",
-    core: "≥ 12% Cushion · Score ≥ 80 · 30-45 DTE · Safe Delta",
-    aggressive: "≥ 8% Cushion · Score ≥ 70 · Shorter DTE eligible",
+    conservative: "≥ 15% Cushion · Score ≥ 70 · Low Beta Pullbacks",
+    core: "≥ 12% Cushion · Score ≥ 65 · 30-45 DTE · Strict Institutional",
+    aggressive: "≥ 8% Cushion · Score ≥ 60 · Momentum / Shorter DTE",
     custom: "Custom user-configured rule parameters",
   };
 
@@ -176,25 +183,7 @@ export default function SignalsPage() {
         </div>
       </div>
 
-      {/* 2. ITM Urgent Risk Banner */}
-      {itmPositions.length > 0 && (
-        <Link
-          href="/admin"
-          className="flex items-center justify-between rounded-control border border-desk-risk/40 bg-desk-risk/10 p-3.5 text-sm text-desk-riskText hover:bg-desk-risk/15 transition-colors"
-        >
-          <div className="flex items-center gap-2.5">
-            <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <span className="font-semibold">
-              {itmPositions.length} position{itmPositions.length > 1 ? "s" : ""} in the money ({itmPositions.map((p) => p.ticker).join(", ")}) — review exit &amp; roll triggers
-            </span>
-          </div>
-          <span className="text-xs font-bold underline underline-offset-4">Open Admin &rarr;</span>
-        </Link>
-      )}
-
-      {/* 3. Preset Segmented Control & Filter Toggles */}
+      {/* 2. Preset Segmented Control & Filter Toggles */}
       <div className="rounded-card border border-desk-border bg-desk-card p-4 space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center rounded-control bg-desk-bg p-1 border border-desk-border">
@@ -216,33 +205,49 @@ export default function SignalsPage() {
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setSkipEarnings(!skipEarnings)}
-              className={`min-h-[36px] rounded-control px-3 py-1.5 text-xs font-medium border transition-colors ${
+              className={`min-h-[36px] inline-flex items-center gap-1.5 rounded-control px-3 py-1.5 text-xs font-semibold border transition-all ${
                 skipEarnings
-                  ? "bg-desk-accent/15 border-desk-accent/40 text-desk-accent"
-                  : "bg-desk-bg border-desk-border text-desk-secondary hover:text-desk-text"
+                  ? "bg-amber-500/15 border-amber-500/50 text-amber-400 shadow-sm"
+                  : "bg-desk-bg border-desk-border text-desk-secondary hover:text-desk-text hover:border-desk-borderHover"
               }`}
+              title="Filter out stocks with upcoming earnings announcements"
             >
+              <span className={`w-2 h-2 rounded-full ${skipEarnings ? "bg-amber-400" : "bg-desk-border"}`} />
               Skip earnings weeks
+              {earningsHoldCount > 0 && (
+                <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${skipEarnings ? "bg-amber-500/20 text-amber-300 font-bold" : "bg-desk-raised text-desk-tertiary"}`}>
+                  {skipEarnings ? `-${earningsHoldCount}` : `${earningsHoldCount}`}
+                </span>
+              )}
             </button>
             <button
               onClick={() => setRedDaysOnly(!redDaysOnly)}
-              className={`min-h-[36px] rounded-control px-3 py-1.5 text-xs font-medium border transition-colors ${
+              className={`min-h-[36px] inline-flex items-center gap-1.5 rounded-control px-3 py-1.5 text-xs font-semibold border transition-all ${
                 redDaysOnly
-                  ? "bg-desk-accent/15 border-desk-accent/40 text-desk-accent"
-                  : "bg-desk-bg border-desk-border text-desk-secondary hover:text-desk-text"
+                  ? "bg-rose-500/15 border-rose-500/50 text-rose-400 shadow-sm"
+                  : "bg-desk-bg border-desk-border text-desk-secondary hover:text-desk-text hover:border-desk-borderHover"
               }`}
+              title="Only show stocks having a red day / pullback"
             >
+              <span className={`w-2 h-2 rounded-full ${redDaysOnly ? "bg-rose-400" : "bg-desk-border"}`} />
               Red days only
             </button>
             <button
               onClick={() => setHideHeld(!hideHeld)}
-              className={`min-h-[36px] rounded-control px-3 py-1.5 text-xs font-medium border transition-colors ${
+              className={`min-h-[36px] inline-flex items-center gap-1.5 rounded-control px-3 py-1.5 text-xs font-semibold border transition-all ${
                 hideHeld
-                  ? "bg-desk-accent/15 border-desk-accent/40 text-desk-accent"
-                  : "bg-desk-bg border-desk-border text-desk-secondary hover:text-desk-text"
+                  ? "bg-desk-accent/15 border-desk-accent/50 text-desk-accent shadow-sm"
+                  : "bg-desk-bg border-desk-border text-desk-secondary hover:text-desk-text hover:border-desk-borderHover"
               }`}
+              title="Hide stocks where you already hold open positions"
             >
+              <span className={`w-2 h-2 rounded-full ${hideHeld ? "bg-desk-accent" : "bg-desk-border"}`} />
               Hide names I hold
+              {heldInUniverseCount > 0 && (
+                <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${hideHeld ? "bg-desk-accent/20 text-desk-accent font-bold" : "bg-desk-raised text-desk-tertiary"}`}>
+                  {hideHeld ? `-${heldInUniverseCount}` : `${heldInUniverseCount} held`}
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -306,7 +311,14 @@ export default function SignalsPage() {
                         {/* 1. Stock */}
                         <td className="py-3.5 px-3 font-sans text-center">
                           <Link href={`/ticket/${s.ticker}`} className="inline-flex flex-col items-center hover:text-desk-accent">
-                            <span className="text-sm font-mono text-desk-accent font-bold">{s.ticker}</span>
+                            <div className="inline-flex items-center gap-1.5">
+                              <span className="text-sm font-mono text-desk-accent font-bold">{s.ticker}</span>
+                              {heldTickers.has(sym) && (
+                                <span className="rounded bg-sky-500/15 px-1 py-0.2 text-[9px] font-mono text-sky-400 font-semibold border border-sky-500/30" title="Held in your open portfolio">
+                                  HELD
+                                </span>
+                              )}
+                            </div>
                             <span className="text-[11px] text-desk-secondary truncate max-w-[110px]">{s.name}</span>
                           </Link>
                         </td>
@@ -318,8 +330,13 @@ export default function SignalsPage() {
                         </td>
 
                         {/* 3. Current Price */}
-                        <td className="py-3.5 px-3 font-mono font-bold text-white text-center">
-                          ${s.spot.toFixed(2)}
+                        <td className="py-3.5 px-3 font-mono font-bold text-center">
+                          <div className="text-white">${s.spot.toFixed(2)}</div>
+                          {typeof (s as any).day_change_pct === "number" && (
+                            <div className={`text-[10px] font-medium ${(s as any).day_change_pct < 0 ? "text-rose-400" : "text-emerald-400"}`}>
+                              {(s as any).day_change_pct > 0 ? "+" : ""}{(s as any).day_change_pct.toFixed(2)}%
+                            </div>
+                          )}
                         </td>
 
                         {/* 4. Put Strike */}
@@ -332,6 +349,11 @@ export default function SignalsPage() {
                         <td className="py-3.5 px-3 font-mono text-center">
                           <div className="font-semibold text-white">{s.expiry}</div>
                           <div className="text-[10px] text-desk-tertiary">{s.dte} DTE</div>
+                          {s.watchouts?.some((w) => w.title.toLowerCase().includes("earning")) && (
+                            <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 px-1 py-0.2 text-[9px] font-mono text-amber-400 border border-amber-500/30 mt-0.5" title="Trade spans earnings announcement window">
+                              ⚠️ Earnings
+                            </span>
+                          )}
                         </td>
 
                         {/* 6. Credit */}

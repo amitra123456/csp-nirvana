@@ -97,7 +97,9 @@
         "roll_trigger_price": 214.2,
         "stress_drop_pct": 30.0,
         "stress_loss": -3274.0
-      }
+      },
+      "day_change_pct": -1.82,
+      "is_red_day": true
     },
     {
       "ticker": "PLTR",
@@ -184,7 +186,9 @@
         "roll_trigger_price": 137.7,
         "stress_drop_pct": 30.0,
         "stress_loss": -2389.0
-      }
+      },
+      "day_change_pct": -3.41,
+      "is_red_day": true
     },
     {
       "ticker": "HOOD",
@@ -271,7 +275,9 @@
         "roll_trigger_price": 56.1,
         "stress_drop_pct": 30.0,
         "stress_loss": -578.0
-      }
+      },
+      "day_change_pct": -2.15,
+      "is_red_day": true
     },
     {
       "ticker": "ORCL",
@@ -350,6 +356,11 @@
           "severity": "medium",
           "title": "Strike Above 1\u03c3 Low",
           "detail": "Put strike $100.00 is higher than the 1-standard-deviation move floor ($89.35)."
+        },
+        {
+          "severity": "high",
+          "title": "Earnings Blackout",
+          "detail": "Option spans earnings report on 2026-12-14."
         }
       ],
       "plan": {
@@ -358,7 +369,9 @@
         "roll_trigger_price": 102.0,
         "stress_drop_pct": 30.0,
         "stress_loss": -1540.0
-      }
+      },
+      "day_change_pct": -1.48,
+      "is_red_day": true
     },
     {
       "ticker": "TSM",
@@ -445,7 +458,9 @@
         "roll_trigger_price": 316.2,
         "stress_drop_pct": 30.0,
         "stress_loss": -5357.0
-      }
+      },
+      "day_change_pct": 1.24,
+      "is_red_day": false
     },
     {
       "ticker": "TSLA",
@@ -532,7 +547,9 @@
         "roll_trigger_price": 336.6,
         "stress_drop_pct": 30.0,
         "stress_loss": -5771.0
-      }
+      },
+      "day_change_pct": -2.7,
+      "is_red_day": true
     },
     {
       "ticker": "MRVL",
@@ -611,6 +628,11 @@
           "severity": "medium",
           "title": "Strike Above 1\u03c3 Low",
           "detail": "Put strike $125.00 is higher than the 1-standard-deviation move floor ($108.43)."
+        },
+        {
+          "severity": "high",
+          "title": "Earnings Blackout",
+          "detail": "Option spans earnings report on 2026-12-01."
         }
       ],
       "plan": {
@@ -619,7 +641,9 @@
         "roll_trigger_price": 127.5,
         "stress_drop_pct": 30.0,
         "stress_loss": -1759.0
-      }
+      },
+      "day_change_pct": 0.85,
+      "is_red_day": false
     },
     {
       "ticker": "INTC",
@@ -706,7 +730,9 @@
         "roll_trigger_price": 47.94,
         "stress_drop_pct": 30.0,
         "stress_loss": -737.0
-      }
+      },
+      "day_change_pct": -0.92,
+      "is_red_day": true
     },
     {
       "ticker": "NVDA",
@@ -785,6 +811,11 @@
           "severity": "medium",
           "title": "Strike Above 1\u03c3 Low",
           "detail": "Put strike $130.00 is higher than the 1-standard-deviation move floor ($126.98)."
+        },
+        {
+          "severity": "high",
+          "title": "Earnings Blackout",
+          "detail": "Option spans earnings report on 2026-11-20."
         }
       ],
       "plan": {
@@ -793,7 +824,9 @@
         "roll_trigger_price": 132.6,
         "stress_drop_pct": 30.0,
         "stress_loss": -2131.0
-      }
+      },
+      "day_change_pct": 1.61,
+      "is_red_day": false
     },
     {
       "ticker": "ARM",
@@ -880,7 +913,9 @@
         "roll_trigger_price": 163.2,
         "stress_drop_pct": 30.0,
         "stress_loss": -2496.0
-      }
+      },
+      "day_change_pct": -1.38,
+      "is_red_day": true
     }
   ],
   "held_back": [
