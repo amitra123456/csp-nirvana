@@ -69,7 +69,7 @@ export default async function TradeTicketPage({ params }: PageProps) {
       {/* Back Link */}
       <div>
         <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-semibold text-desk-secondary hover:text-desk-accent transition-colors">
-          ← Back to Today's setups
+          ← Back to Signals
         </Link>
       </div>
 

@@ -37,8 +37,8 @@ export function Header({ asOfEt = "", itmCount = 0 }: HeaderProps) {
   };
 
   const navLinks = [
-    { href: "/", label: "Today" },
-    { href: "/positions", label: "Positions", badge: itmCount > 0 ? `${itmCount} ITM` : undefined },
+    { href: "/", label: "Signals" },
+    { href: "/admin", label: "Admin", badge: itmCount > 0 ? `${itmCount} ITM` : undefined },
     { href: "/evidence", label: "Evidence" },
     { href: "/rules", label: "Rules" },
   ];

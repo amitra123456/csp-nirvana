@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Setup, Snapshot, HeldBack, Position, ActiveSignal, ClosedTrade } from "@/types/snapshot";
 import { formatCurrency, formatPercent, formatNumber } from "@/lib/data";
 
-export default function TodayPage() {
+export default function SignalsPage() {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [preset, setPreset] = useState<"conservative" | "core" | "aggressive" | "custom">("core");
@@ -130,7 +130,7 @@ export default function TodayPage() {
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-desk-border pb-4">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-desk-text">Today&apos;s Candidates</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-desk-text">Signals &amp; Candidates</h1>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400 border border-emerald-500/20">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Verified 3:35 PM ET
@@ -155,7 +155,7 @@ export default function TodayPage() {
       {/* 2. ITM Urgent Risk Banner */}
       {itmPositions.length > 0 && (
         <Link
-          href="/positions"
+          href="/admin"
           className="flex items-center justify-between rounded-control border border-desk-risk/40 bg-desk-risk/10 p-3.5 text-sm text-desk-riskText hover:bg-desk-risk/15 transition-colors"
         >
           <div className="flex items-center gap-2.5">
@@ -166,7 +166,7 @@ export default function TodayPage() {
               {itmPositions.length} position{itmPositions.length > 1 ? "s" : ""} in the money ({itmPositions.map((p) => p.ticker).join(", ")}) — review exit &amp; roll triggers
             </span>
           </div>
-          <span className="text-xs font-bold underline underline-offset-4">Open Positions &rarr;</span>
+          <span className="text-xs font-bold underline underline-offset-4">Open Admin &rarr;</span>
         </Link>
       )}
 
