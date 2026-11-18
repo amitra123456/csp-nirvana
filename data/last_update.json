@@ -1,9 +1,9 @@
 {
-  "last_updated": "2026-11-18 11:40:56 EST",
-  "timestamp_raw": "2026-11-18T11:40:56.468427-05:00",
+  "last_updated": "2026-11-18 15:33:53 EST",
+  "timestamp_raw": "2026-11-18T15:33:53.989391-05:00",
   "status": "SUCCESS",
   "total_population": 108,
-  "qualified_setups_count": 10,
+  "qualified_setups_count": 14,
   "active_positions_count": 5,
   "closed_trades_count": 753,
   "next_scheduled_run": "2026-11-19 15:35:00 EST"

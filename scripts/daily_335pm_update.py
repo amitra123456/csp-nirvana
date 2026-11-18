@@ -413,6 +413,15 @@ def run_daily_pipeline(force_alpaca_fail: bool = False) -> Snapshot:
         archive_name = f"{now_et.strftime('%Y-%m-%d_%H%M')}.json"
         archive_path = SNAPSHOTS_DIR / archive_name
 
+        # Automatically enrich snapshot with lifecycle trees
+        try:
+            from scripts.enrich_trees import enrich_snapshot_lifecycle_trees
+            snapshot_dict = json.loads(snapshot_json)
+            snapshot_dict = enrich_snapshot_lifecycle_trees(snapshot_dict)
+            snapshot_json = json.dumps(snapshot_dict, indent=2)
+        except Exception as e:
+            logging.warning(f"Could not run enrich_snapshot_lifecycle_trees: {e}")
+
         with open(latest_path, "w", encoding="utf-8") as f:
             f.write(snapshot_json)
         with open(archive_path, "w", encoding="utf-8") as f:
