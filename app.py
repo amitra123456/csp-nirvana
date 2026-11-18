@@ -1746,7 +1746,225 @@ with tab_evidence:
 # SCREEN 5: STRATEGY RULES & CREED
 # =========================================================
 with tab_rules:
-    st.markdown("### 📖 The Nirvana Creed // Kirsten's Operational Rules & Architecture")
+    st.markdown("### 📖 Strategy Rules, Scoring & Operational Execution Protocols")
+    st.markdown("<div style='font-size: 0.85rem; color: #8792A2; margin-bottom: 1.5rem;'>The complete quantitative rulebook: 7-Factor Nirvana Composite Scoring Model followed by 3 detailed procedural flowcharts for Stock Selection, Defensive Rolling, and Planned Assignment vs Loss Triage.</div>", unsafe_allow_html=True)
+
+    # =========================================================================
+    # SECTION 1: NIRVANA COMPOSITE SCORING CRITERIA (0 - 100 SCALE)
+    # =========================================================================
+    st.markdown("#### 1. Nirvana Composite Scoring Model (0–100 Scale)")
+    st.caption("Computed strictly on completed daily bars at order entry. Combines 7 orthogonal factors with event-risk deductions.")
+
+    s_c1, s_c2, s_c3, s_c4 = st.columns(4)
+    with s_c1:
+        render_html("""
+        <div class="desk-card">
+            <div class="kpi-title" style="color: #6CB4FF;">FACTOR 1 · CUSHION (20 PTS)</div>
+            <div style="font-size: 0.82rem; line-height: 1.4; color: #E8ECF1;">
+                <strong>Beta-Adaptive Cushion:</strong> Target = <code>12% × √Beta</code>.<br>
+                Low-beta: 10.5% cushion. High-beta: 16.5% cushion.<br>
+                <code>min(20, (Cushion / Target) × 16.0)</code>
+            </div>
+        </div>
+        <div class="desk-card">
+            <div class="kpi-title" style="color: #6CB4FF;">FACTOR 2 · VALUATION (20 PTS)</div>
+            <div style="font-size: 0.82rem; line-height: 1.4; color: #E8ECF1;">
+                <strong>Lens 1 Intrinsic Safety:</strong> FCF Yield % & Reverse DCF margin of safety.<br>
+                FCF Yield ≥ 4.0% gives full points.<br>
+                <code>min(20, FCF Yield % × 2.5)</code>
+            </div>
+        </div>
+        """)
+    with s_c2:
+        render_html("""
+        <div class="desk-card">
+            <div class="kpi-title" style="color: #6CB4FF;">FACTOR 3 · S/R LEVELS (20 PTS)</div>
+            <div style="font-size: 0.82rem; line-height: 1.4; color: #E8ECF1;">
+                <strong>Macro S/R & Trend:</strong> Base 12 pts.<br>
+                <strong>+4 pts:</strong> Golden Cross (50 > 200 SMA).<br>
+                <strong>+3 pts:</strong> Fortified under 1-2Y Macro Shelf.<br>
+                <strong>-4 pts:</strong> Secular bear downtrend penalty.
+            </div>
+        </div>
+        <div class="desk-card">
+            <div class="kpi-title" style="color: #6CB4FF;">FACTOR 4 · SENTIMENT (15 PTS)</div>
+            <div style="font-size: 0.82rem; line-height: 1.4; color: #E8ECF1;">
+                <strong>Whale Absorption Divergence:</strong><br>
+                Multi-horizon news sentiment + dark pool off-exchange index.<br>
+                Whale Absorption: 15 pts | Neutral: 12 pts.
+            </div>
+        </div>
+        """)
+    with s_c3:
+        render_html("""
+        <div class="desk-card">
+            <div class="kpi-title" style="color: #6CB4FF;">FACTOR 5 · CANDLES (10 PTS)</div>
+            <div style="font-size: 0.82rem; line-height: 1.4; color: #E8ECF1;">
+                <strong>Whale Volume Confirmation:</strong><br>
+                Hammer / wick rejection (+1.5 pts).<br>
+                <strong>+3.0 pts:</strong> Whale Volume Spike (≥ 1.8x) on up close / reversal (98.1% win rate).
+            </div>
+        </div>
+        <div class="desk-card">
+            <div class="kpi-title" style="color: #6CB4FF;">FACTOR 6 · PROBABILITY (8 PTS)</div>
+            <div style="font-size: 0.82rem; line-height: 1.4; color: #E8ECF1;">
+                <strong>Statistical PoS OTM:</strong><br>
+                Black-Scholes Delta cumulative distribution N(d2) with support boosts.<br>
+                <code>min(8, ((PoS - 60) / 38) × 8.0)</code>
+            </div>
+        </div>
+        """)
+    with s_c4:
+        render_html("""
+        <div class="desk-card">
+            <div class="kpi-title" style="color: #6CB4FF;">FACTOR 7 · YIELD (7 PTS)</div>
+            <div style="font-size: 0.82rem; line-height: 1.4; color: #E8ECF1;">
+                <strong>Cycle ROC:</strong><br>
+                Return on collateral (<code>Bid / Strike × 100</code>).<br>
+                Rewards 1.5%–2.5% 35-day cycle return.<br>
+                <code>min(7, (Cycle ROC / 2.5) × 7.0)</code>
+            </div>
+        </div>
+        <div class="desk-card" style="border: 1px solid rgba(255, 139, 92, 0.4);">
+            <div class="kpi-title" style="color: #FF8B5C;">BINARY DEDUCTIONS</div>
+            <div style="font-size: 0.82rem; line-height: 1.4; color: #FF8B5C;">
+                <strong>Earnings Blackout Penalties:</strong><br>
+                <strong>-25 pts:</strong> Cycle spans earnings &le; 7 days.<br>
+                <strong>-8 pts:</strong> Pre-earnings digestion &le; 14 days.
+            </div>
+        </div>
+        """)
+
+    # Score Allocation Matrix
+    render_html("""
+    <div class="desk-card" style="margin-top: 0.5rem; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1E2733; padding-bottom: 6px; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;">
+            <span style="font-weight: bold; color: #E8ECF1;">SCORE CONVICTION & ALLOCATION MATRIX</span>
+            <span style="color: #8792A2;">Empirical Audit Verified</span>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;">
+            <div style="background: rgba(108, 180, 255, 0.08); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(108, 180, 255, 0.2);">
+                <strong style="color: #6CB4FF;">Tier 1: Score ≥ 82.0 (2X Conviction)</strong><br>
+                <span style="color: #A3AEBC;">Golden Cross + 2Y Macro Shelf + Whale Volume. <strong>96.7% Win Rate</strong> · <strong>6.67x Profit Factor</strong>. Allocated 2 contracts.</span>
+            </div>
+            <div style="background: #121821; padding: 8px 12px; border-radius: 6px; border: 1px solid #1E2733;">
+                <strong style="color: #E8ECF1;">Tier 2: Score 75.0 – 81.9 (1X Standard)</strong><br>
+                <span style="color: #A3AEBC;">Solid qualified setup meeting cushion & SMC levels. <strong>96.1% Win Rate</strong> · <strong>3.56x Profit Factor</strong>. Allocated 1 contract.</span>
+            </div>
+            <div style="background: rgba(255, 139, 92, 0.08); padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(255, 139, 92, 0.2);">
+                <strong style="color: #FF8B5C;">Tier 3: Score < 75.0 (Filtered / Held Back)</strong><br>
+                <span style="color: #A3AEBC;">Sub-par cushion, secular bear trend, or earnings proximity. Omitted from daily picks.</span>
+            </div>
+        </div>
+    </div>
+    """)
+
+    # =========================================================================
+    # SECTION 2: THREE OPERATIONAL PROTOCOL FLOWCHARTS
+    # =========================================================================
+    st.markdown("#### 2. Detailed Execution Flowcharts (3 Cards)")
+    st.caption("Step-by-step procedural flowcharts governing Stock Selection, Defensive Rolling, and Planned Assignment vs Loss Triage.")
+
+    # FLOWCHART CARD 1: Stock Selection Criteria
+    render_html("""
+    <div class="desk-card" style="margin-bottom: 1.25rem;">
+        <div class="kpi-title" style="color: #6CB4FF; font-size: 0.85rem; border-bottom: 1px solid #1E2733; padding-bottom: 8px; margin-bottom: 12px;">
+            FLOWCHART CARD #1: STOCK SELECTION & STRIKE QUALIFICATION CRITERIA
+        </div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; line-height: 1.6; color: #E8ECF1;">
+            <div style="background: #121821; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #6CB4FF;">
+                <strong>STEP 1: UNIVERSE FILTER</strong> &rarr; Scan 108 institutional liquid S&P 500 / Nasdaq megacaps with listed weekly options.
+            </div>
+            <div style="background: #121821; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #6CB4FF;">
+                <strong>STEP 2: PULLBACK / SMC DISCOUNT TRIGGER</strong> &rarr; Must satisfy discount trigger: <code>Close ≤ 20 SMA</code> OR <code>Day Return ≤ -0.8%</code> OR <code>RSI(14) ≤ 45</code>. Never sell into green breakout days.
+            </div>
+            <div style="background: #121821; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #6CB4FF;">
+                <strong>STEP 3: STRUCTURAL SUPPORT ANCHORING (~35 DTE)</strong> &rarr; Strike sits behind ICT OTE (61.8%–78.6%) or 1–2Y Macro Support Shelf (SwingLow252 / AVWAP252).
+            </div>
+            <div style="background: #121821; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #6CB4FF;">
+                <strong>STEP 4: BETA-ADAPTIVE CUSHION CALCULATION</strong> &rarr; <code>Target Cushion = 12.0% × √Beta</code>. Low-beta: 10.5%. High-beta: 16.5%.
+            </div>
+            <div style="background: #121821; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #FF8B5C;">
+                <strong>STEP 5: VALIDATION & EARNINGS GATES</strong> &rarr; Bid ≥ $1.20, Cycle ROC ≥ 1.0%, OI ≥ 100, Spread ≤ 25%. <strong>REJECT if earnings report inside ≤ 7 days</strong>.
+            </div>
+            <div style="background: rgba(108, 180, 255, 0.1); padding: 10px; border-radius: 6px; border: 1px solid rgba(108, 180, 255, 0.3);">
+                <strong>STEP 6: SCORING & ALLOCATION DECISION</strong> &rarr; Calculate 0–100 score. If Score ≥ 82: <strong>2X Allocation (2 Contracts)</strong>. If 75 ≤ Score < 82: <strong>1X Allocation (1 Contract)</strong>. Execute Cash-Secured Put order!
+            </div>
+        </div>
+    </div>
+    """)
+
+    # FLOWCHART CARD 2: Roll Criteria
+    render_html("""
+    <div class="desk-card" style="margin-bottom: 1.25rem;">
+        <div class="kpi-title" style="color: #6CB4FF; font-size: 0.85rem; border-bottom: 1px solid #1E2733; padding-bottom: 8px; margin-bottom: 12px;">
+            FLOWCHART CARD #2: DEFENSIVE ROLLING PROTOCOL (WHEN & HOW TO ROLL)
+        </div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; line-height: 1.6; color: #E8ECF1;">
+            <div style="background: #121821; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #6CB4FF;">
+                <strong>1. ACTIVE CANDLE-BY-CANDLE MONITORING</strong> &rarr; Track daily close, remaining DTE, option mark price, and Delta (Δ).
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 8px;">
+                <div style="background: rgba(108, 180, 255, 0.08); padding: 10px; border-radius: 6px; border: 1px solid rgba(108, 180, 255, 0.2);">
+                    <strong style="color: #6CB4FF;">PATH A: 50% TAKE-PROFIT HIT</strong><br>
+                    Option decays to ≤ 50% of entry credit. 🎯 <strong>BUY BACK TO CLOSE</strong>. Realize profit early, free 100% cash collateral. (Avg hold: 8.8–9.2 days).
+                </div>
+                <div style="background: rgba(255, 139, 92, 0.08); padding: 10px; border-radius: 6px; border: 1px solid rgba(255, 139, 92, 0.2);">
+                    <strong style="color: #FF8B5C;">PATH B: POSITION TESTED (ROLL WINDOW)</strong><br>
+                    <strong>When do we decide to roll?</strong><br>
+                    • Spot approaches strike (<code>0% to 3% ITM</code> or spot < Strike × 1.02) where extrinsic value is at peak.<br>
+                    • Delta crosses <code>|Δ| > 0.40</code>.<br>
+                    • Rolls remaining: <code>rolls < 2</code>.
+                </div>
+            </div>
+            <div style="background: #121821; padding: 10px; border-radius: 6px; border-left: 3px solid #6CB4FF;">
+                <strong>2. THE GOLDEN CREDIT RULE OF ROLLING:</strong><br>
+                Roll OUT 35 DTE (and DOWN in strike if possible).<br>
+                &bull; <span style="color: #6CB4FF;"><strong>✓ IF Net Credit ≥ +$0.20 Available:</strong></span> Execute roll. Basis is lowered by additional credit. Rolls += 1.<br>
+                &bull; <span style="color: #FF8B5C;"><strong>✗ IF Requires Paying a Debit OR Rolls = 2:</strong></span> <strong>NEVER pay a debit to roll</strong>. Extrinsic value has collapsed. Transition immediately to <strong>Card #3 (Assignment or Loss)</strong>.
+            </div>
+        </div>
+    </div>
+    """)
+
+    # FLOWCHART CARD 3: Assignment or Take the Loss Criteria
+    render_html("""
+    <div class="desk-card" style="margin-bottom: 1.5rem;">
+        <div class="kpi-title" style="color: #FF8B5C; font-size: 0.85rem; border-bottom: 1px solid #1E2733; padding-bottom: 8px; margin-bottom: 12px;">
+            FLOWCHART CARD #3: PLANNED ASSIGNMENT VS. TAKING THE LOSS TRIAGE PROTOCOL
+        </div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; line-height: 1.6; color: #E8ECF1;">
+            <div style="background: #121821; padding: 10px; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid #FF8B5C;">
+                <strong>TRIGGER:</strong> Stock is Deep In-The-Money (>7% ITM) or Expiration at 0 DTE where Spot < Strike. Rolling is unviable.
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 8px;">
+                <div style="background: rgba(108, 180, 255, 0.08); padding: 12px; border-radius: 6px; border: 1px solid rgba(108, 180, 255, 0.25);">
+                    <strong style="color: #6CB4FF; font-size: 0.82rem;">OPTION A: PLANNED ASSIGNMENT & THE WHEEL (Primary 90%+)</strong><br>
+                    <span style="color: #A3AEBC;">You entered the CSP with secondary intention to own the stock at a discount:</span>
+                    <ol style="margin-top: 6px; padding-left: 18px; color: #E8ECF1;">
+                        <li><strong>Take Physical Delivery:</strong> Accept 100 shares per contract at Strike $K.</li>
+                        <li><strong>100% Cash-Secured:</strong> Paid in full with cash collateral (zero margin borrow, zero margin call risk).</li>
+                        <li><strong>Calculate Net Basis:</strong> <code>Basis = Strike - Total Cumulative Credits Collected</code>.</li>
+                        <li><strong>Launch Covered Call Ladder:</strong> Sell 30–45 DTE Covered Calls at or above Net Basis (<code>Call Strike ≥ Basis</code>).</li>
+                        <li><strong>Harvest Premium:</strong> Collect monthly call income until called away at breakeven or profit!</li>
+                    </ol>
+                </div>
+                <div style="background: rgba(255, 139, 92, 0.08); padding: 12px; border-radius: 6px; border: 1px solid rgba(255, 139, 92, 0.25);">
+                    <strong style="color: #FF8B5C; font-size: 0.82rem;">OPTION B: TAKING THE LOSS (Exception <10%)</strong><br>
+                    <span style="color: #A3AEBC;">When do you take the loss instead of taking assignment?</span>
+                    <ul style="margin-top: 6px; padding-left: 18px; color: #E8ECF1;">
+                        <li><strong>1. Fundamental Thesis Invalidation:</strong> Catastrophic deterioration (fraud, SEC probe, permanent loss of competitive moat).</li>
+                        <li><strong>2. Macro Support Breakdown:</strong> Stock collapses through 2-year macro shelf on heavy institutional liquidation volume (no rebound thesis).</li>
+                        <li><strong>3. Collateral Opportunity Cost:</strong> Collateral can generate significantly higher return redeployed into fresh Tier 1 (Score ≥ 82) candidates.</li>
+                    </ul>
+                    <div style="margin-top: 8px; color: #FF8B5C; font-weight: bold;">
+                        Action: Buy back put to close, accept defined loss, preserve 100% of remaining capital.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    """)
     st.markdown("<div style='font-size: 0.85rem; color: #8792A2; margin-bottom: 1.5rem;'>The complete quantitative rulebook, model specifications, feature dictionary, and stock selection pipeline.</div>", unsafe_allow_html=True)
 
     # Kirsten's 6 Operational Rules
