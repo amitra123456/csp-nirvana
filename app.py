@@ -604,7 +604,7 @@ with tab_today:
     # Top Controls Bar
     col_ctrl1, col_ctrl2 = st.columns([2, 1])
     with col_ctrl1:
-        st.markdown(f"### ⚡ Card 1: Today's Qualified Setups &middot; {len(setups)} Available")
+        st.markdown(f"### ⚡ Today's Qualified Setups &middot; {len(setups)} Available")
         render_html(
             f"<div style='font-size: 0.82rem; color: #8792A2;'>Target DTE: <strong>{rules.get('target_dte', 35)}d</strong> &middot; Min Cushion: <strong>{rules.get('cushion_min_pct', 12)}%</strong> &middot; Min ROC: <strong>{rules.get('min_roc_pct', 1.2)}%</strong> &middot; Evaluated strictly at market close (3:35 PM ET)</div>"
         )
@@ -775,7 +775,7 @@ with tab_today:
         except Exception:
             active_signals = []
 
-    st.markdown(f"### ⏳ Card 2: Active Open Positions &middot; {len(active_signals)} In-Flight")
+    st.markdown(f"### ⏳ Active Open Positions &middot; {len(active_signals)} In-Flight")
     render_html(
         "<div style='font-size: 0.82rem; color: #8792A2; margin-bottom: 0.8rem;'>"
         "Continuous candle-by-candle position tracking across all institutional names. "
@@ -810,7 +810,6 @@ with tab_today:
             a_curr_px = act.get("current_price", 0.0)
             a_spot = act.get("current_spot", 0.0)
             a_pnl = act.get("profit_pct", 0.0)
-            a_prog = min(100.0, max(0.0, act.get("progress_to_target", 0.0)))
             a_status = act.get("status", "In Progress")
             a_color = act.get("badge_color", "#6CB4FF")
             a_exp = act.get("expiry", "")
@@ -819,6 +818,14 @@ with tab_today:
             cush = ((a_spot - a_strike) / a_spot * 100.0) if a_spot > 0 else 0.0
             cush_color = "#6CB4FF" if cush > 0 else "#FF8B5C"
             pnl_color = "#10B981" if a_pnl >= 50.0 else ("#6CB4FF" if a_pnl >= 0 else "#FF8B5C")
+
+            # Bidirectional Progress Bar
+            is_pos = a_pnl >= 0.0
+            right_w = min(50.0, (a_pnl / 50.0) * 50.0) if is_pos else 0.0
+            left_w = min(50.0, (abs(a_pnl) / 100.0) * 50.0) if not is_pos else 0.0
+            prog_label = f"+{a_pnl:.1f}%" if is_pos else f"{a_pnl:.1f}%"
+            prog_sub = f"{(a_pnl / 50.0 * 100.0):.0f}% of TP" if (is_pos and a_pnl < 50.0) else ("🎯 50% TP" if a_pnl >= 50.0 else "Drawdown")
+            pos_color = "#10B981" if a_pnl >= 50.0 else "#38BDF8"
 
             act_rows_html.append(f"""
 <tr>
@@ -831,10 +838,15 @@ with tab_today:
 <td class="font-mono">${a_entry_px:.2f}</td>
 <td class="font-mono" style="font-weight: 600;">${a_curr_px:.2f}</td>
 <td class="font-mono" style="color: {pnl_color}; font-weight: 700;">{a_pnl:+.1f}%</td>
-<td style="min-width: 120px;">
-    <div style="font-size: 0.72rem; color: #8792A2; margin-bottom: 2px;">{a_prog:.0f}% to 50% TP</div>
-    <div style="height: 6px; width: 100%; background: #18202B; border-radius: 3px; overflow: hidden;">
-        <div style="height: 100%; width: {a_prog}%; background: {'#10B981' if a_prog >= 100 else '#6CB4FF'}; border-radius: 3px;"></div>
+<td style="min-width: 130px;">
+    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+        <span style="color: {pnl_color}; font-weight: 700;">{prog_label}</span>
+        <span style="color: #8792A2; font-size: 0.68rem;">{prog_sub}</span>
+    </div>
+    <div style="position: relative; height: 6px; width: 100%; background: #121821; border: 1px solid #1E2733; border-radius: 3px; overflow: hidden;">
+        <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #384556; z-index: 2;"></div>
+        <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: {right_w}%; background: {pos_color}; border-radius: 0 2px 2px 0;"></div>
+        <div style="position: absolute; right: 50%; top: 0; bottom: 0; width: {left_w}%; background: #FF8B5C; border-radius: 2px 0 0 2px;"></div>
     </div>
 </td>
 <td class="font-mono" style="color: #8792A2; font-size: 0.78rem;">{a_exp}</td>
@@ -857,7 +869,7 @@ with tab_today:
                             <th>Entry Credit</th>
                             <th>Put Mark</th>
                             <th>P&L %</th>
-                            <th>50% TP Progress</th>
+                            <th>Progress</th>
                             <th>Expiry</th>
                             <th>Status</th>
                         </tr>
@@ -873,7 +885,7 @@ with tab_today:
         st.info("No active open positions currently in flight.")
 
     # =========================================================
-    # CARD 3: CLOSED TRADES & REALIZED RESULTS
+    # CLOSED TRADES & REALIZED RESULTS
     # =========================================================
     st.markdown("<br><hr style='border-color: #1E2733; margin: 1.5rem 0;'>", unsafe_allow_html=True)
     closed_trades = snapshot.get("closed_trades", [])
@@ -883,7 +895,7 @@ with tab_today:
         except Exception:
             closed_trades = []
 
-    st.markdown(f"### 🏁 Card 3: Closed Trades & Realized Results &middot; Audited Performance")
+    st.markdown(f"### 🏁 Closed Trades & Realized Results &middot; Audited Performance")
     render_html(
         "<div style='font-size: 0.82rem; color: #8792A2; margin-bottom: 0.8rem;'>"
         "Audited historical closed trades verified candle-by-candle with Kirsten's 50% Take-Profit rule, assignment tracking, and net-credit rolls."

@@ -238,7 +238,7 @@ export default function TodayPage() {
           <div className="p-4 border-b border-desk-border bg-desk-raised/60 flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider flex items-center gap-2">
-                <span>⚡ Card 1: Today&apos;s Qualified Setups</span>
+                <span>⚡ Today&apos;s Qualified Setups</span>
                 <span className="text-xs font-mono font-normal text-desk-accent">({filteredSetups.length} ready to enter)</span>
               </h2>
               <p className="text-xs text-desk-secondary mt-0.5">
@@ -437,7 +437,7 @@ export default function TodayPage() {
         <div className="p-4 border-b border-desk-border bg-desk-raised/60 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider flex items-center gap-2">
-              <span>⏳ Card 2: Active Open Positions</span>
+              <span>⏳ Active Open Positions</span>
               <span className="text-xs font-mono font-normal text-desk-accent">({activeSignals.length} in-flight)</span>
             </h2>
             <p className="text-xs text-desk-secondary mt-0.5">
@@ -473,7 +473,7 @@ export default function TodayPage() {
                 <th className="py-3 px-3">Entry Credit</th>
                 <th className="py-3 px-3">Put Mark</th>
                 <th className="py-3 px-3">P&amp;L %</th>
-                <th className="py-3 px-3">50% TP Progress</th>
+                <th className="py-3 px-3">Progress</th>
                 <th className="py-3 px-3">Expiry</th>
                 <th className="py-3 px-4 text-right">Status</th>
               </tr>
@@ -516,16 +516,43 @@ export default function TodayPage() {
                       <td className={`py-3.5 px-3 font-bold ${pnlColor}`}>
                         {a.profit_pct > 0 ? "+" : ""}{a.profit_pct.toFixed(1)}%
                       </td>
-                      <td className="py-3.5 px-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[11px] text-desk-secondary w-8">{prog.toFixed(0)}%</span>
-                          <div className="w-16 h-1.5 rounded-full bg-desk-bg overflow-hidden">
-                            <div
-                              className={`h-full rounded-full ${prog >= 100 ? "bg-emerald-500" : "bg-desk-accent"}`}
-                              style={{ width: `${prog}%` }}
-                            />
-                          </div>
-                        </div>
+                      {/* Bidirectional Progress Bar */}
+                      <td className="py-3.5 px-3 min-w-[130px]">
+                        {(() => {
+                          const isPos = a.profit_pct >= 0;
+                          const rightW = isPos ? Math.min(50, (a.profit_pct / 50.0) * 50) : 0;
+                          const leftW = !isPos ? Math.min(50, (Math.abs(a.profit_pct) / 100.0) * 50) : 0;
+                          const posColor = a.profit_pct >= 50 ? "bg-emerald-500" : "bg-desk-accent";
+                          const labelColor = a.profit_pct >= 50 ? "text-emerald-400" : isPos ? "text-desk-accent" : "text-desk-riskText";
+                          const subLabel = a.profit_pct >= 50 ? "🎯 50% TP" : isPos ? `${((a.profit_pct / 50) * 100).toFixed(0)}% of TP` : "Drawdown";
+
+                          return (
+                            <div>
+                              <div className="flex items-center justify-between text-[11px] mb-1">
+                                <span className={`font-mono font-semibold ${labelColor}`}>
+                                  {a.profit_pct > 0 ? "+" : ""}{a.profit_pct.toFixed(1)}%
+                                </span>
+                                <span className="text-[10px] text-desk-secondary">
+                                  {subLabel}
+                                </span>
+                              </div>
+                              <div className="relative h-1.5 w-full bg-desk-bg rounded-full overflow-hidden border border-desk-border/60">
+                                <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-desk-border z-10" />
+                                {isPos ? (
+                                  <div
+                                    className={`absolute left-1/2 top-0 bottom-0 ${posColor} rounded-r-full transition-all`}
+                                    style={{ width: `${rightW}%` }}
+                                  />
+                                ) : (
+                                  <div
+                                    className="absolute right-1/2 top-0 bottom-0 bg-desk-riskText rounded-l-full transition-all"
+                                    style={{ width: `${leftW}%` }}
+                                  />
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </td>
                       <td className="py-3.5 px-3 text-desk-secondary">{a.expiry}</td>
                       <td className="py-3.5 px-4 text-right">
@@ -556,7 +583,7 @@ export default function TodayPage() {
         <div className="p-4 border-b border-desk-border bg-desk-raised/60 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider flex items-center gap-2">
-              <span>🏁 Card 3: Closed Trades &amp; Realized Results</span>
+              <span>🏁 Closed Trades &amp; Realized Results</span>
               <span className="text-xs font-mono font-normal text-desk-secondary">(Audited Performance)</span>
             </h2>
             <p className="text-xs text-desk-secondary mt-0.5">
