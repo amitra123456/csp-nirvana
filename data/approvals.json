@@ -1,6 +1,7 @@
 {
   "approved": [
-    "NXPI"
+    "NXPI",
+    "TSM"
   ],
   "disapproved": [
     "PLTR"
@@ -15,6 +16,11 @@
       "status": "disapproved",
       "comment": "High beta test",
       "updated_at": "2026-11-18T18:53:11.398Z"
+    },
+    "TSM": {
+      "status": "approved",
+      "comment": "Good to go . Elliot",
+      "updated_at": "2026-11-18T21:08:29.420Z"
     }
   }
 }
