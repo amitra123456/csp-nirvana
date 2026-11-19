@@ -427,7 +427,7 @@ export default function AdminDeskPage() {
                             <span className="text-base font-black text-white group-hover/btn:text-desk-accent underline underline-offset-4 decoration-desk-border group-hover/btn:decoration-desk-accent transition-colors">
                               {s.ticker}
                             </span>
-                            <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-desk-raised text-desk-secondary border border-desk-border">
+                            <span className="text-[11px] uppercase font-bold px-1.5 py-0.5 rounded bg-desk-raised text-desk-secondary border border-desk-border">
                               {s.trend}
                             </span>
                           </div>
@@ -443,7 +443,7 @@ export default function AdminDeskPage() {
                           <span className="text-sm font-black text-white px-2 py-0.5 rounded bg-desk-raised border border-desk-border">
                             {s.score.toFixed(1)}
                           </span>
-                          <span className="text-[10px] text-desk-tertiary mt-1">
+                          <span className="text-[11px] text-desk-tertiary mt-1">
                             PoS {s.odds_otm_market_pct.toFixed(0)}%
                           </span>
                         </div>
@@ -474,7 +474,7 @@ export default function AdminDeskPage() {
                           <div className="text-[11px] text-desk-secondary">
                             Exp: {s.expiry} ({s.dte} DTE)
                           </div>
-                          <div className="text-[10px] text-desk-tertiary">
+                          <div className="text-[11px] text-desk-tertiary">
                             Δ {s.delta ? s.delta.toFixed(2) : "-0.15"} &middot; IV {(s.iv * 100).toFixed(0)}%
                           </div>
                         </div>
@@ -485,7 +485,7 @@ export default function AdminDeskPage() {
                         <div className="space-y-0.5">
                           <div className="text-white font-bold">${s.spot.toFixed(2)}</div>
                           <div className="text-emerald-400 font-bold">+{s.cushion_pct.toFixed(1)}% Cushion</div>
-                          <div className="text-[10px] text-desk-tertiary">1σ: ${s.one_sigma_low.toFixed(1)}</div>
+                          <div className="text-[11px] text-desk-tertiary">1σ: ${s.one_sigma_low.toFixed(1)}</div>
                         </div>
                       </td>
 
@@ -494,7 +494,7 @@ export default function AdminDeskPage() {
                         <div className="space-y-0.5">
                           <div className="text-white font-bold">${s.bid.toFixed(2)} Bid</div>
                           <div className="text-desk-accent font-bold">+{s.roc_cycle_pct.toFixed(1)}% ROC</div>
-                          <div className="text-[10px] text-desk-secondary font-mono">
+                          <div className="text-[11px] text-desk-secondary font-mono">
                             ${formatNumber(s.collateral)} Collat
                           </div>
                         </div>
@@ -505,21 +505,21 @@ export default function AdminDeskPage() {
                         <div className="space-y-1">
                           <div className="flex items-center gap-1.5">
                             {isGolden ? (
-                              <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                              <span className="px-1.5 py-0.5 rounded text-[11px] bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
                                 50&gt;200 Golden
                               </span>
                             ) : (
-                              <span className="px-1.5 py-0.5 rounded text-[10px] bg-desk-raised text-desk-tertiary border border-desk-border">
+                              <span className="px-1.5 py-0.5 rounded text-[11px] bg-desk-raised text-desk-tertiary border border-desk-border">
                                 Normal Trend
                               </span>
                             )}
                             {macroFloor && s.strike <= macroFloor && (
-                              <span className="px-1.5 py-0.5 rounded text-[10px] bg-sky-500/15 text-sky-400 border border-sky-500/30">
+                              <span className="px-1.5 py-0.5 rounded text-[11px] bg-sky-500/15 text-sky-400 border border-sky-500/30">
                                 Fortified Shelf
                               </span>
                             )}
                           </div>
-                          <div className="text-[10px] text-desk-tertiary">
+                          <div className="text-[11px] text-desk-tertiary">
                             Basis: ${s.cost_basis.toFixed(2)} &middot; 200MA: ${s.levels?.sma200?.toFixed(1) || "N/A"}
                           </div>
                         </div>
@@ -649,7 +649,7 @@ export default function AdminDeskPage() {
                         <div className="text-[11px] text-desk-secondary">
                           Basis: ${a.net_basis ? a.net_basis.toFixed(2) : (a.strike - a.entry_price).toFixed(2)}
                         </div>
-                        <div className="text-[10px] text-desk-tertiary">
+                        <div className="text-[11px] text-desk-tertiary">
                           Spot: ${a.current_spot.toFixed(2)}
                         </div>
                       </td>
@@ -658,7 +658,7 @@ export default function AdminDeskPage() {
                       <td className="py-3 px-4">
                         <div className="text-desk-tertiary">Entry: ${a.entry_price.toFixed(2)}</div>
                         <div className="text-white font-bold">Now: ${a.current_price.toFixed(2)}</div>
-                        <div className="text-[10px] text-desk-secondary">TP50: ${a.tp_50_price.toFixed(2)}</div>
+                        <div className="text-[11px] text-desk-secondary">TP50: ${a.tp_50_price.toFixed(2)}</div>
                       </td>
 
                       {/* Progress Bar */}
@@ -668,7 +668,7 @@ export default function AdminDeskPage() {
                             <span className={isProfit ? "text-emerald-400 font-bold" : "text-desk-riskText font-bold"}>
                               {isProfit ? `+${a.profit_pct.toFixed(1)}%` : `${a.profit_pct.toFixed(1)}%`}
                             </span>
-                            <span className="text-desk-tertiary text-[10px]">
+                            <span className="text-desk-tertiary text-[11px]">
                               {a.rolls > 0 ? `${a.rolls} rolls` : "0 rolls"}
                             </span>
                           </div>

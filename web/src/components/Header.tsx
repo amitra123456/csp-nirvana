@@ -18,16 +18,20 @@ export function Header({ asOfEt = "", itmCount = 0 }: HeaderProps) {
 
   const handleRunScan = async () => {
     setIsRunning(true);
-    setRunMessage("Triggering 3:35 PM scan pipeline...");
+    setRunMessage("Requesting a scan...");
     try {
       const res = await fetch("/api/run-scan", { method: "POST" });
       if (res.ok) {
-        setRunMessage("Scan triggered successfully! Snapshot will refresh shortly.");
+        setRunMessage("Scan requested. The snapshot updates when the pipeline finishes.");
+      } else if (res.status === 401) {
+        setRunMessage("Admin sign-in is required to run a scan.");
+      } else if (res.status === 503) {
+        setRunMessage("Scans are disabled until ADMIN_PASSWORD is set.");
       } else {
-        setRunMessage("Pipeline queued. Verification in progress.");
+        setRunMessage(`Scan request failed (status ${res.status}).`);
       }
     } catch (e) {
-      setRunMessage("Scan triggered. Monitoring pipeline.");
+      setRunMessage("Could not reach the server; no scan was started.");
     } finally {
       setTimeout(() => {
         setIsRunning(false);
@@ -63,6 +67,8 @@ export function Header({ asOfEt = "", itmCount = 0 }: HeaderProps) {
                 <Link
                   key={link.href}
                   href={link.href}
+                  // /admin is password-protected (see middleware.ts); prefetching it only produces 401s
+                  prefetch={link.href === "/admin" ? false : undefined}
                   className={`relative flex items-center gap-1.5 rounded-control px-3.5 py-2 text-sm font-medium transition-colors ${
                     isActive
                       ? "bg-desk-raised text-desk-text"

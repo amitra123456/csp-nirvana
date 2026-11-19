@@ -599,11 +599,23 @@ def get_active_previous_signals(
             badge_color = "#10B981"
             triage_action = "Target hit. Buy back put to lock in 50% profit and release capital."
         elif itm_pct <= -3.0:
-            # Spot is > 3% above strike -> Safe OTM
+            # Spot is > 3% above strike. Out of the money is not the same as safe:
+            # label by what the position is doing, not only by distance to the strike.
             protocol = "HOLD_THETA"
-            status = "🟢 Hold (Theta Harvesting)"
-            badge_color = "#38BDF8"
-            triage_action = f"Spot is +{abs(itm_pct):.1f}% above strike. Safe OTM; allow time decay to harvest."
+            if profit_pct >= 0.0:
+                status = "🟢 Hold (time decay working)"
+                badge_color = "#38BDF8"
+                triage_action = f"Spot is {abs(itm_pct):.1f}% above strike and the put has lost value since entry; hold."
+            elif profit_pct > -100.0:
+                status = "🟡 Watch (premium rising)"
+                badge_color = "#F2B24C"
+                triage_action = (f"Spot is {abs(itm_pct):.1f}% above strike, but buying the put back now costs "
+                                 f"{abs(profit_pct):.0f}% more than the credit received.")
+            else:
+                status = "🟠 At risk (loss exceeds credit)"
+                badge_color = "#FF8B5C"
+                triage_action = (f"Spot is {abs(itm_pct):.1f}% above strike, but the put now costs "
+                                 f"{1 + abs(profit_pct) / 100:.1f}x the credit. Decide: close, or accept assignment risk.")
         elif 0.0 <= itm_pct <= 3.0 or (rem_dte <= 21 and -1.5 <= itm_pct <= 3.0):
             # Optimal Roll Window: Spot is touching strike (0 to 3% ITM)
             if rolls < 2:

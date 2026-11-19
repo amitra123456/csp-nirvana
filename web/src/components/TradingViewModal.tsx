@@ -352,7 +352,7 @@ export function TradingViewModal({ isOpen, onClose, setup }: TradingViewModalPro
                         <span className={`text-xs font-bold font-mono ${lvl.isPrimary ? "text-white" : "text-desk-text"}`}>
                           ${lvl.price.toFixed(2)}
                         </span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-desk-raised text-desk-secondary border border-desk-border">
+                        <span className="text-[11px] font-mono px-1.5 py-0.5 rounded bg-desk-raised text-desk-secondary border border-desk-border">
                           {lvl.tag}
                         </span>
                       </div>
@@ -370,14 +370,14 @@ export function TradingViewModal({ isOpen, onClose, setup }: TradingViewModalPro
 
                     <div className="flex items-center justify-between text-[11px] text-desk-tertiary mt-1 pl-4.5">
                       <span>{lvl.name}</span>
-                      <span className="text-[10px] italic">{lvl.desc}</span>
+                      <span className="text-[11px] italic">{lvl.desc}</span>
                     </div>
                   </div>
                 ))}
 
                 {/* Sizing & Structure Rationale Box */}
                 <div className="mt-4 p-3 rounded-lg bg-[#141B26] border border-desk-border space-y-1.5 text-xs font-mono">
-                  <div className="text-desk-tertiary uppercase text-[10px] font-bold">Model Conviction Rule</div>
+                  <div className="text-desk-tertiary uppercase text-[11px] font-bold">Model Conviction Rule</div>
                   <div className="text-white font-semibold">{setup.sizing_reason || "Standard 1X Allocation"}</div>
                   <div className="text-desk-secondary text-[11px] leading-relaxed">
                     Strike ${strike.toFixed(1)} sits behind {setup.cushion_pct.toFixed(1)}% downside cushion with 1-Sigma limit at ${oneSigmaLow.toFixed(2)}.

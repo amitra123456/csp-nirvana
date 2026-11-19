@@ -85,13 +85,13 @@ export default function PhoneBriefPage() {
               <div key={`${pos.ticker}-${pos.strike}`} className="flex items-center justify-between p-2 rounded bg-bg-raised text-xs">
                 <div>
                   <span className="font-bold font-mono">{pos.ticker} ${pos.strike}P</span>
-                  <div className="text-[10px] text-text-muted">Exp: {pos.expiry} · {pos.dte}d</div>
+                  <div className="text-[11px] text-text-muted">Exp: {pos.expiry} · {pos.dte}d</div>
                 </div>
                 <div className="text-right">
                   <span className={`font-mono font-bold ${pos.pnl >= 0 ? 'text-accent-favorable' : 'text-accent-risk'}`}>
                     {formatCurrency(pos.pnl)}
                   </span>
-                  <div className="text-[10px] font-mono text-accent-caution uppercase">{pos.next_step.replace('_', ' ')}</div>
+                  <div className="text-[11px] font-mono text-accent-caution uppercase">{pos.next_step.replace('_', ' ')}</div>
                 </div>
               </div>
             ))}
@@ -117,7 +117,7 @@ export default function PhoneBriefPage() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-bg-raised text-[10px] font-mono flex items-center justify-center text-text-muted border border-border-subtle">
+                  <span className="w-5 h-5 rounded-full bg-bg-raised text-[11px] font-mono flex items-center justify-center text-text-muted border border-border-subtle">
                     {idx + 1}
                   </span>
                   <div>
@@ -127,21 +127,21 @@ export default function PhoneBriefPage() {
                 </div>
                 <div className="text-right">
                   <span className="text-base font-bold font-mono text-accent-favorable">{s.score.toFixed(1)}</span>
-                  <span className="text-[10px] text-text-muted font-mono block">SCORE</span>
+                  <span className="text-[11px] text-text-muted font-mono block">SCORE</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-border-subtle text-xs font-mono">
                 <div>
-                  <span className="text-[10px] text-text-muted block">PUT STRIKE</span>
+                  <span className="text-[11px] text-text-muted block">PUT STRIKE</span>
                   <span>${s.strike}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-text-muted block">CUSHION</span>
+                  <span className="text-[11px] text-text-muted block">CUSHION</span>
                   <span className="text-accent-favorable">+{s.cushion_pct.toFixed(1)}%</span>
                 </div>
                 <div>
-                  <span className="text-[10px] text-text-muted block">ROC / CYCLE</span>
+                  <span className="text-[11px] text-text-muted block">ROC / CYCLE</span>
                   <span className="text-accent-favorable">{s.roc_cycle_pct.toFixed(1)}%</span>
                 </div>
               </div>

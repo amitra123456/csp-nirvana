@@ -175,7 +175,7 @@ export function ModelLevelsChart({ setup, className = "" }: ModelLevelsChartProp
             <h3 className="text-xs font-bold font-mono tracking-wider uppercase text-desk-text flex items-center gap-1.5">
               <span>📐 Model Levels Distribution Chart</span>
             </h3>
-            <span className="rounded bg-sky-500/15 border border-sky-500/30 px-1.5 py-0.2 text-[10px] font-mono text-sky-400 font-semibold">
+            <span className="rounded bg-sky-500/15 border border-sky-500/30 px-1.5 py-0.2 text-[11px] font-mono text-sky-400 font-semibold">
               Signal: ${spot.toFixed(2)}
             </span>
           </div>
@@ -243,7 +243,7 @@ export function ModelLevelsChart({ setup, className = "" }: ModelLevelsChartProp
                 height: `${Math.max(24, cushionHeight)}%`,
               }}
             >
-              <span className="text-[10px] font-mono font-bold text-emerald-400 tracking-wider uppercase opacity-80">
+              <span className="text-[11px] font-mono font-bold text-emerald-400 tracking-wider uppercase opacity-80">
                 🛡️ +{setup.cushion_pct.toFixed(1)}% Cushion Buffer (${(spot - strike).toFixed(2)})
               </span>
             </div>
@@ -306,7 +306,7 @@ export function ModelLevelsChart({ setup, className = "" }: ModelLevelsChartProp
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-white">${lvl.price.toFixed(2)}</span>
                       <span
-                        className={`text-[10px] px-1.5 py-0.2 rounded font-semibold ${
+                        className={`text-[11px] px-1.5 py-0.2 rounded font-semibold ${
                           lvl.diff === 0
                             ? "bg-sky-500/30 text-sky-200"
                             : lvl.diff < 0
@@ -354,7 +354,7 @@ export function ModelLevelsChart({ setup, className = "" }: ModelLevelsChartProp
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: lvl.color }} />
                       <span className="font-semibold">{lvl.name}</span>
-                      <span className="text-[10px] text-desk-tertiary">({lvl.tag})</span>
+                      <span className="text-[11px] text-desk-tertiary">({lvl.tag})</span>
                     </div>
 
                     <div className="flex items-center gap-3">

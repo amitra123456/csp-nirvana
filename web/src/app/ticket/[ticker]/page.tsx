@@ -126,17 +126,17 @@ export default async function TradeTicketPage({ params }: PageProps) {
               <div className="rounded-control bg-desk-bg p-3 border border-desk-border">
                 <span className="text-[11px] text-desk-secondary block">Return / cycle</span>
                 <span className="text-base font-bold text-desk-accent">{setup?.roc_cycle_pct.toFixed(2)}%</span>
-                <span className="text-[10px] text-desk-tertiary block font-sans">({setup?.roc_annual_pct.toFixed(1)}% Ann.)</span>
+                <span className="text-[11px] text-desk-tertiary block font-sans">({setup?.roc_annual_pct.toFixed(1)}% Ann.)</span>
               </div>
               <div className="rounded-control bg-desk-bg p-3 border border-desk-border">
                 <span className="text-[11px] text-desk-secondary block">Strike cushion</span>
                 <span className="text-base font-bold text-desk-text">{setup?.cushion_pct.toFixed(1)}%</span>
-                <span className="text-[10px] text-desk-tertiary block font-sans">Below spot</span>
+                <span className="text-[11px] text-desk-tertiary block font-sans">Below spot</span>
               </div>
               <div className="rounded-control bg-desk-bg p-3 border border-desk-border">
                 <span className="text-[11px] text-desk-secondary block">Cost if assigned</span>
                 <span className="text-base font-bold text-desk-text">${setup?.cost_basis.toFixed(2)}</span>
-                <span className="text-[10px] text-desk-tertiary block font-sans">Net of credit</span>
+                <span className="text-[11px] text-desk-tertiary block font-sans">Net of credit</span>
               </div>
             </div>
 
@@ -287,7 +287,7 @@ export default async function TradeTicketPage({ params }: PageProps) {
                 <div className="w-full h-1.5 bg-desk-raised rounded-full mt-2 overflow-hidden">
                   <div className="h-full bg-desk-accent rounded-full" style={{ width: `${setup?.odds_otm_market_pct}%` }} />
                 </div>
-                <span className="text-[10px] text-desk-tertiary block font-sans mt-1">Based on option Delta and real-time chain pricing.</span>
+                <span className="text-[11px] text-desk-tertiary block font-sans mt-1">Based on option Delta and real-time chain pricing.</span>
               </div>
 
               <div className="rounded-control bg-desk-bg p-3 border border-desk-border">
@@ -357,7 +357,7 @@ export default async function TradeTicketPage({ params }: PageProps) {
                   >
                     <div className="font-bold uppercase tracking-wide flex items-center justify-between">
                       <span>{w.title}</span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-desk-card">{w.severity}</span>
+                      <span className="text-[11px] px-1.5 py-0.2 rounded bg-desk-card">{w.severity}</span>
                     </div>
                     <p className="text-[11px] leading-relaxed opacity-90">{w.detail}</p>
                   </div>

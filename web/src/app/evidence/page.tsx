@@ -82,13 +82,23 @@ export default function EvidencePage() {
   const displayPayoff = displayAvgWin > 0 && displayAvgLoss ? Math.abs(displayAvgLoss / displayAvgWin).toFixed(1) : '—';
   const displayEdge = (displayWinRate - displayBreakeven).toFixed(1);
 
-  // Dynamic EV Calculation for Institutional Model
-  const bWinRate = (backtest?.win_rate ?? 95.1) / 100;
-  const bAvgWin = backtest?.avg_win ?? 299.20;
-  const bLossRate = 1 - bWinRate;
-  const bAvgLoss = Math.abs(backtest?.avg_loss ?? 485.00);
-  const dynamicEV = (bWinRate * bAvgWin) - (bLossRate * bAvgLoss);
-  const dynamicPayoff = bAvgWin > 0 ? (bAvgLoss / bAvgWin).toFixed(1) : '1.6';
+  // Every figure below comes from the snapshot. No hard-coded fallbacks: if a value is missing we show "—".
+  const hasBacktest = !!backtest && typeof backtest.win_rate === 'number';
+  const bWinRate = (backtest?.win_rate ?? 0) / 100;
+  const bAvgWin = backtest?.avg_win ?? 0;
+  const bAvgLoss = Math.abs(backtest?.avg_loss ?? 0);
+  const dynamicEV = hasBacktest ? (bWinRate * bAvgWin) - ((1 - bWinRate) * bAvgLoss) : 0;
+  const dynamicPayoff = bAvgWin > 0 && bAvgLoss > 0 ? (bAvgLoss / bAvgWin).toFixed(1) : '—';
+  const winsPerLoss = bAvgWin > 0 && bAvgLoss > 0 ? Math.round(bAvgLoss / bAvgWin) : null;
+  const signedCurrency = (v: number) => `${v < 0 ? '-' : '+'}${formatCurrency(Math.abs(v))}`;
+  const edgeVal = displayWinRate - displayBreakeven;
+  const monthRange = monthlyData.length
+    ? `${monthlyData[0].month} to ${monthlyData[monthlyData.length - 1].month}`
+    : null;
+  // Does a higher entry score lead to better simulated results? Compare the top and bottom fifths.
+  const topQ = quintiles[0];
+  const bottomQ = quintiles[quintiles.length - 1];
+  const scoreHelps = topQ && bottomQ ? topQ.profit_factor > bottomQ.profit_factor && topQ.win_rate >= bottomQ.win_rate : null;
 
   return (
     <div className="space-y-8 py-2">
@@ -96,23 +106,29 @@ export default function EvidencePage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-subtle pb-6">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-text-primary">Historical Analysis · Empirical Backtest &amp; Score Efficacy</h1>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-mono font-semibold uppercase bg-bg-raised border border-border-strong text-accent-favorable">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              Audited Empirical Proof
+            <h1 className="text-2xl font-bold tracking-tight text-text-primary">Historical Analysis · Simulated Backtest &amp; Score Check</h1>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-xs font-mono font-semibold uppercase bg-accent-caution/10 border border-accent-caution/40 text-accent-caution">
+              <AlertTriangle className="w-3.5 h-3.5" />
+              Simulated · model prices
             </span>
           </div>
           <p className="mt-1 text-sm text-text-muted">
-            Continuous candle-by-candle simulation of 753 cash-secured put lifecycles across 108 institutional stocks. Dynamically addressed and reconciled with the live Signals Page closed ledger.
+            Day-by-day simulation of {backtest?.trades ? formatNumber(backtest.trades) : '—'} cash-secured put trades. Option prices are Black-Scholes estimates from daily bars, not real quotes or fills, and bid/ask spreads are not charged. Treat these numbers as a model, not a track record.
           </p>
         </div>
         <div className="flex flex-col items-end gap-1 text-xs font-mono text-text-muted">
-          <div className="px-2.5 py-1 rounded bg-bg-raised border border-border-strong text-text-primary flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Signals Page Live Link Active</span>
-          </div>
-          <span>Model Engine Run: {backtest?.as_of ? new Date(backtest.as_of).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Nov 18, 2026'}</span>
+          <span>Simulator run: {backtest?.as_of ? new Date(backtest.as_of).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}</span>
         </div>
+      </div>
+
+      {/* Plain-language caution next to the headline numbers */}
+      <div className="flex items-start gap-3 rounded-xl border border-accent-caution/40 bg-accent-caution/5 p-4 text-sm text-text-secondary">
+        <Info className="w-5 h-5 text-accent-caution shrink-0 mt-0.5" />
+        <p>
+          A high win rate is normal for selling out-of-the-money puts; what matters is the size of the losses.
+          {winsPerLoss ? <> In this simulation each average loss wipes out about <strong className="text-text-primary">{winsPerLoss} average wins</strong>.</> : null}{' '}
+          Simulated results usually look better than real trading, so do not read these figures as expected performance.
+        </p>
       </div>
 
       {/* Dynamic Dataset Selector Toggle */}
@@ -129,7 +145,7 @@ export default function EvidencePage() {
               }`}
             >
               <Database className="w-3.5 h-3.5" />
-              Multi-Year Backtest (753 Trades)
+              Simulated backtest ({backtest?.trades ? formatNumber(backtest.trades) : '—'} trades)
             </button>
             <button
               onClick={() => setDataSource('live_signals')}
@@ -140,19 +156,16 @@ export default function EvidencePage() {
               }`}
             >
               <Zap className="w-3.5 h-3.5" />
-              Signals Page Closed Ledger ({liveLedgerStats?.tradesCount ?? 100} Campaigns)
+              Signals page ledger, simulated ({liveLedgerStats?.tradesCount ?? '—'} trades)
             </button>
           </div>
         </div>
 
         <div className="flex items-center gap-2 text-xs font-mono text-text-muted pr-1">
           {isLive ? (
-            <span className="text-accent-favorable flex items-center gap-1">
-              <RefreshCw className="w-3 h-3 animate-spin" />
-              Live-synced from <code>snapshot.closed_trades</code>
-            </span>
+            <span>Most recent closed trades from the simulator (<code>snapshot.closed_trades</code>)</span>
           ) : (
-            <span>📅 Jan 2, 2024 – Nov 18, 2026 (712 Market Days)</span>
+            <span>{monthRange ? `Monthly P&L shown: ${monthRange}` : 'Date range not in snapshot'}</span>
           )}
         </div>
       </div>
@@ -163,21 +176,21 @@ export default function EvidencePage() {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="text-xs font-mono uppercase tracking-wider text-text-muted">
-                {isLive ? 'Signals Page Closed Ledger Performance' : 'Empirical Backtest Performance'}
+                {isLive ? 'Signals page ledger (simulated)' : 'Simulated backtest'}
               </span>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-bg-raised text-desk-secondary border border-border-strong">
-                {isLive ? 'Dynamic Signals Page Feed' : 'Date Range: 2024-01-02 → 2026-11-18 (35 Months)'}
+              <span className="px-2 py-0.5 rounded text-[11px] font-mono bg-bg-raised text-desk-secondary border border-border-strong">
+                Model prices · no spreads charged
               </span>
             </div>
             <p className="text-base text-text-primary font-medium">
-              Across <span className="font-mono text-accent-favorable font-bold">{formatNumber(displayTrades)}</span> trade lifecycles evaluated{isLive ? ' in the live campaign ledger' : ' across 712 market days'}, the strategy generated{' '}
-              <span className="font-mono text-accent-favorable font-bold">{formatCurrency(displayNetPnl)}</span> net realized profit with a{' '}
-              <span className="font-mono text-accent-favorable font-bold">{formatPercent(displayWinRate)}</span> win rate (beating the {formatPercent(displayBreakeven)} breakeven hurdle).
+              Across <span className="font-mono text-text-primary font-bold">{formatNumber(displayTrades)}</span> simulated trades the model booked{' '}
+              <span className={`font-mono font-bold ${displayNetPnl >= 0 ? 'text-accent-favorable' : 'text-accent-risk'}`}>{signedCurrency(displayNetPnl)}</span>, with a{' '}
+              <span className="font-mono font-bold">{formatPercent(displayWinRate)}</span> win rate against a {formatPercent(displayBreakeven)} break-even win rate for these win and loss sizes.
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <div className="px-3 py-1.5 rounded-lg bg-bg-raised border border-border-strong text-xs font-mono text-text-muted">
-              Edge over breakeven: <span className="text-accent-favorable font-bold">+{displayEdge}%</span>
+              Win rate minus break-even: <span className={`font-bold ${edgeVal >= 0 ? 'text-accent-favorable' : 'text-accent-risk'}`}>{edgeVal >= 0 ? '+' : ''}{displayEdge} pts</span>
             </div>
           </div>
         </div>
@@ -192,9 +205,9 @@ export default function EvidencePage() {
           </div>
           <div className="text-2xl font-bold font-mono text-text-primary">{formatNumber(displayTrades)}</div>
           <div className="flex items-center justify-between text-xs text-text-muted">
-            <span>{isLive ? 'Closed Signals Campaigns' : 'Closed CSP lifecycles'}</span>
-            <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-bg-raised text-desk-accent border border-border-strong">
-              {isLive ? 'Live Ledger' : '2024–2026'}
+            <span>{isLive ? 'Recent closed trades' : 'Closed simulated trades'}</span>
+            <span className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-bg-raised text-desk-accent border border-border-strong">
+              Simulated
             </span>
           </div>
         </div>
@@ -227,11 +240,11 @@ export default function EvidencePage() {
 
         <div className="bg-bg-card border border-border-subtle rounded-xl p-5 space-y-2">
           <div className="flex items-center justify-between text-xs text-text-muted font-mono uppercase tracking-wider">
-            <span>Net Realized P&L</span>
-            <span className="text-xs font-mono text-accent-favorable font-bold">{isLive ? 'LEDGER' : 'TOTAL'}</span>
+            <span>Net P&L (simulated)</span>
+            <span className="text-xs font-mono text-text-muted font-bold">{isLive ? 'LEDGER' : 'TOTAL'}</span>
           </div>
-          <div className="text-2xl font-bold font-mono text-accent-favorable">{formatCurrency(displayNetPnl)}</div>
-          <div className="text-xs text-text-muted">{isLive ? 'Realized from 100 closed trades' : 'Compounded cumulative backtest'}</div>
+          <div className={`text-2xl font-bold font-mono ${displayNetPnl >= 0 ? 'text-accent-favorable' : 'text-accent-risk'}`}>{signedCurrency(displayNetPnl)}</div>
+          <div className="text-xs text-text-muted">{isLive ? `Sum of the last ${formatNumber(displayTrades)} simulated closes` : 'Sum of simulated trade P&L'}</div>
         </div>
       </div>
 
@@ -241,11 +254,11 @@ export default function EvidencePage() {
           <div className="flex items-center gap-2">
             <RefreshCw className="w-4 h-4 text-desk-accent" />
             <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider font-mono">
-              Live Signals Page Ledger vs. Multi-Year Simulation Reconciliation
+              Signals Page Ledger vs. Full Simulation
             </h3>
           </div>
-          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            🟢 Dynamic Signals Page Feed Active
+          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-accent-caution/10 text-accent-caution border border-accent-caution/30">
+            Both simulated
           </span>
         </div>
 
@@ -253,42 +266,42 @@ export default function EvidencePage() {
           <table className="w-full text-xs font-mono text-left">
             <thead className="bg-[#121821] text-desk-tertiary uppercase text-[11px] border-b border-border-subtle">
               <tr>
-                <th className="py-2.5 px-4">Performance Dimension</th>
-                <th className="py-2.5 px-4 text-accent-favorable font-bold">Signals Page Closed Ledger (100 Trades)</th>
-                <th className="py-2.5 px-4 text-desk-accent font-bold">Multi-Year Simulation (753 Trades)</th>
-                <th className="py-2.5 px-4">System Confirmation</th>
+                <th className="py-2.5 px-4">Measure</th>
+                <th className="py-2.5 px-4 text-text-primary font-bold">Signals page ledger ({liveLedgerStats?.tradesCount ?? '—'} trades)</th>
+                <th className="py-2.5 px-4 text-text-primary font-bold">Full simulation ({backtest?.trades ? formatNumber(backtest.trades) : '—'} trades)</th>
+                <th className="py-2.5 px-4">What it means</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border-subtle text-text-secondary">
               <tr className="hover:bg-bg-raised/50">
-                <td className="py-2.5 px-4 font-bold text-text-primary">Win Rate</td>
-                <td className="py-2.5 px-4 text-accent-favorable font-bold">{liveLedgerStats?.winRate.toFixed(1) ?? '94.0'}% ({liveLedgerStats?.winsCount ?? 94}W / {liveLedgerStats?.lossesCount ?? 6}L)</td>
-                <td className="py-2.5 px-4 text-desk-accent font-bold">{backtest?.win_rate?.toFixed(1) ?? '95.1'}%</td>
-                <td className="py-2.5 px-4 text-[11px] font-sans text-emerald-400 font-medium">✓ Exceeds 61.8% institutional breakeven hurdle</td>
+                <td className="py-2.5 px-4 font-bold text-text-primary">Win rate</td>
+                <td className="py-2.5 px-4 text-text-primary font-bold">{liveLedgerStats ? `${liveLedgerStats.winRate.toFixed(1)}% (${liveLedgerStats.winsCount}W / ${liveLedgerStats.lossesCount}L)` : '—'}</td>
+                <td className="py-2.5 px-4 text-text-primary font-bold">{hasBacktest ? `${backtest!.win_rate.toFixed(1)}%` : '—'}</td>
+                <td className="py-2.5 px-4 text-[11px] font-sans">Break-even win rate for these win and loss sizes: {liveLedgerStats ? `${liveLedgerStats.breakevenWinRate.toFixed(1)}%` : '—'} (ledger) and {hasBacktest ? `${backtest!.breakeven_win_rate.toFixed(1)}%` : '—'} (simulation).</td>
               </tr>
               <tr className="hover:bg-bg-raised/50">
-                <td className="py-2.5 px-4 font-bold text-text-primary">Average Win</td>
-                <td className="py-2.5 px-4 text-accent-favorable font-bold">+{formatCurrency(liveLedgerStats?.avgWin ?? 338.94)}</td>
-                <td className="py-2.5 px-4 text-desk-accent font-bold">+{formatCurrency(backtest?.avg_win ?? 299.20)}</td>
-                <td className="py-2.5 px-4 text-[11px] font-sans">Consistent 50% TP harvesting across both cohorts</td>
+                <td className="py-2.5 px-4 font-bold text-text-primary">Average win</td>
+                <td className="py-2.5 px-4 text-accent-favorable font-bold">{liveLedgerStats ? signedCurrency(liveLedgerStats.avgWin) : '—'}</td>
+                <td className="py-2.5 px-4 text-accent-favorable font-bold">{hasBacktest ? signedCurrency(bAvgWin) : '—'}</td>
+                <td className="py-2.5 px-4 text-[11px] font-sans">Mostly trades closed at the 50% take-profit target.</td>
               </tr>
               <tr className="hover:bg-bg-raised/50">
-                <td className="py-2.5 px-4 font-bold text-text-primary">Average Loss (After Roll/Stop)</td>
-                <td className="py-2.5 px-4 text-accent-risk font-bold">-{formatCurrency(Math.abs(liveLedgerStats?.avgLoss ?? 2907.83))}</td>
-                <td className="py-2.5 px-4 text-accent-favorable font-bold">-{formatCurrency(Math.abs(backtest?.avg_loss ?? 485.00))}</td>
-                <td className="py-2.5 px-4 text-[11px] font-sans">Managed stop-loss reduces average loss to -$485.00 in continuous lifecycle</td>
+                <td className="py-2.5 px-4 font-bold text-text-primary">Average loss</td>
+                <td className="py-2.5 px-4 text-accent-risk font-bold">{liveLedgerStats ? signedCurrency(liveLedgerStats.avgLoss) : '—'}</td>
+                <td className="py-2.5 px-4 text-accent-risk font-bold">{hasBacktest ? signedCurrency(-bAvgLoss) : '—'}</td>
+                <td className="py-2.5 px-4 text-[11px] font-sans">Losses come from assignment below the net cost basis. There is no fixed loss cap.</td>
               </tr>
               <tr className="hover:bg-bg-raised/50">
-                <td className="py-2.5 px-4 font-bold text-text-primary">Payoff Ratio (Win:Loss)</td>
-                <td className="py-2.5 px-4 text-text-primary">1 : {liveLedgerStats?.payoff.toFixed(1) ?? '8.6'}</td>
-                <td className="py-2.5 px-4 text-accent-favorable font-bold">1 : {dynamicPayoff}</td>
-                <td className="py-2.5 px-4 text-[11px] font-sans">Institutional edge prevents retail blowout risk</td>
+                <td className="py-2.5 px-4 font-bold text-text-primary">Average loss ÷ average win</td>
+                <td className="py-2.5 px-4 text-text-primary">{liveLedgerStats && liveLedgerStats.payoff > 0 ? `${liveLedgerStats.payoff.toFixed(1)}×` : '—'}</td>
+                <td className="py-2.5 px-4 text-text-primary">{dynamicPayoff === '—' ? '—' : `${dynamicPayoff}×`}</td>
+                <td className="py-2.5 px-4 text-[11px] font-sans">{winsPerLoss ? `One average loss erases about ${winsPerLoss} average wins.` : '—'}</td>
               </tr>
               <tr className="hover:bg-bg-raised/50">
-                <td className="py-2.5 px-4 font-bold text-text-primary">Total Realized Net P&L</td>
-                <td className="py-2.5 px-4 text-accent-favorable font-bold">+{formatCurrency(liveLedgerStats?.netPnl ?? 14413.00)}</td>
-                <td className="py-2.5 px-4 text-accent-favorable font-bold">+{formatCurrency(backtest?.net_pnl ?? 196282.00)}</td>
-                <td className="py-2.5 px-4 text-[11px] font-sans text-emerald-400 font-medium">✓ Positive mathematical expectancy confirmed</td>
+                <td className="py-2.5 px-4 font-bold text-text-primary">Net P&L</td>
+                <td className={`py-2.5 px-4 font-bold ${(liveLedgerStats?.netPnl ?? 0) >= 0 ? 'text-accent-favorable' : 'text-accent-risk'}`}>{liveLedgerStats ? signedCurrency(liveLedgerStats.netPnl) : '—'}</td>
+                <td className={`py-2.5 px-4 font-bold ${(backtest?.net_pnl ?? 0) >= 0 ? 'text-accent-favorable' : 'text-accent-risk'}`}>{hasBacktest ? signedCurrency(backtest!.net_pnl) : '—'}</td>
+                <td className="py-2.5 px-4 text-[11px] font-sans">Simulated with model prices. Not checked against real fills.</td>
               </tr>
             </tbody>
           </table>
@@ -301,14 +314,21 @@ export default function EvidencePage() {
           <div>
             <div className="flex items-center gap-2">
               <Award className="w-5 h-5 text-accent-favorable" />
-              <h2 className="text-lg font-bold text-text-primary">Nirvana Composite Score Predictive Efficacy</h2>
-              <span className="px-2 py-0.5 rounded text-[11px] font-mono bg-bg-raised border border-border-strong text-accent-favorable">
-                Strict Signal-Time Calculation
+              <h2 className="text-lg font-bold text-text-primary">Does the Nirvana Score Predict Results?</h2>
+              <span className="px-2 py-0.5 rounded text-[11px] font-mono bg-accent-caution/10 border border-accent-caution/30 text-accent-caution">
+                Simulated
               </span>
             </div>
             <p className="text-xs text-text-muted mt-1">
-              Rigorous empirical audit proving the predictive power of the 0–100 score at the exact moment of order entry across 753 trades.
+              Simulated trades grouped by their score at entry. If the score worked, the top fifth (Q1) would clearly beat the bottom fifth (Q5).
             </p>
+            {scoreHelps !== null && (
+              <p className={`text-sm mt-2 font-medium ${scoreHelps ? 'text-accent-favorable' : 'text-accent-caution'}`}>
+                {scoreHelps
+                  ? `In this simulation the top fifth did better than the bottom fifth (profit factor ${topQ!.profit_factor.toFixed(2)}× vs ${bottomQ!.profit_factor.toFixed(2)}×).`
+                  : `In this simulation the top fifth did not beat the bottom fifth (profit factor ${topQ!.profit_factor.toFixed(2)}× vs ${bottomQ!.profit_factor.toFixed(2)}×, win rate ${topQ!.win_rate.toFixed(1)}% vs ${bottomQ!.win_rate.toFixed(1)}%). The score is not shown to add value here.`}
+              </p>
+            )}
           </div>
 
           {/* Segmented View Switcher */}
@@ -334,47 +354,39 @@ export default function EvidencePage() {
           </div>
         </div>
 
-        {/* 3 High-Impact Key Findings Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-lg bg-bg-raised border border-border-subtle space-y-1">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-text-muted">
-              <Sparkles className="w-4 h-4 text-accent-favorable" />
-              <span>Top 40% (Q1 + Q2) Edge</span>
+        {/* Key figures straight from the snapshot (hidden when the snapshot does not provide them) */}
+        {summary && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 rounded-lg bg-bg-raised border border-border-subtle space-y-1">
+              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-text-muted">
+                <Sparkles className="w-4 h-4 text-text-muted" />
+                <span>Top 40% of scores (Q1 + Q2)</span>
+              </div>
+              <div className="text-xl font-bold font-mono text-text-primary">{summary.top_40_win_rate}% win rate</div>
+              <div className="text-xs text-text-muted font-mono">
+                Profit factor: <span className="text-text-primary font-bold">{summary.top_40_profit_factor}×</span>
+              </div>
             </div>
-            <div className="text-xl font-bold font-mono text-accent-favorable">
-              {summary ? `${summary.top_40_win_rate}% Win Rate` : '98.0% Win Rate'}
-            </div>
-            <div className="text-xs text-text-muted font-mono">
-              Profit Factor: <span className="text-text-primary font-bold">{summary ? `${summary.top_40_profit_factor}x` : '5.28x'}</span> · +$63k Net P&L
-            </div>
-          </div>
 
-          <div className="p-4 rounded-lg bg-bg-raised border border-border-subtle space-y-1">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-text-muted">
-              <ShieldCheck className="w-4 h-4 text-accent-favorable" />
-              <span>1-2Y Macro Shelf Shield</span>
+            <div className="p-4 rounded-lg bg-bg-raised border border-border-subtle space-y-1">
+              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-text-muted">
+                <ShieldCheck className="w-4 h-4 text-text-muted" />
+                <span>Strike below 1–2 year support</span>
+              </div>
+              <div className="text-xl font-bold font-mono text-text-primary">{summary.macro_shelf_loss_reduction_pct}% fewer losses</div>
+              <div className="text-xs text-text-muted font-mono">Compared with strikes above that level (simulated)</div>
             </div>
-            <div className="text-xl font-bold font-mono text-accent-favorable">
-              {summary ? `-${summary.macro_shelf_loss_reduction_pct}% Loss Reduction` : '-57.1% Loss Reduction'}
-            </div>
-            <div className="text-xs text-text-muted font-mono">
-              Loss rate drops from <span className="text-accent-risk">3.5%</span> down to <span className="text-accent-favorable font-bold">1.5%</span>
-            </div>
-          </div>
 
-          <div className="p-4 rounded-lg bg-bg-raised border border-border-subtle space-y-1">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-text-muted">
-              <Target className="w-4 h-4 text-accent-favorable" />
-              <span>Golden Cross Lift</span>
-            </div>
-            <div className="text-xl font-bold font-mono text-accent-favorable">
-              {summary ? `${summary.golden_cross_profit_contribution_pct}% of Net Profits` : '77.2% of Net Profits'}
-            </div>
-            <div className="text-xs text-text-muted font-mono">
-              3.90x Profit Factor in Golden Cross vs 2.38x in downtrend
+            <div className="p-4 rounded-lg bg-bg-raised border border-border-subtle space-y-1">
+              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-text-muted">
+                <Target className="w-4 h-4 text-text-muted" />
+                <span>50-day above 200-day average</span>
+              </div>
+              <div className="text-xl font-bold font-mono text-text-primary">{summary.golden_cross_profit_contribution_pct}% of net profit</div>
+              <div className="text-xs text-text-muted font-mono">Share of simulated profit from these trades</div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Tab 1: Quintiles Table */}
         {activeTab === 'quintiles' && (
@@ -414,7 +426,7 @@ export default function EvidencePage() {
                       <td className="py-2 px-3 text-right font-bold text-text-primary">{q.profit_factor.toFixed(2)}x</td>
                       <td className="py-2 px-3 text-right text-accent-favorable">+${formatNumber(q.gross_win)}</td>
                       <td className="py-2 px-3 text-right text-accent-risk">-${formatNumber(q.gross_loss)}</td>
-                      <td className="py-2 px-3 text-right font-bold text-accent-favorable">+${formatNumber(q.net_pnl)}</td>
+                      <td className={`py-2 px-3 text-right font-bold ${q.net_pnl >= 0 ? 'text-accent-favorable' : 'text-accent-risk'}`}>{signedCurrency(q.net_pnl)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -427,17 +439,14 @@ export default function EvidencePage() {
                 <BarChart data={quintiles} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#253041" opacity={0.5} />
                   <XAxis dataKey="quintile" stroke="#8E9AA8" fontSize={11} tickLine={false} />
-                  <YAxis stroke="#8E9AA8" fontSize={11} tickLine={false} domain={[90, 100]} tickFormatter={(v) => `${v}%`} />
+                  {/* Axis starts at 0 so small differences are not exaggerated */}
+                  <YAxis stroke="#8E9AA8" fontSize={11} tickLine={false} domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
                   <Tooltip
                     contentStyle={{ backgroundColor: '#121821', borderColor: '#253041', borderRadius: '8px', color: '#E8ECF1' }}
                     formatter={(val: number) => [`${val.toFixed(1)}%`, 'Win Rate']}
                     labelStyle={{ color: '#8E9AA8', fontFamily: 'monospace' }}
                   />
-                  <Bar dataKey="win_rate" radius={[4, 4, 0, 0]} fill="#6CB4FF">
-                    {quintiles.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={index < 2 ? '#4ADE80' : index === 2 ? '#6CB4FF' : '#FBBF24'} />
-                    ))}
-                  </Bar>
+                  <Bar dataKey="win_rate" radius={[4, 4, 0, 0]} fill="#6CB4FF" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -450,7 +459,7 @@ export default function EvidencePage() {
             <table className="w-full text-xs font-mono text-left">
               <thead className="bg-bg-raised text-text-muted uppercase border-b border-border-subtle">
                 <tr>
-                  <th className="py-2.5 px-3">Institutional Tier</th>
+                  <th className="py-2.5 px-3">Score Tier</th>
                   <th className="py-2.5 px-3">Score Cutoff</th>
                   <th className="py-2.5 px-3 text-right">Trades</th>
                   <th className="py-2.5 px-3 text-right">Win Rate</th>
@@ -474,7 +483,7 @@ export default function EvidencePage() {
                     <td className="py-2 px-3 text-right font-bold text-text-primary">{t.profit_factor.toFixed(2)}x</td>
                     <td className="py-2 px-3 text-right text-accent-favorable">+${formatNumber(t.avg_win)}</td>
                     <td className="py-2 px-3 text-right text-accent-risk">-${formatNumber(Math.abs(t.avg_loss))}</td>
-                    <td className="py-2 px-3 text-right font-bold text-accent-favorable">+${formatNumber(t.net_pnl)}</td>
+                    <td className={`py-2 px-3 text-right font-bold ${t.net_pnl >= 0 ? 'text-accent-favorable' : 'text-accent-risk'}`}>{signedCurrency(t.net_pnl)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -519,9 +528,9 @@ export default function EvidencePage() {
             </div>
 
             <div className="p-4 rounded-lg bg-bg-canvas border border-border-subtle text-xs text-text-secondary space-y-1">
-              <span className="font-bold text-text-primary uppercase tracking-wider text-[11px]">Core Takeaway:</span>
+              <span className="font-bold text-text-primary uppercase tracking-wider text-[11px]">How to read this:</span>
               <p>
-                Anchoring short put strikes underneath multi-year macro support shelves provides the single highest loss-reduction edge (-57.1% loss frequency), while Golden Cross alignment (+4 pts) isolates the highest profit factor cohorts (3.90x). Whale Volume on an up close indicates institutional absorption, whereas unconfirmed volume on heavy down days indicates liquidation jump-risk.
+                Each row compares simulated trades with and without one condition. The factors overlap and these are in-sample results from the same simulation, so a difference here is a lead to test on real quotes, not proof that the factor works.
               </p>
             </div>
           </div>
@@ -572,135 +581,70 @@ export default function EvidencePage() {
         </div>
       </div>
 
-      {/* ========================================================================= */}
-      {/* REAL-WORLD INSTITUTIONAL LIFECYCLE ACCOUNTING PROPOSAL (ROLLS, ASSIGNMENTS, STOP-LOSS) */}
-      {/* ========================================================================= */}
+      {/* How the simulator books each trade (no invented percentages; figures come from the snapshot) */}
       <div className="bg-bg-card border border-border-subtle rounded-xl p-6 space-y-6 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-subtle pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <Layers className="w-5 h-5 text-accent-favorable" />
-              <h2 className="text-lg font-bold text-text-primary">Institutional Lifecycle Accounting: Rolls, Assignments &amp; Stop-Loss Readjustment</h2>
+              <Layers className="w-5 h-5 text-text-muted" />
+              <h2 className="text-lg font-bold text-text-primary">How the Simulator Books Each Trade</h2>
             </div>
             <p className="text-xs text-text-muted mt-1">
-              Why traditional retail backtests miscalculate Avg Win / Avg Loss, and how Nirvana structures rolls, assignments, and risk cuts into realistic continuous campaigns.
+              Every simulated trade ends in one of three ways. Rolls extend a trade; they are not counted as separate wins.
             </p>
-          </div>
-          <span className="px-2.5 py-1 rounded text-xs font-mono font-semibold bg-bg-raised text-desk-accent border border-border-strong self-start md:self-auto">
-            Accounting Architecture
-          </span>
-        </div>
-
-        {/* 4 Path Visual Breakdown */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Path 1: 50% TP Harvest */}
-          <div className="p-4 rounded-xl border border-emerald-500/30 bg-emerald-500/5 space-y-2 font-mono">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-emerald-400">1. Early 50% TP</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">~81.4%</span>
-            </div>
-            <div className="text-sm font-bold text-text-primary">Standard Harvest</div>
-            <p className="text-[11px] text-text-muted font-sans leading-relaxed">
-              Auto-closes at 50% of credit collected (avg 14.2 days held). Releases 100% of collateral for immediate re-deployment.
-            </p>
-            <div className="pt-2 border-t border-emerald-500/20 text-[11px] text-emerald-400 font-bold">
-              Outcome: Full Win (+0.5x Prem)
-            </div>
-          </div>
-
-          {/* Path 2: Defensive Roll */}
-          <div className="p-4 rounded-xl border border-sky-500/30 bg-sky-500/5 space-y-2 font-mono">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-sky-400">2. Defensive Roll</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300">~9.3%</span>
-            </div>
-            <div className="text-sm font-bold text-text-primary">Multi-Leg Campaign</div>
-            <p className="text-[11px] text-text-muted font-sans leading-relaxed">
-              When tested (Delta &gt; 0.40), rolled out 30–45 DTE for net credit. Not an isolated loss, but an extended single trade lifecycle.
-            </p>
-            <div className="pt-2 border-t border-sky-500/20 text-[11px] text-sky-400 font-bold">
-              Outcome: Sequence Win (Credits +)
-            </div>
-          </div>
-
-          {/* Path 3: Wheel Assignment */}
-          <div className="p-4 rounded-xl border border-purple-500/30 bg-purple-500/5 space-y-2 font-mono">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-purple-400">3. Wheel Assignment</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300">~7.1%</span>
-            </div>
-            <div className="text-sm font-bold text-text-primary">Asset Acquisition</div>
-            <p className="text-[11px] text-text-muted font-sans leading-relaxed">
-              Shares taken at Net Basis (Strike − Premiums − Rolls). 60% assigned above net basis. Converted to Covered Calls.
-            </p>
-            <div className="pt-2 border-t border-purple-500/20 text-[11px] text-purple-400 font-bold">
-              Outcome: Neutral / Equity Conversion
-            </div>
-          </div>
-
-          {/* Path 4: Disciplined Risk Cut */}
-          <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/5 space-y-2 font-mono">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-rose-400">4. Hard Stop Loss</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300">~2.2%</span>
-            </div>
-            <div className="text-sm font-bold text-text-primary">Secular Invalidation</div>
-            <p className="text-[11px] text-text-muted font-sans leading-relaxed">
-              Thesis broken or multi-year macro support shattered on volume. Position bought to close at 2.5x credit to protect capital.
-            </p>
-            <div className="pt-2 border-t border-rose-500/20 text-[11px] text-rose-400 font-bold">
-              Outcome: Realized Loss (Capped)
-            </div>
           </div>
         </div>
 
-        {/* Comparison Table: Naive vs Readjusted Institutional Accounting - 100% Dynamically Addressed */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="p-4 rounded-xl border border-border-subtle bg-bg-raised space-y-2">
+            <div className="text-sm font-bold text-text-primary">1. Take profit at 50%</div>
+            <p className="text-xs text-text-muted leading-relaxed">
+              The put is bought back when its model price falls to half the credit received. Counted as a win.
+            </p>
+          </div>
+          <div className="p-4 rounded-xl border border-border-subtle bg-bg-raised space-y-2">
+            <div className="text-sm font-bold text-text-primary">2. Roll when tested</div>
+            <p className="text-xs text-text-muted leading-relaxed">
+              When the stock nears the strike, the put is rolled out in time for a net credit, up to 2 times. The trade continues and is judged when it finally closes.
+            </p>
+          </div>
+          <div className="p-4 rounded-xl border border-border-subtle bg-bg-raised space-y-2">
+            <div className="text-sm font-bold text-text-primary">3. Expiry or assignment</div>
+            <p className="text-xs text-text-muted leading-relaxed">
+              At expiry the put either expires worthless (win) or is assigned. Assignment above the net cost basis is counted as a win; below it is a loss. There is no stop-loss, so losses are not capped.
+            </p>
+          </div>
+        </div>
+
         <div className="overflow-x-auto rounded-xl border border-border-subtle bg-bg-raised/40">
           <table className="w-full text-xs font-mono text-left">
             <thead className="bg-[#121821] text-desk-tertiary uppercase text-[11px] border-b border-border-subtle">
               <tr>
-                <th className="py-3 px-4">Performance Metric</th>
-                <th className="py-3 px-4 text-text-muted">Naive Binary Retail Model</th>
-                <th className="py-3 px-4 text-accent-favorable font-bold">Nirvana Institutional Lifecycle Model (Dynamic)</th>
-                <th className="py-3 px-4">Why the Difference Matters</th>
+                <th className="py-3 px-4">Measure (full simulation)</th>
+                <th className="py-3 px-4 text-text-primary font-bold">Value</th>
+                <th className="py-3 px-4">How it is calculated</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border-subtle text-text-secondary">
               <tr className="hover:bg-bg-raised/50">
-                <td className="py-3 px-4 font-bold text-text-primary">Win Rate</td>
-                <td className="py-3 px-4 text-text-muted">89.8% (Treats rolls/assignments as losses)</td>
-                <td className="py-3 px-4 text-accent-favorable font-bold">{backtest?.win_rate?.toFixed(1) ?? '95.1'}% (Multi-leg campaigns resolved profitably)</td>
-                <td className="py-3 px-4 text-[11px] font-sans">Defensive rolls capture extra credit and defend strikes effectively.</td>
+                <td className="py-3 px-4 font-bold text-text-primary">Win rate</td>
+                <td className="py-3 px-4 text-text-primary font-bold">{hasBacktest ? `${backtest!.win_rate.toFixed(1)}%` : '—'}</td>
+                <td className="py-3 px-4 text-[11px] font-sans">Winning trades ÷ all closed trades</td>
               </tr>
               <tr className="hover:bg-bg-raised/50">
-                <td className="py-3 px-4 font-bold text-text-primary">Average Win</td>
-                <td className="py-3 px-4 text-text-muted">+$152.00 (Single-cycle premium only)</td>
-                <td className="py-3 px-4 text-accent-favorable font-bold">+{formatCurrency(bAvgWin)} (Includes roll credits &amp; 50% TP harvests)</td>
-                <td className="py-3 px-4 text-[11px] font-sans">Rolled cycles collect 2nd &amp; 3rd tranches of extrinsic value.</td>
+                <td className="py-3 px-4 font-bold text-text-primary">Average win / average loss</td>
+                <td className="py-3 px-4 font-bold"><span className="text-accent-favorable">{hasBacktest ? signedCurrency(bAvgWin) : '—'}</span> / <span className="text-accent-risk">{hasBacktest ? signedCurrency(-bAvgLoss) : '—'}</span></td>
+                <td className="py-3 px-4 text-[11px] font-sans">Mean P&amp;L of winning and of losing trades, including roll credits</td>
               </tr>
               <tr className="hover:bg-bg-raised/50">
-                <td className="py-3 px-4 font-bold text-text-primary">Average Loss</td>
-                <td className="py-3 px-4 text-accent-risk font-bold">-$2,723.80 (Assumes unhedged drop without stops)</td>
-                <td className="py-3 px-4 text-accent-favorable font-bold">-{formatCurrency(bAvgLoss)} (Capped at 2.5x stop or net basis buffer)</td>
-                <td className="py-3 px-4 text-[11px] font-sans">Hard stop-loss cuts tail risk; assignment basis is mitigated by collected premium.</td>
+                <td className="py-3 px-4 font-bold text-text-primary">Break-even win rate</td>
+                <td className="py-3 px-4 text-text-primary font-bold">{hasBacktest ? `${backtest!.breakeven_win_rate.toFixed(1)}%` : '—'}</td>
+                <td className="py-3 px-4 text-[11px] font-sans">|Avg loss| ÷ (|Avg loss| + Avg win): the win rate needed just to break even</td>
               </tr>
               <tr className="hover:bg-bg-raised/50">
-                <td className="py-3 px-4 font-bold text-text-primary">Payoff Ratio (Win:Loss)</td>
-                <td className="py-3 px-4 text-text-muted">1 : 17.9 (Unbalanced retail skew)</td>
-                <td className="py-3 px-4 text-accent-favorable font-bold">1 : {dynamicPayoff} (Institutional expectancy profile)</td>
-                <td className="py-3 px-4 text-[11px] font-sans">Prevents the catastrophic "pennies in front of steamroller" scenario.</td>
-              </tr>
-              <tr className="hover:bg-bg-raised/50">
-                <td className="py-3 px-4 font-bold text-text-primary">Breakeven Win Rate</td>
-                <td className="py-3 px-4 text-text-muted">94.7% (Extreme pressure to avoid single loss)</td>
-                <td className="py-3 px-4 text-accent-favorable font-bold">{backtest?.breakeven_win_rate?.toFixed(1) ?? '61.8'}% (Edge over hurdle: +{((backtest?.win_rate ?? 95.1) - (backtest?.breakeven_win_rate ?? 61.8)).toFixed(1)}%)</td>
-                <td className="py-3 px-4 text-[11px] font-sans">A 61.8% hurdle gives a 33.3% statistical buffer above required breakeven.</td>
-              </tr>
-              <tr className="hover:bg-bg-raised/50">
-                <td className="py-3 px-4 font-bold text-text-primary">Expected Value (EV) / Trade</td>
-                <td className="py-3 px-4 text-text-muted">+$31.74 / trade</td>
-                <td className="py-3 px-4 text-accent-favorable font-bold">+{formatCurrency(dynamicEV)} / trade (+720% Efficiency)</td>
-                <td className="py-3 px-4 text-[11px] font-sans">Capital efficiency surges when drawdowns are actively managed and losses are capped.</td>
+                <td className="py-3 px-4 font-bold text-text-primary">Expected P&amp;L per trade</td>
+                <td className={`py-3 px-4 font-bold ${dynamicEV >= 0 ? 'text-accent-favorable' : 'text-accent-risk'}`}>{hasBacktest ? signedCurrency(dynamicEV) : '—'}</td>
+                <td className="py-3 px-4 text-[11px] font-sans">Win rate × Avg win − (1 − Win rate) × |Avg loss|</td>
               </tr>
             </tbody>
           </table>
@@ -725,7 +669,7 @@ export default function EvidencePage() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-accent-favorable mt-0.5">•</span>
-              <span><strong>Full Assignment &amp; Margin:</strong> Accurate cash-collateral deduction and assignment at settlement.</span>
+              <span><strong>Cash-secured assignment:</strong> Collateral is set aside for every put and assignment is settled at expiry. No margin is used.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-accent-favorable mt-0.5">•</span>
@@ -746,7 +690,7 @@ export default function EvidencePage() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-accent-caution mt-0.5">•</span>
-              <span><strong>Wide Slippage on Earnings:</strong> Assumes fills at theoretical mid-point; earnings illiquidity can widen spreads.</span>
+              <span><strong>Real option prices and spreads:</strong> Option prices are Black-Scholes estimates, not market quotes, and no bid/ask spread or commission is charged. Real fills are worse.</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-accent-caution mt-0.5">•</span>

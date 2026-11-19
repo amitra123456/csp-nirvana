@@ -5,6 +5,55 @@ import Link from "next/link";
 import { Setup, Snapshot, HeldBack, Position, ActiveSignal, ClosedTrade } from "@/types/snapshot";
 import { formatCurrency, formatPercent, formatNumber } from "@/lib/data";
 
+/** "2026-11-18T15:33:53.98-05:00" -> "Nov 18, 3:33 PM ET" (keeps the ET wall-clock time from the string). */
+function formatAsOf(iso?: string): string {
+  if (!iso) return "time unknown";
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if (!m) return iso;
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const h = Number(m[4]);
+  const h12 = ((h + 11) % 12) + 1;
+  return `${months[Number(m[2]) - 1]} ${Number(m[3])}, ${h12}:${m[5]} ${h >= 12 ? "PM" : "AM"} ET`;
+}
+
+/**
+ * Display status for a simulated trade. The pipeline labels every put more than 3% out of the money
+ * "Hold (Theta Harvesting) · Safe OTM", even when the put now costs several times the credit received.
+ * These positions are relabelled from their P&L so the badge never calls a position "safe".
+ */
+function positionView(a: ActiveSignal): { label: string; color: string; detail?: string } {
+  const base = { label: a.status, color: a.badge_color || "#38BDF8", detail: a.triage_action };
+  if (a.protocol !== "HOLD_THETA") return base;
+  const cushion = a.current_spot > 0 ? ((a.current_spot - a.strike) / a.current_spot) * 100 : 0;
+  const lossX = Math.abs(a.profit_pct) / 100; // loss as a multiple of the credit received
+  if (a.profit_pct >= 0) {
+    return {
+      label: "Hold · time decay working",
+      color: "#38BDF8",
+      detail: `${cushion.toFixed(1)}% above the strike and the put has lost value since it was sold.`,
+    };
+  }
+  if (a.profit_pct <= -100) {
+    return {
+      label: "At risk · loss exceeds credit",
+      color: "#FF8B5C",
+      detail: `Still ${cushion.toFixed(1)}% above the strike, but the put now costs ${(1 + lossX).toFixed(1)}× the credit. Decide: close, or accept assignment risk.`,
+    };
+  }
+  return {
+    label: "Watch · premium rising",
+    color: "#F2B24C",
+    detail: `Still ${cushion.toFixed(1)}% above the strike, but buying the put back now costs ${Math.abs(a.profit_pct).toFixed(0)}% more than the credit received.`,
+  };
+}
+
+/** Days from the snapshot date to an option's expiry (negative = already expired). */
+function daysUntil(expiry: string, asOf?: string): number {
+  const ref = asOf ? new Date(asOf.slice(0, 10) + "T00:00:00Z") : new Date();
+  const exp = new Date(expiry + "T00:00:00Z");
+  return Math.round((exp.getTime() - ref.getTime()) / 86400000);
+}
+
 export default function SignalsPage() {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [loading, setLoading] = useState(true);
@@ -103,6 +152,33 @@ export default function SignalsPage() {
     return { totalCash, totalCredit, avgRoc };
   }, [filteredSetups]);
 
+  // "Act today": real ledger positions (data/positions.csv) that need a decision
+  const actItems = useMemo(() => {
+    const asOf = snapshot?.run?.as_of_et;
+    return (snapshot?.positions || [])
+      .map((p) => {
+        const days = daysUntil(p.expiry, asOf);
+        let action = "";
+        let urgency = 0;
+        if (days < 0) {
+          action = `Expired ${p.expiry}. Record the outcome in the ledger (positions.csv).`;
+          urgency = 3;
+        } else if (p.next_step === "plan_assignment") {
+          action = "In the money with rolls used up: plan for assignment.";
+          urgency = 2;
+        } else if (p.next_step === "decide") {
+          action = "In the money: roll for a net credit or accept assignment.";
+          urgency = 2;
+        } else if (days <= 7) {
+          action = "Expires within a week: check it.";
+          urgency = 1;
+        }
+        return { p, days, action, urgency };
+      })
+      .filter((x) => x.urgency > 0)
+      .sort((x, y) => y.urgency - x.urgency || x.days - y.days);
+  }, [snapshot]);
+
   // Card 2: Active in-flight open positions
   const activeSignals = useMemo(() => {
     return (snapshot?.active_signals || []) as ActiveSignal[];
@@ -148,7 +224,7 @@ export default function SignalsPage() {
       <div className="rounded-card border border-desk-risk/30 bg-desk-risk/10 p-8 text-center">
         <h2 className="text-lg font-bold text-desk-riskText">Snapshot Data Unavailable</h2>
         <p className="text-sm text-desk-secondary mt-2">
-          Unable to connect to verified snapshot cache. Ensure <code>data/snapshots/latest.json</code> exists.
+          Unable to load the snapshot. Ensure <code>data/snapshots/latest.json</code> exists.
         </p>
       </div>
     );
@@ -168,26 +244,82 @@ export default function SignalsPage() {
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight text-desk-text">Signals &amp; Candidates</h1>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-emerald-400 border border-emerald-500/20">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Verified 3:35 PM ET
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium border ${
+                snapshot.run?.status === "ok"
+                  ? "bg-desk-raised text-desk-secondary border-desk-border"
+                  : "bg-amber-500/10 text-amber-400 border-amber-500/30"
+              }`}
+              title={`Run ${snapshot.run?.run_id || "unknown"} · status: ${snapshot.run?.status || "unknown"}`}
+            >
+              {snapshot.run?.status === "ok" ? "Snapshot" : `Partial snapshot`} &middot; {formatAsOf(snapshot.run?.as_of_et)}
             </span>
           </div>
           <p className="text-xs text-desk-secondary mt-1">
-            As of: {snapshot.run?.as_of_et || "Latest Close"} &middot; Engine: {snapshot.run?.run_id || "v2.5-prod"} &middot; Strict 7-Gate Validation
+            Run {snapshot.run?.run_id || "—"} &middot; Option prices may be delayed or indicative; check your broker before trading.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs text-desk-tertiary">Data Feeds:</span>
-          <span className="rounded bg-desk-raised px-2 py-0.5 text-[11px] font-mono text-desk-secondary border border-desk-border">
-            SIP Live
-          </span>
-          <span className="rounded bg-desk-raised px-2 py-0.5 text-[11px] font-mono text-desk-secondary border border-desk-border">
-            Alpaca Options
-          </span>
+          <span className="text-xs text-desk-tertiary">Data sources:</span>
+          {Object.entries(snapshot.run?.sources || {}).map(([k, v]) => (
+            <span key={k} className="rounded bg-desk-raised px-2 py-0.5 text-[11px] font-mono text-desk-secondary border border-desk-border" title={k}>
+              {k}: {v}
+            </span>
+          ))}
         </div>
       </div>
+
+      {/* 1b. Act today: what needs doing, from your real positions */}
+      <section className="rounded-card border border-desk-border bg-desk-card p-4 space-y-3" aria-label="Act today">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider">Act today</h2>
+          <span className="text-xs text-desk-tertiary">From your positions ledger &middot; {formatAsOf(snapshot.run?.as_of_et)}</span>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="rounded-control bg-desk-raised/60 border border-desk-border p-3">
+            <span className="text-xs text-desk-tertiary block">Need a decision</span>
+            <span className={`text-lg font-bold font-mono ${actItems.length ? "text-amber-400" : "text-desk-text"}`}>{actItems.length}</span>
+            <span className="text-xs text-desk-tertiary"> of {snapshot.positions?.length || 0} open</span>
+          </div>
+          <div className="rounded-control bg-desk-raised/60 border border-desk-border p-3">
+            <span className="text-xs text-desk-tertiary block">Collateral in use</span>
+            <span className="text-lg font-bold font-mono text-desk-text">{formatCurrency(snapshot.portfolio?.collateral || 0)}</span>
+          </div>
+          <div className="rounded-control bg-desk-raised/60 border border-desk-border p-3">
+            <span className="text-xs text-desk-tertiary block">Unrealised P&amp;L</span>
+            <span className={`text-lg font-bold font-mono ${(snapshot.portfolio?.unrealized || 0) < 0 ? "text-desk-riskText" : "text-emerald-400"}`}>
+              {(snapshot.portfolio?.unrealized || 0) < 0 ? "-" : "+"}{formatCurrency(Math.abs(snapshot.portfolio?.unrealized || 0))}
+            </span>
+          </div>
+          <div className="rounded-control bg-desk-raised/60 border border-desk-border p-3">
+            <span className="text-xs text-desk-tertiary block">New setups today</span>
+            <span className="text-lg font-bold font-mono text-desk-text">{filteredSetups.length}</span>
+            <span className="text-xs text-desk-tertiary"> &middot; {formatCurrency(totals.totalCash)} if all taken</span>
+          </div>
+        </div>
+
+        {actItems.length === 0 ? (
+          <p className="text-sm text-desk-secondary">No open position needs action today.</p>
+        ) : (
+          <ul className="divide-y divide-desk-border/60 rounded-control border border-desk-border">
+            {actItems.map(({ p, days, action, urgency }) => (
+              <li key={`${p.ticker}-${p.expiry}-${p.strike}`} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-3 py-2.5 text-sm">
+                <span className={`h-2 w-2 rounded-full shrink-0 ${urgency >= 3 ? "bg-desk-riskText" : urgency === 2 ? "bg-amber-400" : "bg-desk-accent"}`} />
+                <Link href={`/ticket/${p.ticker}`} className="font-mono font-bold text-desk-accent hover:underline w-14">{p.ticker}</Link>
+                <span className="font-mono text-desk-text">${p.strike} put</span>
+                <span className="font-mono text-desk-secondary">
+                  {days < 0 ? `expired ${-days}d ago` : days === 0 ? "expires today" : `expires in ${days}d`} ({p.expiry})
+                </span>
+                <span className="font-mono text-desk-secondary">stock ${p.spot.toFixed(2)} ({p.spot_vs_strike_pct > 0 ? "+" : ""}{p.spot_vs_strike_pct.toFixed(1)}% vs strike)</span>
+                <span className={`font-mono font-semibold ${p.pnl < 0 ? "text-desk-riskText" : "text-emerald-400"}`}>{p.pnl < 0 ? "-" : "+"}{formatCurrency(Math.abs(p.pnl))}</span>
+                <span className="text-desk-text basis-full md:basis-auto md:ml-auto">{action}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       {/* 2. Preset Segmented Control & Filter Toggles */}
       <div className="rounded-card border border-desk-border bg-desk-card p-4 space-y-3">
@@ -221,7 +353,7 @@ export default function SignalsPage() {
               <span className={`w-2 h-2 rounded-full ${skipEarnings ? "bg-amber-400" : "bg-desk-border"}`} />
               Skip earnings weeks
               {earningsHoldCount > 0 && (
-                <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${skipEarnings ? "bg-amber-500/20 text-amber-300 font-bold" : "bg-desk-raised text-desk-tertiary"}`}>
+                <span className={`px-1.5 py-0.5 rounded text-[11px] font-mono ${skipEarnings ? "bg-amber-500/20 text-amber-300 font-bold" : "bg-desk-raised text-desk-tertiary"}`}>
                   {skipEarnings ? `-${earningsHoldCount}` : `${earningsHoldCount}`}
                 </span>
               )}
@@ -250,7 +382,7 @@ export default function SignalsPage() {
               <span className={`w-2 h-2 rounded-full ${hideHeld ? "bg-desk-accent" : "bg-desk-border"}`} />
               Hide names I hold
               {heldInUniverseCount > 0 && (
-                <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono ${hideHeld ? "bg-desk-accent/20 text-desk-accent font-bold" : "bg-desk-raised text-desk-tertiary"}`}>
+                <span className={`px-1.5 py-0.5 rounded text-[11px] font-mono ${hideHeld ? "bg-desk-accent/20 text-desk-accent font-bold" : "bg-desk-raised text-desk-tertiary"}`}>
                   {hideHeld ? `-${heldInUniverseCount}` : `${heldInUniverseCount} held`}
                 </span>
               )}
@@ -320,7 +452,7 @@ export default function SignalsPage() {
                             <div className="inline-flex items-center gap-1.5">
                               <span className="text-sm font-mono text-desk-accent font-bold">{s.ticker}</span>
                               {heldTickers.has(sym) && (
-                                <span className="rounded bg-sky-500/15 px-1 py-0.2 text-[9px] font-mono text-sky-400 font-semibold border border-sky-500/30" title="Held in your open portfolio">
+                                <span className="rounded bg-sky-500/15 px-1 py-0.2 text-[11px] font-mono text-sky-400 font-semibold border border-sky-500/30" title="Held in your open portfolio">
                                   HELD
                                 </span>
                               )}
@@ -332,14 +464,14 @@ export default function SignalsPage() {
                         {/* 2. Date of Signal */}
                         <td className="py-3.5 px-3 font-mono text-center">
                           <div className="font-medium text-white">{signalDate}</div>
-                          <div className="text-[10px] text-desk-tertiary">3:35 PM ET</div>
+                          <div className="text-[11px] text-desk-tertiary">3:35 PM ET</div>
                         </td>
 
                         {/* 3. Current Price */}
                         <td className="py-3.5 px-3 font-mono font-bold text-center">
                           <div className="text-white">${s.spot.toFixed(2)}</div>
                           {typeof (s as any).day_change_pct === "number" && (
-                            <div className={`text-[10px] font-medium ${(s as any).day_change_pct < 0 ? "text-rose-400" : "text-emerald-400"}`}>
+                            <div className={`text-[11px] font-medium ${(s as any).day_change_pct < 0 ? "text-rose-400" : "text-emerald-400"}`}>
                               {(s as any).day_change_pct > 0 ? "+" : ""}{(s as any).day_change_pct.toFixed(2)}%
                             </div>
                           )}
@@ -348,15 +480,15 @@ export default function SignalsPage() {
                         {/* 4. Put Strike */}
                         <td className="py-3.5 px-3 font-mono text-center">
                           <div className="font-bold text-emerald-400">${s.strike.toFixed(1)}P</div>
-                          <div className="text-[10px] text-desk-secondary">+{s.cushion_pct.toFixed(1)}% Cushion</div>
+                          <div className="text-[11px] text-desk-secondary">+{s.cushion_pct.toFixed(1)}% Cushion</div>
                         </td>
 
                         {/* 5. Put Expiration */}
                         <td className="py-3.5 px-3 font-mono text-center">
                           <div className="font-semibold text-white">{s.expiry}</div>
-                          <div className="text-[10px] text-desk-tertiary">{s.dte} DTE</div>
+                          <div className="text-[11px] text-desk-tertiary">{s.dte} DTE</div>
                           {s.watchouts?.some((w) => w.title.toLowerCase().includes("earning")) && (
-                            <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 px-1 py-0.2 text-[9px] font-mono text-amber-400 border border-amber-500/30 mt-0.5" title="Trade spans earnings announcement window">
+                            <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 px-1 py-0.2 text-[11px] font-mono text-amber-400 border border-amber-500/30 mt-0.5" title="Trade spans earnings announcement window">
                               ⚠️ Earnings
                             </span>
                           )}
@@ -365,18 +497,18 @@ export default function SignalsPage() {
                         {/* 6. Credit */}
                         <td className="py-3.5 px-3 font-mono text-center">
                           <div className="font-semibold text-desk-text">${s.bid.toFixed(2)}</div>
-                          <div className="text-[10px] text-desk-secondary">(${s.credit.toFixed(0)})</div>
+                          <div className="text-[11px] text-desk-secondary">(${s.credit.toFixed(0)})</div>
                         </td>
 
                         {/* 7. Position Size (1X or 2x..) */}
                         <td className="py-3.5 px-3 font-mono text-center">
                           <div className="flex justify-center">
                             {s.sizing_tier === "2x" ? (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
                                 🔥 2X (2 Cont)
                               </span>
                             ) : (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-desk-raised text-desk-secondary border border-desk-border whitespace-nowrap">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-desk-raised text-desk-secondary border border-desk-border whitespace-nowrap">
                                 1X (1 Cont)
                               </span>
                             )}
@@ -386,7 +518,7 @@ export default function SignalsPage() {
                         {/* 8. Return/Cycle */}
                         <td className="py-3.5 px-3 font-mono text-center">
                           <div className="font-bold text-desk-accent">+{s.roc_cycle_pct.toFixed(2)}%</div>
-                          <div className="text-[10px] text-desk-secondary">({s.roc_annual_pct.toFixed(1)}% Ann.)</div>
+                          <div className="text-[11px] text-desk-secondary">({s.roc_annual_pct.toFixed(1)}% Ann.)</div>
                         </td>
 
                         {/* 9. Model Score */}
@@ -395,7 +527,7 @@ export default function SignalsPage() {
                             <span className="font-bold text-white px-2 py-0.5 rounded bg-desk-raised border border-desk-border">
                               {s.score.toFixed(1)}
                             </span>
-                            <span className="text-[10px] text-desk-tertiary mt-0.5">
+                            <span className="text-[11px] text-desk-tertiary mt-0.5">
                               PoS {s.odds_otm_market_pct.toFixed(0)}%
                             </span>
                           </div>
@@ -430,14 +562,14 @@ export default function SignalsPage() {
                                 className="inline-flex items-center gap-1 px-2.5 py-1 rounded-control bg-desk-raised border border-desk-border text-desk-tertiary select-none"
                                 title="Pending Admin Review"
                               >
-                                <span className="text-[10px]">⏳</span>
+                                <span className="text-[11px]">⏳</span>
                                 <span className="text-[11px] font-mono">Pending</span>
                               </div>
                             )}
 
                             {comment && (
                               <div
-                                className="text-[10px] text-desk-secondary font-mono italic mt-1 max-w-[130px] truncate"
+                                className="text-[11px] text-desk-secondary font-mono italic mt-1 max-w-[130px] truncate"
                                 title={comment}
                               >
                                 💬 {comment}
@@ -464,23 +596,23 @@ export default function SignalsPage() {
 
             <div className="space-y-2.5 font-mono text-xs">
               <div>
-                <span className="text-[10px] text-desk-tertiary block uppercase">Cash collateral</span>
+                <span className="text-[11px] text-desk-tertiary block uppercase">Cash collateral</span>
                 <span className="text-sm font-bold text-desk-text">{formatCurrency(totals.totalCash)}</span>
               </div>
 
               <div>
-                <span className="text-[10px] text-desk-tertiary block uppercase">Credit collected</span>
+                <span className="text-[11px] text-desk-tertiary block uppercase">Credit collected</span>
                 <span className="text-sm font-bold text-desk-accent">{formatCurrency(totals.totalCredit)}</span>
               </div>
 
               <div>
-                <span className="text-[10px] text-desk-tertiary block uppercase">Avg return / cycle</span>
+                <span className="text-[11px] text-desk-tertiary block uppercase">Avg return / cycle</span>
                 <span className="text-xs font-bold text-desk-text">{totals.avgRoc.toFixed(2)}%</span>
               </div>
             </div>
 
             {filteredSetups.length > 5 && (
-              <div className="rounded-control bg-desk-caution/10 border border-desk-caution/30 p-2 text-[10px] text-desk-cautionText font-sans leading-tight">
+              <div className="rounded-control bg-desk-caution/10 border border-desk-caution/30 p-2 text-[11px] text-desk-cautionText font-sans leading-tight">
                 ⚠️ Sector concentration warning: taking all {filteredSetups.length} setups exceeds recommended collateral cap.
               </div>
             )}
@@ -492,7 +624,7 @@ export default function SignalsPage() {
               <h2 className="text-xs font-bold text-desk-text uppercase tracking-wider">
                 Held back &middot; {snapshot.held_back?.length || 0}
               </h2>
-              <span className="text-[10px] text-desk-tertiary">Gates</span>
+              <span className="text-[11px] text-desk-tertiary">Gates</span>
             </div>
 
             <div className="divide-y divide-desk-border/60 max-h-72 overflow-y-auto pr-1">
@@ -502,7 +634,7 @@ export default function SignalsPage() {
                 snapshot.held_back.slice(0, 10).map((h, i) => (
                   <div key={i} className="py-2 text-[11px]">
                     <span className="font-mono font-bold text-desk-accent text-xs">{h.ticker}</span>
-                    <p className="text-desk-secondary text-[10px] leading-tight mt-0.5">{h.reason}</p>
+                    <p className="text-desk-secondary text-[11px] leading-tight mt-0.5">{h.reason}</p>
                   </div>
                 ))
               )}
@@ -518,11 +650,11 @@ export default function SignalsPage() {
         <div className="p-4 border-b border-desk-border bg-desk-raised/60 flex flex-wrap items-center justify-between gap-4">
           <div>
             <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider flex items-center gap-2">
-              <span>⏳ Active Open Positions</span>
-              <span className="text-xs font-mono font-normal text-desk-accent">({activeSignals.length} in-flight)</span>
+              <span>⏳ Model Tracker: Simulated Open Trades</span>
+              <span className="text-xs font-mono font-normal text-amber-400">({activeSignals.length} simulated)</span>
             </h2>
             <p className="text-xs text-desk-secondary mt-0.5">
-              Continuous candle-by-candle position tracking across all institutional names. Positions remain active until Kirsten&apos;s 50% Take-Profit target is captured or expiration. Sorted newest-first.
+              Trades the simulator would have opened, marked with model (Black-Scholes) prices. These are not your account; your own positions are in &ldquo;Act today&rdquo; above. Sorted newest first.
             </p>
           </div>
 
@@ -537,7 +669,7 @@ export default function SignalsPage() {
               ⏳ Harvesting: <strong>{activeStats.harvesting}</strong>
             </span>
             <span className="px-2.5 py-1 rounded bg-desk-risk/10 border border-desk-risk/30 text-desk-riskText">
-              🛡️ Tested: <strong>{activeStats.tested}</strong>
+              Losing: <strong>{activeStats.tested}</strong>
             </span>
             <button
               onClick={() => {
@@ -559,7 +691,7 @@ export default function SignalsPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-[11px]">
-            <thead className="border-b border-desk-border bg-desk-raised text-[10px] text-desk-secondary font-medium uppercase tracking-tight">
+            <thead className="border-b border-desk-border bg-desk-raised text-[11px] text-desk-secondary font-medium uppercase tracking-tight">
               <tr>
                 <th className="py-2.5 px-2 text-center w-12">Details</th>
                 <th className="py-2.5 px-2 whitespace-nowrap">Entry Date</th>
@@ -608,7 +740,7 @@ export default function SignalsPage() {
                                 [rowKey]: !isExpanded,
                               }))
                             }
-                            className={`px-1.5 py-0.5 rounded text-[9.5px] font-bold border transition-colors ${
+                            className={`px-1.5 py-0.5 rounded text-[11px] font-bold border transition-colors ${
                               isExpanded
                                 ? "bg-desk-accent/20 border-desk-accent text-desk-accent"
                                 : "bg-desk-raised border-desk-border text-desk-secondary hover:text-white"
@@ -620,7 +752,7 @@ export default function SignalsPage() {
                         </td>
 
                         {/* 2. Entry Date */}
-                        <td className="py-2 px-2 text-desk-secondary whitespace-nowrap text-[10.5px]">{a.entry_date}</td>
+                        <td className="py-2 px-2 text-desk-secondary whitespace-nowrap text-[11px]">{a.entry_date}</td>
 
                         {/* 3. Stock */}
                         <td className="py-2 px-2 font-sans font-bold">
@@ -632,7 +764,7 @@ export default function SignalsPage() {
                         {/* 4. Rolls Badge */}
                         <td className="py-2 px-1.5 text-center">
                           <span
-                            className={`inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold whitespace-nowrap ${
+                            className={`inline-block px-1.5 py-0.5 rounded text-[11px] font-bold whitespace-nowrap ${
                               a.rolls === 0
                                 ? "bg-desk-bg border border-desk-border text-desk-secondary"
                                 : a.rolls === 1
@@ -669,8 +801,10 @@ export default function SignalsPage() {
                           <div className={`font-bold ${pnlColor}`}>
                             {unrealizedDollars >= 0 ? "+" : ""}${unrealizedDollars.toFixed(0)}
                           </div>
-                          <div className={`text-[9.5px] ${pnlColor}`}>
-                            {a.profit_pct > 0 ? "+" : ""}{a.profit_pct.toFixed(1)}%
+                          <div className={`text-[11px] ${pnlColor}`}>
+                            {a.profit_pct <= -100
+                              ? `−${(Math.abs(a.profit_pct) / 100).toFixed(1)}× credit`
+                              : `${a.profit_pct > 0 ? "+" : ""}${a.profit_pct.toFixed(1)}%`}
                           </div>
                         </td>
 
@@ -682,15 +816,17 @@ export default function SignalsPage() {
                             const leftW = !isPos ? Math.min(50, (Math.abs(a.profit_pct) / 100.0) * 50) : 0;
                             const posColor = a.profit_pct >= 50 ? "bg-emerald-500" : "bg-desk-accent";
                             const labelColor = a.profit_pct >= 50 ? "text-emerald-400" : isPos ? "text-desk-accent" : "text-desk-riskText";
-                            const subLabel = a.profit_pct >= 50 ? "🎯 50% TP" : isPos ? `${((a.profit_pct / 50) * 100).toFixed(0)}%` : "Drawdown";
+                            const subLabel = a.profit_pct >= 50 ? "🎯 50% TP" : isPos ? `${((a.profit_pct / 50) * 100).toFixed(0)}% to target` : "Losing";
 
                             return (
                               <div>
-                                <div className="flex items-center justify-between text-[10px] mb-0.5">
+                                <div className="flex items-center justify-between text-[11px] mb-0.5">
                                   <span className={`font-mono font-semibold ${labelColor}`}>
-                                    {a.profit_pct > 0 ? "+" : ""}{a.profit_pct.toFixed(1)}%
+                                    {a.profit_pct <= -100
+                                      ? `−${(Math.abs(a.profit_pct) / 100).toFixed(1)}×`
+                                      : `${a.profit_pct > 0 ? "+" : ""}${a.profit_pct.toFixed(1)}%`}
                                   </span>
-                                  <span className="text-[9px] text-desk-secondary">
+                                  <span className="text-[11px] text-desk-secondary">
                                     {subLabel}
                                   </span>
                                 </div>
@@ -714,25 +850,28 @@ export default function SignalsPage() {
                         </td>
 
                         {/* 12. Expiry */}
-                        <td className="py-2 px-2 text-desk-secondary whitespace-nowrap text-[10.5px]">{a.expiry}</td>
+                        <td className="py-2 px-2 text-desk-secondary whitespace-nowrap text-[11px]">{a.expiry}</td>
 
                         {/* 13. Action Protocol */}
-                        <td className="py-2 px-2 text-right min-w-[130px] max-w-[170px]">
-                          <span
-                            className="inline-block px-1.5 py-0.5 rounded text-[9.5px] font-semibold whitespace-nowrap"
-                            style={{
-                              backgroundColor: `${a.badge_color || "#38BDF8"}18`,
-                              color: a.badge_color || "#38BDF8",
-                              border: `1px solid ${a.badge_color || "#38BDF8"}40`,
-                            }}
-                          >
-                            {a.status}
-                          </span>
-                          {a.triage_action && (
-                            <div className="text-[9.5px] text-desk-secondary mt-0.5 max-w-[165px] ml-auto leading-tight line-clamp-2" title={a.triage_action}>
-                              {a.triage_action}
-                            </div>
-                          )}
+                        <td className="py-2 px-2 text-right min-w-[150px] max-w-[200px]">
+                          {(() => {
+                            const v = positionView(a);
+                            return (
+                              <>
+                                <span
+                                  className="inline-block px-1.5 py-0.5 rounded text-[11px] font-semibold whitespace-nowrap"
+                                  style={{ backgroundColor: `${v.color}18`, color: v.color, border: `1px solid ${v.color}40` }}
+                                >
+                                  {v.label}
+                                </span>
+                                {v.detail && (
+                                  <div className="text-[11px] text-desk-secondary mt-0.5 max-w-[195px] ml-auto leading-tight line-clamp-2" title={v.detail}>
+                                    {v.detail}
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })()}
                         </td>
                       </tr>
 
@@ -768,7 +907,7 @@ export default function SignalsPage() {
                                         </span>
 
                                         <span
-                                          className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                                          className={`px-2 py-0.5 rounded text-[11px] font-bold shrink-0 ${
                                             isInitial
                                               ? "bg-sky-500/15 text-sky-400 border border-sky-500/30"
                                               : isRoll
@@ -804,7 +943,7 @@ export default function SignalsPage() {
                                           {node.amount_dollars >= 0 ? "+" : ""}${node.amount_dollars.toFixed(0)}
                                         </span>
                                         <span
-                                          className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
+                                          className={`text-[11px] font-bold px-1.5 py-0.2 rounded ${
                                             node.pnl_pct >= 0 ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"
                                           }`}
                                         >
@@ -836,10 +975,10 @@ export default function SignalsPage() {
           <div>
             <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider flex items-center gap-2">
               <span>🏁 Closed Trades &amp; Realized Results</span>
-              <span className="text-xs font-mono font-normal text-desk-secondary">(Audited Performance)</span>
+              <span className="text-xs font-mono font-normal text-amber-400">(Simulated)</span>
             </h2>
             <p className="text-xs text-desk-secondary mt-0.5">
-              Audited historical closed trades verified candle-by-candle with Kirsten&apos;s 50% Take-Profit rule, assignment tracking, and net-credit rolls.
+              Most recent trades closed by the simulator, using the 50% take-profit rule, net-credit rolls and assignment. Model prices, no bid/ask spreads; not a record of real trades.
             </p>
           </div>
 
@@ -889,7 +1028,7 @@ export default function SignalsPage() {
         {/* Closed Trades Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-[11px]">
-            <thead className="border-b border-desk-border bg-desk-raised text-[10px] text-desk-secondary font-medium uppercase tracking-tight">
+            <thead className="border-b border-desk-border bg-desk-raised text-[11px] text-desk-secondary font-medium uppercase tracking-tight">
               <tr>
                 <th className="py-2.5 px-2 text-center w-12">Details</th>
                 <th className="py-2.5 px-2 whitespace-nowrap">Open Date</th>
@@ -931,7 +1070,7 @@ export default function SignalsPage() {
                                 [rowKey]: !isExpanded,
                               }))
                             }
-                            className={`px-1.5 py-0.5 rounded text-[9.5px] font-bold border transition-colors ${
+                            className={`px-1.5 py-0.5 rounded text-[11px] font-bold border transition-colors ${
                               isExpanded
                                 ? "bg-desk-accent/20 border-desk-accent text-desk-accent"
                                 : "bg-desk-raised border-desk-border text-desk-secondary hover:text-white"
@@ -943,10 +1082,10 @@ export default function SignalsPage() {
                         </td>
 
                         {/* 2. Open Date */}
-                        <td className="py-2 px-2 text-desk-secondary whitespace-nowrap text-[10.5px]">{c.open_date}</td>
+                        <td className="py-2 px-2 text-desk-secondary whitespace-nowrap text-[11px]">{c.open_date}</td>
 
                         {/* 3. Close Date */}
-                        <td className="py-2 px-2 text-desk-secondary font-semibold whitespace-nowrap text-[10.5px]">{c.close_date}</td>
+                        <td className="py-2 px-2 text-desk-secondary font-semibold whitespace-nowrap text-[11px]">{c.close_date}</td>
 
                         {/* 4. Stock */}
                         <td className="py-2 px-2 font-sans font-bold">
@@ -958,7 +1097,7 @@ export default function SignalsPage() {
                         {/* 5. Rolls Badge */}
                         <td className="py-2 px-1.5 text-center">
                           <span
-                            className={`inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold whitespace-nowrap ${
+                            className={`inline-block px-1.5 py-0.5 rounded text-[11px] font-bold whitespace-nowrap ${
                               rolls === 0
                                 ? "bg-desk-bg border border-desk-border text-desk-secondary"
                                 : rolls === 1
@@ -975,7 +1114,7 @@ export default function SignalsPage() {
                         <td className="py-2 px-2 font-semibold text-desk-text whitespace-nowrap">${c.strike.toFixed(1)}P</td>
 
                         {/* 7. Entry -> Exit */}
-                        <td className="py-2 px-2 text-desk-secondary whitespace-nowrap text-[10.5px]">
+                        <td className="py-2 px-2 text-desk-secondary whitespace-nowrap text-[11px]">
                           ${c.entry_credit.toFixed(2)} &rarr; ${c.exit_debit.toFixed(2)}
                         </td>
 
@@ -984,7 +1123,7 @@ export default function SignalsPage() {
                           <div className={`font-bold ${gain >= 0 ? "text-emerald-400" : "text-desk-riskText"}`}>
                             {gain >= 0 ? "+" : ""}${gain.toFixed(1)}
                           </div>
-                          <div className={`text-[9.5px] ${c.profit_pct >= 0 ? "text-emerald-400" : "text-desk-riskText"}`}>
+                          <div className={`text-[11px] ${c.profit_pct >= 0 ? "text-emerald-400" : "text-desk-riskText"}`}>
                             {c.profit_pct > 0 ? "+" : ""}{c.profit_pct.toFixed(1)}%
                           </div>
                         </td>
@@ -995,7 +1134,7 @@ export default function SignalsPage() {
                         {/* 10. Result */}
                         <td className="py-2 px-2">
                           <span
-                            className={`inline-block px-1.5 py-0.5 rounded text-[9.5px] font-bold ${
+                            className={`inline-block px-1.5 py-0.5 rounded text-[11px] font-bold ${
                               isWin
                                 ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
                                 : "bg-desk-risk/15 text-desk-riskText border border-desk-risk/30"
@@ -1006,7 +1145,7 @@ export default function SignalsPage() {
                         </td>
 
                         {/* 11. Exit Reason */}
-                        <td className="py-2 px-2 text-right text-desk-secondary text-[10.5px] truncate max-w-[200px]">
+                        <td className="py-2 px-2 text-right text-desk-secondary text-[11px] truncate max-w-[200px]">
                           <span className={c.exit_type.includes("Stop Loss") ? "text-rose-400 font-bold" : c.exit_type.includes("Assigned") ? "text-amber-400 font-bold" : ""}>
                             {c.exit_type}
                           </span>
@@ -1047,7 +1186,7 @@ export default function SignalsPage() {
                                         </span>
 
                                         <span
-                                          className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                                          className={`px-2 py-0.5 rounded text-[11px] font-bold shrink-0 ${
                                             isInitial
                                               ? "bg-sky-500/15 text-sky-400 border border-sky-500/30"
                                               : isRoll
@@ -1087,7 +1226,7 @@ export default function SignalsPage() {
                                           {node.amount_dollars >= 0 ? "+" : ""}${node.amount_dollars.toFixed(0)}
                                         </span>
                                         <span
-                                          className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
+                                          className={`text-[11px] font-bold px-1.5 py-0.2 rounded ${
                                             node.pnl_pct >= 0 ? "bg-emerald-500/20 text-emerald-300" : "bg-rose-500/20 text-rose-300"
                                           }`}
                                         >
