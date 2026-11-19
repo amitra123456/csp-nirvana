@@ -6,11 +6,12 @@ import { NextRequest, NextResponse } from "next/server";
  *   - POST /api/approve (writes approvals)
  *   - /api/run-scan (starts the pipeline or the GitHub workflow)
  *
- * Uses HTTP Basic auth. Set these environment variables (Vercel: Project → Settings → Environment Variables):
+ * Uses HTTP Basic auth. It is OFF until you set these environment variables
+ * (Vercel: Project → Settings → Environment Variables, then redeploy):
  *   ADMIN_USER      (optional, defaults to "admin")
- *   ADMIN_PASSWORD  (required in production)
+ *   ADMIN_PASSWORD  (turns the login on)
  *
- * If ADMIN_PASSWORD is not set, protected routes are refused in production and left open in local development.
+ * If ADMIN_PASSWORD is not set, these routes stay open to anyone, as before.
  */
 
 function isProtected(req: NextRequest): boolean {
@@ -34,13 +35,8 @@ export function middleware(req: NextRequest) {
   const password = process.env.ADMIN_PASSWORD;
   const user = process.env.ADMIN_USER || "admin";
 
-  if (!password) {
-    if (process.env.NODE_ENV !== "production") return NextResponse.next();
-    return new NextResponse("Admin is disabled: set ADMIN_PASSWORD in the deployment's environment variables.", {
-      status: 503,
-      headers: { "Content-Type": "text/plain; charset=utf-8" },
-    });
-  }
+  // Login is opt-in: with no password configured, behave exactly as before (open).
+  if (!password) return NextResponse.next();
 
   const header = req.headers.get("authorization") || "";
   if (header.startsWith("Basic ")) {
