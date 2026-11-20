@@ -3,42 +3,47 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getFreshness } from "@/lib/data";
-import { useState } from "react";
+import { formatCountdown, formatScanDate, minutesUntilNextScan, nextScanDate } from "@/lib/schedule";
+import { useEffect, useState } from "react";
 
 interface HeaderProps {
   asOfEt?: string;
   itmCount?: number;
 }
 
+/** Shows when the next scheduled scan runs (NYSE trading days, 3:35 PM ET). */
+function NextScanBox() {
+  // Rendered only after mount so server and browser clocks never disagree during hydration
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    setNow(new Date());
+    const id = setInterval(() => setNow(new Date()), 30000);
+    return () => clearInterval(id);
+  }, []);
+  const date = now ? nextScanDate(now) : null;
+  return (
+    <div
+      className="flex min-h-[44px] flex-col justify-center rounded-control border border-desk-border bg-desk-card px-3.5 py-1.5 leading-tight"
+      title="The scan runs automatically on NYSE trading days at 3:35 PM Eastern."
+    >
+      <span className="text-[11px] uppercase tracking-wider text-desk-tertiary">Next scan</span>
+      <span className="font-mono text-xs font-semibold text-desk-text whitespace-nowrap">
+        {date ? (
+          <>
+            {formatScanDate(date)} · 3:35 PM ET
+            <span className="ml-1.5 font-normal text-desk-secondary">({formatCountdown(minutesUntilNextScan(now!))})</span>
+          </>
+        ) : (
+          "3:35 PM ET"
+        )}
+      </span>
+    </div>
+  );
+}
+
 export function Header({ asOfEt = "", itmCount = 0 }: HeaderProps) {
   const pathname = usePathname();
   const freshness = getFreshness(asOfEt);
-  const [isRunning, setIsRunning] = useState(false);
-  const [runMessage, setRunMessage] = useState<string | null>(null);
-
-  const handleRunScan = async () => {
-    setIsRunning(true);
-    setRunMessage("Requesting a scan...");
-    try {
-      const res = await fetch("/api/run-scan", { method: "POST" });
-      if (res.ok) {
-        setRunMessage("Scan requested. The snapshot updates when the pipeline finishes.");
-      } else if (res.status === 401) {
-        setRunMessage("Admin sign-in is required to run a scan.");
-      } else if (res.status === 503) {
-        setRunMessage("Scans are disabled until ADMIN_PASSWORD is set.");
-      } else {
-        setRunMessage(`Scan request failed (status ${res.status}).`);
-      }
-    } catch (e) {
-      setRunMessage("Could not reach the server; no scan was started.");
-    } finally {
-      setTimeout(() => {
-        setIsRunning(false);
-        setRunMessage(null);
-      }, 4000);
-    }
-  };
 
   const navLinks: { href: string; label: string; badge?: string }[] = [
     { href: "/", label: "Signals" },
@@ -98,24 +103,9 @@ export function Header({ asOfEt = "", itmCount = 0 }: HeaderProps) {
             </span>
           </div>
 
-          <button
-            onClick={handleRunScan}
-            disabled={isRunning}
-            className="flex min-h-[44px] items-center gap-2 rounded-control bg-desk-accent px-4 py-2 text-xs font-semibold text-desk-bg transition-opacity hover:opacity-90 active:scale-98 disabled:opacity-50"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-            </svg>
-            <span>{isRunning ? "Running..." : "Run scan now"}</span>
-          </button>
+          <NextScanBox />
         </div>
       </div>
-
-      {runMessage && (
-        <div className="bg-desk-card border-t border-desk-border py-1.5 px-4 text-center text-xs text-desk-accent font-mono">
-          {runMessage}
-        </div>
-      )}
     </header>
   );
 }

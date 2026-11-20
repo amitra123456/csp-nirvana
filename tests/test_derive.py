@@ -103,3 +103,31 @@ def test_derive_position_exact_fixtures():
     assert pos.spot_vs_strike_pct == pytest.approx(expected_spot_vs_strike, abs=1e-6)
     assert pos.status == "itm"
     assert pos.next_step == "plan_assignment"  # rolls >= rolls_max (2 >= 2)
+
+
+def test_derive_strike_ladder_recommended_plus_two_safer():
+    from core.derive import derive_strike_ladder
+    chain = [
+        {"strike": 100.0, "bid": 5.00, "ask": 5.20, "iv": 0.40, "open_interest": 900},
+        {"strike": 90.0, "bid": 2.00, "ask": 2.20, "iv": 0.45, "open_interest": 500},
+        {"strike": 85.0, "bid": 1.10, "ask": 1.30, "iv": 0.48, "open_interest": 300},
+        {"strike": 80.0, "bid": 0.60, "ask": 0.80, "iv": 0.50, "open_interest": 200},
+        {"strike": 75.0, "bid": 0.30, "ask": 0.40, "iv": 0.52, "open_interest": 100},
+    ]
+    ladder = derive_strike_ladder(spot=103.0, dte=35, recommended_strike=90.0,
+                                  chain_puts=chain, recommended_delta=-0.20)
+    assert [r.strike for r in ladder] == [90.0, 85.0, 80.0]
+    assert [r.role for r in ladder] == ["recommended", "safer", "safer"]
+    top = ladder[0]
+    assert top.mid == 2.10
+    assert top.breakeven == 87.90
+    assert top.roi_cycle_pct == round(2.10 / 90.0 * 100, 2)
+    assert top.pos_pct == 80.0                      # 1 - |delta| from the recommended row
+    # safer strikes: lower premium, higher probability of expiring worthless
+    assert ladder[1].mid < top.mid and ladder[2].mid < ladder[1].mid
+    assert ladder[2].pos_pct > ladder[1].pos_pct > 0
+
+
+def test_derive_strike_ladder_missing_strike_returns_empty():
+    from core.derive import derive_strike_ladder
+    assert derive_strike_ladder(spot=100, dte=30, recommended_strike=95.0, chain_puts=[]) == []

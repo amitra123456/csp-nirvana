@@ -48,7 +48,7 @@ from core.snapshot_models import (
     Snapshot, RunMetadata, RunError, RulesConfig, HeldBackModel,
     PositionModel, PortfolioModel, BacktestModel, MonthlyPnl
 )
-from core.derive import derive_setup, derive_position
+from core.derive import derive_setup, derive_position, derive_strike_ladder
 from core.portfolio_tracker import (
     run_candle_by_candle_population_sim,
     load_real_positions_ledger,
@@ -60,6 +60,33 @@ from core.options_scanner import run_screener
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 
 NY_TZ = ZoneInfo("America/New_York")
+
+SIM_TRADES_FILE = PROJECT_ROOT / "data" / "sim_closed_trades.json"
+
+
+def write_sim_closed_trades(closed_trades: List[Dict[str, Any]], as_of: str) -> None:
+    """Save every simulated closed trade (compact) for the Signals page equity curve.
+    P&L is per share; the web page multiplies by 100 for one contract."""
+    rows = [{
+        "ticker": t.get("ticker"),
+        "entry_date": str(t.get("entry_date", ""))[:10],
+        "close_date": str(t.get("close_date", ""))[:10],
+        "strike": t.get("strike"),
+        "rolls": int(t.get("rolls", 0) or 0),
+        "realized_gain": round(float(t.get("realized_gain", 0.0) or 0.0), 4),
+        "result": t.get("result"),
+        "exit_type": t.get("exit_type"),
+    } for t in closed_trades if t.get("close_date")]
+    rows.sort(key=lambda r: (r["close_date"], r["ticker"] or ""))
+    try:
+        SIM_TRADES_FILE.write_text(json.dumps({
+            "as_of": as_of,
+            "label": "Simulated (Black-Scholes model prices, no bid/ask spreads)",
+            "trades": rows,
+        }), encoding="utf-8")
+    except OSError as e:
+        logging.error(f"Could not write {SIM_TRADES_FILE}: {e}")
+
 
 def get_now_et() -> datetime:
     """Returns current localized New York datetime."""
@@ -323,6 +350,14 @@ def run_daily_pipeline(force_alpaca_fail: bool = False) -> Snapshot:
             rules=rules_input,
             held_position=held_pos_dict
         )
+        # Recommended strike plus the next 2 safer strikes (shown when a row is expanded on Signals)
+        setup_obj.strike_ladder = derive_strike_ladder(
+            spot=spot_val,
+            dte=int(r['dte']),
+            recommended_strike=float(r['strike']),
+            chain_puts=r.get('chain_puts', []),
+            recommended_delta=setup_obj.delta,
+        )
         setups_list.append(setup_obj)
 
     # Rank setups by score
@@ -331,6 +366,7 @@ def run_daily_pipeline(force_alpaca_fail: bool = False) -> Snapshot:
     # Step 4: Backtest Simulation (strictly labeled 'Simulated')
     sim_data = run_candle_by_candle_population_sim(DATA_DIR)
     closed_trades = sim_data.get("closed_trades", [])
+    write_sim_closed_trades(closed_trades, as_of_et_str)
     trades_count = len(closed_trades)
     wins = sum(1 for t in closed_trades if "WIN" in str(t.get("result", "")))
     win_rate = round((wins / trades_count) * 100.0, 1) if trades_count > 0 else 0.0

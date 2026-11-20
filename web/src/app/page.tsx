@@ -4,6 +4,9 @@ import React, { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { Setup, Snapshot, HeldBack, Position, ActiveSignal, ClosedTrade } from "@/types/snapshot";
 import { formatCurrency, formatPercent, formatNumber } from "@/lib/data";
+import SignalChartModal from "@/components/SignalChartModal";
+import SectorFilter, { SectorData } from "@/components/SectorFilter";
+import EquityCurve from "@/components/EquityCurve";
 
 /** "2026-11-18T15:33:53.98-05:00" -> "Nov 18, 3:33 PM ET" (keeps the ET wall-clock time from the string). */
 function formatAsOf(iso?: string): string {
@@ -69,6 +72,20 @@ export default function SignalsPage() {
   const [expandedClosedTrees, setExpandedClosedTrees] = useState<Record<string, boolean>>({});
   const [expandAllActive, setExpandAllActive] = useState(false);
   const [expandAllClosed, setExpandAllClosed] = useState(false);
+
+  // Setups table: per-row strike-options expanders and the daily chart modal
+  const [expandedLadders, setExpandedLadders] = useState<Record<string, boolean>>({});
+  const [chartSetup, setChartSetup] = useState<Setup | null>(null);
+
+  // S&P 500 sector filter (each sector = its 10 largest companies by market cap)
+  const [sectorData, setSectorData] = useState<SectorData | null>(null);
+  const [sector, setSector] = useState<string | null>(null);
+  useEffect(() => {
+    fetch("/api/sectors")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setSectorData(d))
+      .catch(() => setSectorData(null));
+  }, []);
 
   // Admin Review & Approval State (status: approved | disapproved | none, and comments)
   const [reviewRecords, setReviewRecords] = useState<Record<string, { status: "approved" | "disapproved" | "none"; comment: string }>>({});
@@ -140,9 +157,19 @@ export default function SignalsPage() {
       if (redDaysOnly && (s.is_red_day === false || (typeof s.day_change_pct === "number" && s.day_change_pct >= 0))) return false;
       if (hideHeld && heldTickers.has(s.ticker.toUpperCase())) return false;
 
+      // Sector chip
+      if (sector && sectorData && !(sectorData.sectors[sector] || []).some((r) => r.ticker === s.ticker.toUpperCase())) return false;
+
       return true;
     });
-  }, [snapshot, preset, skipEarnings, redDaysOnly, hideHeld, heldTickers]);
+  }, [snapshot, preset, skipEarnings, redDaysOnly, hideHeld, heldTickers, sector, sectorData]);
+
+  const setupTickerSet = useMemo(() => new Set((snapshot?.setups || []).map((s) => s.ticker.toUpperCase())), [snapshot]);
+  const heldBackReasons = useMemo(() => {
+    const m: Record<string, string> = {};
+    (snapshot?.held_back || []).forEach((h) => { m[h.ticker.toUpperCase()] = h.reason; });
+    return m;
+  }, [snapshot]);
 
   // Aggregate "If you take all N"
   const totals = useMemo(() => {
@@ -396,6 +423,14 @@ export default function SignalsPage() {
             Edit rules
           </Link>
         </div>
+
+        <SectorFilter
+          data={sectorData}
+          selected={sector}
+          onSelect={setSector}
+          setupTickers={setupTickerSet}
+          heldBack={heldBackReasons}
+        />
       </div>
 
       {/* 4. Main 2-Column Grid (Card 1: Table + Right Rail) */}
@@ -417,6 +452,7 @@ export default function SignalsPage() {
             <table className="w-full text-center text-sm">
               <thead className="border-b border-desk-border bg-desk-raised text-xs text-desk-secondary font-medium uppercase tracking-wider">
                 <tr>
+                  <th className="py-3 pl-3 pr-0 text-center w-10"><span className="sr-only">Strike options</span></th>
                   <th className="py-3 px-3 text-center">Stock</th>
                   <th className="py-3 px-3 text-center">Date of Signal</th>
                   <th className="py-3 px-3 text-center">Current Price</th>
@@ -432,7 +468,7 @@ export default function SignalsPage() {
               <tbody className="divide-y divide-desk-border font-mono text-xs">
                 {filteredSetups.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="py-12 text-center text-desk-secondary font-sans text-sm">
+                    <td colSpan={11} className="py-12 text-center text-desk-secondary font-sans text-sm">
                       No setups qualify under current filters. Try relaxing the cushion or enabling earnings weeks.
                     </td>
                   </tr>
@@ -444,13 +480,37 @@ export default function SignalsPage() {
                     const comment = rec.comment;
                     const signalDate = s.spot_ts ? s.spot_ts.slice(0, 10) : (snapshot.run?.as_of_et?.slice(0, 10) || "2026-11-18");
 
+                    const ladderOpen = !!expandedLadders[sym];
+
                     return (
-                      <tr key={s.ticker} className={`hover:bg-desk-raised/60 transition-colors ${status === "approved" ? "bg-emerald-500/[0.02]" : status === "disapproved" ? "bg-rose-500/[0.02]" : ""}`}>
-                        {/* 1. Stock */}
+                      <React.Fragment key={s.ticker}>
+                      <tr className={`hover:bg-desk-raised/60 transition-colors ${status === "approved" ? "bg-emerald-500/[0.02]" : status === "disapproved" ? "bg-rose-500/[0.02]" : ""}`}>
+                        {/* 0. Strike options expander */}
+                        <td className="py-3.5 pl-3 pr-0 text-center">
+                          <button
+                            onClick={() => setExpandedLadders((prev) => ({ ...prev, [sym]: !prev[sym] }))}
+                            className={`h-7 w-7 rounded-control border text-xs font-bold transition-colors ${
+                              ladderOpen
+                                ? "bg-desk-accent/20 border-desk-accent text-desk-accent"
+                                : "bg-desk-raised border-desk-border text-desk-secondary hover:text-desk-text"
+                            }`}
+                            aria-expanded={ladderOpen}
+                            aria-label={`${ladderOpen ? "Hide" : "Show"} strike options for ${s.ticker}`}
+                            title="Recommended strike and the next 2 safer strikes"
+                          >
+                            {ladderOpen ? "▾" : "▸"}
+                          </button>
+                        </td>
+
+                        {/* 1. Stock: opens the daily chart */}
                         <td className="py-3.5 px-3 font-sans text-center">
-                          <Link href={`/ticket/${s.ticker}`} className="inline-flex flex-col items-center hover:text-desk-accent">
+                          <button
+                            onClick={() => setChartSetup(s)}
+                            className="inline-flex flex-col items-center hover:text-desk-accent group"
+                            title={`Open ${s.ticker} daily chart`}
+                          >
                             <div className="inline-flex items-center gap-1.5">
-                              <span className="text-sm font-mono text-desk-accent font-bold">{s.ticker}</span>
+                              <span className="text-sm font-mono text-desk-accent font-bold group-hover:underline">{s.ticker}</span>
                               {heldTickers.has(sym) && (
                                 <span className="rounded bg-sky-500/15 px-1 py-0.2 text-[11px] font-mono text-sky-400 font-semibold border border-sky-500/30" title="Held in your open portfolio">
                                   HELD
@@ -458,7 +518,7 @@ export default function SignalsPage() {
                               )}
                             </div>
                             <span className="text-[11px] text-desk-secondary truncate max-w-[110px]">{s.name}</span>
-                          </Link>
+                          </button>
                         </td>
 
                         {/* 2. Date of Signal */}
@@ -578,6 +638,66 @@ export default function SignalsPage() {
                           </div>
                         </td>
                       </tr>
+
+                      {/* Strike options: recommended strike + next 2 safer strikes */}
+                      {ladderOpen && (
+                        <tr className="bg-[#0B0E14]">
+                          <td colSpan={11} className="px-4 py-3 text-left font-sans">
+                            {s.strike_ladder && s.strike_ladder.length > 0 ? (
+                              <div className="space-y-2">
+                                <p className="text-xs text-desk-secondary">
+                                  {s.ticker} puts expiring {s.expiry} ({s.dte} DTE) · stock ${s.spot.toFixed(2)} at signal.
+                                  Mid = halfway between bid and ask; ROI = mid ÷ strike; PoS = market-implied chance of expiring worthless (1 − |delta|); breakeven = strike − mid.
+                                </p>
+                                <div className="overflow-x-auto rounded-control border border-desk-border">
+                                  <table className="w-full text-xs font-mono">
+                                    <thead className="bg-desk-raised text-desk-secondary uppercase tracking-wider">
+                                      <tr>
+                                        <th className="py-2 px-3 text-left">Strike</th>
+                                        <th className="py-2 px-3 text-right">Below stock</th>
+                                        <th className="py-2 px-3 text-right">Bid / Ask</th>
+                                        <th className="py-2 px-3 text-right">Mid</th>
+                                        <th className="py-2 px-3 text-right">ROI (cycle / yr)</th>
+                                        <th className="py-2 px-3 text-right">PoS</th>
+                                        <th className="py-2 px-3 text-right">Breakeven</th>
+                                        <th className="py-2 px-3 text-right">Open int.</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-desk-border">
+                                      {s.strike_ladder.map((l) => (
+                                        <tr key={l.strike} className={l.role === "recommended" ? "bg-desk-accent/5" : ""}>
+                                          <td className="py-2 px-3 text-left">
+                                            <span className="font-bold text-desk-text">${l.strike.toFixed(2)}</span>
+                                            <span className={`ml-2 rounded px-1.5 py-0.5 text-[11px] ${l.role === "recommended" ? "bg-desk-accent/15 text-desk-accent" : "bg-desk-raised text-desk-secondary"}`}>
+                                              {l.role === "recommended" ? "Recommended" : "Safer"}
+                                            </span>
+                                          </td>
+                                          <td className="py-2 px-3 text-right text-desk-secondary">{l.cushion_pct.toFixed(1)}%</td>
+                                          <td className="py-2 px-3 text-right text-desk-secondary">
+                                            {l.bid > 0 ? `$${l.bid.toFixed(2)} / $${l.ask.toFixed(2)}` : "no bid"}
+                                          </td>
+                                          <td className="py-2 px-3 text-right font-semibold text-desk-text">${l.mid.toFixed(2)}</td>
+                                          <td className="py-2 px-3 text-right text-desk-text">
+                                            {l.roi_cycle_pct.toFixed(2)}% <span className="text-desk-tertiary">/ {l.roi_annual_pct.toFixed(1)}%</span>
+                                          </td>
+                                          <td className="py-2 px-3 text-right text-desk-text">{l.pos_pct > 0 ? `${l.pos_pct.toFixed(0)}%` : "—"}</td>
+                                          <td className="py-2 px-3 text-right text-desk-text">${l.breakeven.toFixed(2)}</td>
+                                          <td className="py-2 px-3 text-right text-desk-secondary">{l.open_interest.toLocaleString()}</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            ) : (
+                              <p className="text-xs text-desk-secondary">
+                                Strike options are added by the daily scan, and this snapshot ({formatAsOf(snapshot.run?.as_of_et)}) was made before that feature existed. They will appear after the next scan.
+                              </p>
+                            )}
+                          </td>
+                        </tr>
+                      )}
+                      </React.Fragment>
                     );
                   })
                 )}
@@ -1250,7 +1370,20 @@ export default function SignalsPage() {
         </div>
       </div>
 
-      {/* 7. Legend Footer */}
+      {/* 7. Equity curve of simulated trades, 1 contract each, with a date range slider */}
+      <EquityCurve />
+
+      {/* Daily chart for a clicked setup: signal price and CSP strike lines */}
+      <SignalChartModal
+        ticker={chartSetup?.ticker ?? null}
+        name={chartSetup?.name}
+        signalPrice={chartSetup?.spot}
+        strike={chartSetup?.strike}
+        expiry={chartSetup?.expiry}
+        onClose={() => setChartSetup(null)}
+      />
+
+      {/* 8. Legend Footer */}
       <footer className="rounded-card border border-desk-border bg-desk-raised/40 p-4 text-xs text-desk-secondary space-y-1">
         <p>
           <strong className="text-desk-text">Market odds:</strong> Implied probability of expiring out of the money derived directly from options chain delta and Parkinson historical volatility.

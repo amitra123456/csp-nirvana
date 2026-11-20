@@ -60,6 +60,26 @@ for _sec in [
         if _t not in ALL_108_CANDIDATES:
             ALL_108_CANDIDATES.append(_t)
 
+# S&P 500 sectors: the 10 largest companies by market cap in each GICS sector
+# (config/sp500_sector_top10.json, rebuilt by hand; see its "as_of" date). These are added
+# to the daily scan so every sector filter on the Signals page has its full top 10.
+# The name ALL_108_CANDIDATES is kept for compatibility; the list is now larger than 108.
+import json as _json
+
+SP500_SECTOR_FILE = CONFIG_DIR / "sp500_sector_top10.json"
+SP500_SECTOR_TOP10 = {}
+_SECTOR_NAMES = {}
+try:
+    _sec_data = _json.loads(SP500_SECTOR_FILE.read_text(encoding="utf-8"))
+    for _sector, _rows in _sec_data.get("sectors", {}).items():
+        SP500_SECTOR_TOP10[_sector] = [r["ticker"] for r in _rows]
+        for r in _rows:
+            _SECTOR_NAMES[r["ticker"]] = r.get("name", r["ticker"])
+            if r["ticker"] not in ALL_108_CANDIDATES:
+                ALL_108_CANDIDATES.append(r["ticker"])
+except (OSError, ValueError, KeyError):
+    pass
+
 SECTOR_MAP = {
     "Core High-Conviction Trio (NVDA, HOOD, MRVL)": CORE_TRIO,
     "Mega-Cap Tech (AAPL, MSFT, NVDA...)": MEGA_CAP_TECH,
@@ -203,7 +223,8 @@ COMPANY_NAMES = {
 
 def get_company_name(ticker: str) -> str:
     """Returns canonical company name for display."""
-    return COMPANY_NAMES.get(ticker.upper(), ticker)
+    t = ticker.upper()
+    return COMPANY_NAMES.get(t) or _SECTOR_NAMES.get(t, ticker)
 
 BANNER_CREED = """
 ================================================================================

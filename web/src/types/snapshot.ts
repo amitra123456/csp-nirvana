@@ -94,6 +94,23 @@ export interface Setup {
   held_position: HeldPositionSummary | null;
   watchouts: WatchoutItem[];
   plan: TradePlan;
+  /** Recommended strike plus the next 2 safer strikes (added 2026-11; absent in older snapshots). */
+  strike_ladder?: LadderStrike[];
+}
+
+export interface LadderStrike {
+  strike: number;
+  role: "recommended" | "safer";
+  bid: number;
+  ask: number;
+  mid: number;
+  cushion_pct: number;
+  roi_cycle_pct: number;
+  roi_annual_pct: number;
+  pos_pct: number;
+  breakeven: number;
+  open_interest: number;
+  iv: number;
 }
 
 export interface HeldBack {

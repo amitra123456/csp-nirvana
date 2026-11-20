@@ -211,117 +211,122 @@ export function ModelLevelsChart({ setup, className = "" }: ModelLevelsChartProp
         </div>
       </div>
 
-      {/* VIEW 1: PROPORTIONAL VERTICAL SCALE */}
+      {/* VIEW 1: PROPORTIONAL VERTICAL SCALE
+          Dots sit at their true price on the axis; labels are spread out so they never overlap,
+          and a short connector links each label to its dot. Works in narrow side panels too. */}
       {viewMode === "scale" ? (
-        <div className="relative bg-[#0B0E14] rounded-lg border border-desk-border/70 p-4 overflow-hidden">
+        <div className="relative bg-[#0B0E14] rounded-lg border border-desk-border/70 p-3 overflow-hidden">
           {/* Legend Banner */}
-          <div className="flex flex-wrap items-center justify-between text-[11px] font-mono pb-3 border-b border-desk-border/40 text-desk-tertiary">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-[11px] font-mono pb-2 border-b border-desk-border/40 text-desk-tertiary">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <span className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-sky-400" />
-                <strong className="text-white">Signal / Entry ($spot)</strong>
+                <strong className="text-white">Signal</strong>
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-                <strong className="text-emerald-400">Put Strike (Target)</strong>
+                <strong className="text-emerald-400">Put strike</strong>
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="w-3 h-2 rounded bg-emerald-500/20 border border-emerald-500/40" />
-                <span className="text-emerald-300">Safety Cushion Zone (+{setup.cushion_pct.toFixed(1)}%)</span>
+                <span className="w-2 h-3 rounded-sm bg-emerald-500/40 border border-emerald-500/60" />
+                <span className="text-emerald-300">Cushion {setup.cushion_pct.toFixed(1)}%</span>
               </span>
             </div>
-            <span className="text-desk-secondary">Range: ${minPrice.toFixed(0)} – ${maxPrice.toFixed(0)}</span>
+            <span className="text-desk-secondary">${minPrice.toFixed(0)} – ${maxPrice.toFixed(0)}</span>
           </div>
 
-          {/* Vertical Scale Container */}
-          <div className="relative h-[420px] my-2 select-none">
-            {/* Background Cushion Shaded Zone */}
-            <div
-              className="absolute left-8 right-2 rounded border border-dashed border-emerald-500/50 bg-emerald-500/10 pointer-events-none transition-all flex items-center justify-end pr-3"
-              style={{
-                top: `${cushionTop}%`,
-                height: `${Math.max(24, cushionHeight)}%`,
-              }}
-            >
-              <span className="text-[11px] font-mono font-bold text-emerald-400 tracking-wider uppercase opacity-80">
-                🛡️ +{setup.cushion_pct.toFixed(1)}% Cushion Buffer (${(spot - strike).toFixed(2)})
-              </span>
-            </div>
+          {(() => {
+            const ROW = 30; // minimum vertical spacing between labels (px)
+            const H = Math.max(420, levelItems.length * ROW + 16);
+            const half = ROW / 2;
+            const AXIS_X = 12;
+            const GUTTER = 44; // width reserved for axis + connectors
+            const trueY = levelItems.map((l) => ((maxPrice - l.price) / priceRange) * H);
+            const labelY = [...trueY];
+            for (let i = 0; i < labelY.length; i++) {
+              labelY[i] = Math.max(labelY[i], i === 0 ? half : labelY[i - 1] + ROW);
+            }
+            for (let i = labelY.length - 1; i >= 0; i--) {
+              labelY[i] = Math.min(labelY[i], i === labelY.length - 1 ? H - half : labelY[i + 1] - ROW);
+            }
+            const sigPx = ((maxPrice - spot) / priceRange) * H;
+            const strikePx = ((maxPrice - strike) / priceRange) * H;
 
-            {/* Central Vertical Price Axis Line */}
-            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-desk-border" />
-
-            {/* Render Each Level Line Along Scale */}
-            {levelItems.map((lvl) => {
-              const yPct = getScaleY(lvl.price);
-              const isSignal = lvl.id === "signal";
-              const isStrike = lvl.id === "strike";
-
-              return (
-                <div
-                  key={lvl.id}
-                  className="absolute left-0 right-0 flex items-center group transition-all"
-                  style={{ top: `${yPct}%`, transform: "translateY(-50%)" }}
-                >
-                  {/* Axis Tick Marker */}
-                  <div className="w-8 flex items-center justify-end pr-1.5 shrink-0">
-                    <span
-                      className={`w-3 h-3 rounded-full border-2 transition-transform group-hover:scale-125 ${
-                        isSignal
-                          ? "bg-sky-400 border-white ring-2 ring-sky-400/40 animate-pulse"
-                          : isStrike
-                          ? "bg-emerald-400 border-white ring-2 ring-emerald-400/40"
-                          : "border-[#0B0E14]"
-                      }`}
-                      style={{ backgroundColor: lvl.color }}
-                    />
-                  </div>
-
-                  {/* Horizontal Connection Guide Line */}
-                  <div
-                    className={`h-[1px] flex-1 mr-3 transition-opacity ${
-                      isSignal
-                        ? "bg-sky-400/80 shadow-[0_0_8px_rgba(56,189,248,0.5)]"
-                        : isStrike
-                        ? "bg-emerald-400/80 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                        : "bg-desk-border/60 group-hover:bg-desk-border"
-                    }`}
+            return (
+              <div className="relative my-2 select-none" style={{ height: H }}>
+                {/* Axis, cushion band between signal and strike, connectors and dots */}
+                <svg className="absolute left-0 top-0 overflow-visible" width={GUTTER} height={H} aria-hidden="true">
+                  <line x1={AXIS_X} y1={0} x2={AXIS_X} y2={H} stroke="#253041" strokeWidth={2} />
+                  <rect
+                    x={AXIS_X - 4}
+                    y={Math.min(sigPx, strikePx)}
+                    width={8}
+                    height={Math.max(2, Math.abs(strikePx - sigPx))}
+                    rx={3}
+                    fill="rgba(16,185,129,0.30)"
+                    stroke="rgba(16,185,129,0.6)"
                   />
+                  {levelItems.map((lvl, i) => (
+                    <g key={lvl.id}>
+                      <path
+                        d={`M ${AXIS_X} ${trueY[i]} C ${AXIS_X + 16} ${trueY[i]}, ${GUTTER - 16} ${labelY[i]}, ${GUTTER} ${labelY[i]}`}
+                        fill="none"
+                        stroke={lvl.color}
+                        strokeOpacity={lvl.id === "signal" || lvl.id === "strike" ? 0.9 : 0.45}
+                        strokeWidth={lvl.id === "signal" || lvl.id === "strike" ? 1.5 : 1}
+                      />
+                      <circle
+                        cx={AXIS_X}
+                        cy={trueY[i]}
+                        r={lvl.id === "signal" || lvl.id === "strike" ? 5 : 3.5}
+                        fill={lvl.color}
+                        stroke="#0B0E14"
+                        strokeWidth={1.5}
+                      />
+                    </g>
+                  ))}
+                </svg>
 
-                  {/* Label Pill */}
-                  <div
-                    className={`flex items-center justify-between gap-3 px-2.5 py-1 rounded text-xs font-mono shrink-0 transition-all ${
-                      isSignal
-                        ? "bg-sky-500/20 border border-sky-400/60 text-white font-bold shadow-md"
-                        : isStrike
-                        ? "bg-emerald-500/20 border border-emerald-400/60 text-emerald-300 font-bold shadow-md"
-                        : "bg-[#121821] border border-desk-border/60 text-desk-secondary group-hover:border-desk-border group-hover:text-white"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: lvl.color }} />
-                      <span className="font-semibold truncate max-w-[170px]">{lvl.name}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-white">${lvl.price.toFixed(2)}</span>
-                      <span
-                        className={`text-[11px] px-1.5 py-0.2 rounded font-semibold ${
-                          lvl.diff === 0
-                            ? "bg-sky-500/30 text-sky-200"
-                            : lvl.diff < 0
-                            ? "bg-emerald-500/20 text-emerald-400"
-                            : "bg-rose-500/20 text-rose-300"
+                {/* Labels */}
+                {levelItems.map((lvl, i) => {
+                  const isSignal = lvl.id === "signal";
+                  const isStrike = lvl.id === "strike";
+                  return (
+                    <div
+                      key={lvl.id}
+                      className="absolute right-0 flex items-center"
+                      style={{ left: GUTTER, top: labelY[i], transform: "translateY(-50%)" }}
+                      title={`${lvl.name} (${lvl.tag}) · $${lvl.price.toFixed(2)}`}
+                    >
+                      <div
+                        className={`flex w-full min-w-0 items-center gap-2 px-2 py-1 rounded text-xs font-mono ${
+                          isSignal
+                            ? "bg-sky-500/20 border border-sky-400/60 text-white font-bold"
+                            : isStrike
+                            ? "bg-emerald-500/20 border border-emerald-400/60 text-emerald-300 font-bold"
+                            : "bg-[#121821] border border-desk-border/60 text-desk-secondary hover:text-white"
                         }`}
                       >
-                        {lvl.diff === 0 ? "ENTRY" : `${lvl.pct > 0 ? "+" : ""}${lvl.pct.toFixed(1)}%`}
-                      </span>
+                        <span className="min-w-0 flex-1 truncate font-semibold">{lvl.name}</span>
+                        <span className="shrink-0 font-bold text-white">${lvl.price.toFixed(2)}</span>
+                        <span
+                          className={`shrink-0 text-[11px] px-1 rounded font-semibold ${
+                            lvl.diff === 0
+                              ? "bg-sky-500/30 text-sky-200"
+                              : lvl.diff < 0
+                              ? "bg-emerald-500/20 text-emerald-400"
+                              : "bg-rose-500/20 text-rose-300"
+                          }`}
+                        >
+                          {lvl.diff === 0 ? "ENTRY" : `${lvl.pct > 0 ? "+" : ""}${lvl.pct.toFixed(1)}%`}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
         </div>
       ) : (
         /* VIEW 2: HORIZONTAL DISTANCE BARS */
@@ -350,14 +355,14 @@ export function ModelLevelsChart({ setup, className = "" }: ModelLevelsChartProp
                       : "bg-[#121821] border-desk-border/50 text-desk-secondary hover:text-desk-text hover:border-desk-border"
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <div className="flex min-w-0 items-center gap-2" title={`${lvl.name} (${lvl.tag})`}>
                       <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: lvl.color }} />
-                      <span className="font-semibold">{lvl.name}</span>
-                      <span className="text-[11px] text-desk-tertiary">({lvl.tag})</span>
+                      <span className="truncate font-semibold">{lvl.name}</span>
+                      <span className="hidden truncate text-[11px] text-desk-tertiary 2xl:inline">({lvl.tag})</span>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex shrink-0 items-center gap-3">
                       <span className="font-bold text-white">${lvl.price.toFixed(2)}</span>
                       <span
                         className={`text-[11px] font-bold ${

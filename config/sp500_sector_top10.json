@@ -1,0 +1,582 @@
+{
+ "as_of": "2026-11-20",
+ "source": "S&P 500 membership and GICS sector: Wikipedia; market cap: Nasdaq.com screener",
+ "skipped_dotted_tickers": [
+  "BRK.B",
+  "BF.B"
+ ],
+ "sectors": {
+  "Communication Services": [
+   {
+    "ticker": "GOOGL",
+    "name": "Alphabet Inc. (Class A)",
+    "market_cap": 3352082040000.0
+   },
+   {
+    "ticker": "META",
+    "name": "Meta Platforms",
+    "market_cap": 1524082159864.0
+   },
+   {
+    "ticker": "NFLX",
+    "name": "Netflix",
+    "market_cap": 240055812289.0
+   },
+   {
+    "ticker": "DIS",
+    "name": "Walt Disney Company (The)",
+    "market_cap": 205424728170.0
+   },
+   {
+    "ticker": "VZ",
+    "name": "Verizon",
+    "market_cap": 189636096864.0
+   },
+   {
+    "ticker": "TMUS",
+    "name": "T-Mobile US",
+    "market_cap": 172163570965.0
+   },
+   {
+    "ticker": "T",
+    "name": "AT&T",
+    "market_cap": 147158262144.0
+   },
+   {
+    "ticker": "APP",
+    "name": "AppLovin",
+    "market_cap": 125577690213.0
+   },
+   {
+    "ticker": "CMCSA",
+    "name": "Comcast",
+    "market_cap": 88278017488.0
+   },
+   {
+    "ticker": "LYV",
+    "name": "Live Nation Entertainment",
+    "market_cap": 42234463540.0
+   }
+  ],
+  "Consumer Discretionary": [
+   {
+    "ticker": "AMZN",
+    "name": "Amazon",
+    "market_cap": 2782977405815.0
+   },
+   {
+    "ticker": "TSLA",
+    "name": "Tesla, Inc.",
+    "market_cap": 1479952102562.0
+   },
+   {
+    "ticker": "HD",
+    "name": "Home Depot (The)",
+    "market_cap": 336141588792.0
+   },
+   {
+    "ticker": "MCD",
+    "name": "McDonald's",
+    "market_cap": 192262822113.0
+   },
+   {
+    "ticker": "TJX",
+    "name": "TJX Companies",
+    "market_cap": 153468380991.0
+   },
+   {
+    "ticker": "LOW",
+    "name": "Lowe's",
+    "market_cap": 122949377724.0
+   },
+   {
+    "ticker": "SBUX",
+    "name": "Starbucks",
+    "market_cap": 119106247000.0
+   },
+   {
+    "ticker": "BKNG",
+    "name": "Booking Holdings",
+    "market_cap": 109562069181.0
+   },
+   {
+    "ticker": "MAR",
+    "name": "Marriott International",
+    "market_cap": 106617120534.0
+   },
+   {
+    "ticker": "ABNB",
+    "name": "Airbnb",
+    "market_cap": 101521416220.0
+   }
+  ],
+  "Consumer Staples": [
+   {
+    "ticker": "WMT",
+    "name": "Walmart",
+    "market_cap": 999969376216.0
+   },
+   {
+    "ticker": "COST",
+    "name": "Costco",
+    "market_cap": 484708175817.0
+   },
+   {
+    "ticker": "KO",
+    "name": "Coca-Cola Company (The)",
+    "market_cap": 413412814394.0
+   },
+   {
+    "ticker": "PG",
+    "name": "Procter & Gamble",
+    "market_cap": 389155789710.0
+   },
+   {
+    "ticker": "PM",
+    "name": "Philip Morris International",
+    "market_cap": 290580168914.0
+   },
+   {
+    "ticker": "PEP",
+    "name": "PepsiCo",
+    "market_cap": 189421011788.0
+   },
+   {
+    "ticker": "MO",
+    "name": "Altria",
+    "market_cap": 124258737551.0
+   },
+   {
+    "ticker": "MNST",
+    "name": "Monster Beverage",
+    "market_cap": 86013073853.0
+   },
+   {
+    "ticker": "MDLZ",
+    "name": "Mondelez International",
+    "market_cap": 83152923117.0
+   },
+   {
+    "ticker": "CL",
+    "name": "Colgate-Palmolive",
+    "market_cap": 77019848505.0
+   }
+  ],
+  "Energy": [
+   {
+    "ticker": "XOM",
+    "name": "ExxonMobil",
+    "market_cap": 648372011362.0
+   },
+   {
+    "ticker": "CVX",
+    "name": "Chevron Corporation",
+    "market_cap": 406056120328.0
+   },
+   {
+    "ticker": "WMB",
+    "name": "Williams Companies",
+    "market_cap": 167903072615.0
+   },
+   {
+    "ticker": "COP",
+    "name": "ConocoPhillips",
+    "market_cap": 159627056046.0
+   },
+   {
+    "ticker": "MPC",
+    "name": "Marathon Petroleum",
+    "market_cap": 100172650812.0
+   },
+   {
+    "ticker": "PSX",
+    "name": "Phillips 66",
+    "market_cap": 94682264428.0
+   },
+   {
+    "ticker": "VLO",
+    "name": "Valero Energy",
+    "market_cap": 94427468996.0
+   },
+   {
+    "ticker": "EOG",
+    "name": "EOG Resources",
+    "market_cap": 77513391488.0
+   },
+   {
+    "ticker": "SLB",
+    "name": "Schlumberger",
+    "market_cap": 70701818463.0
+   },
+   {
+    "ticker": "KMI",
+    "name": "Kinder Morgan",
+    "market_cap": 69281943622.0
+   }
+  ],
+  "Financials": [
+   {
+    "ticker": "JPM",
+    "name": "JPMorgan Chase",
+    "market_cap": 850512057447.0
+   },
+   {
+    "ticker": "V",
+    "name": "Visa Inc.",
+    "market_cap": 725720832008.0
+   },
+   {
+    "ticker": "MA",
+    "name": "Mastercard",
+    "market_cap": 546096747061.0
+   },
+   {
+    "ticker": "BAC",
+    "name": "Bank of America",
+    "market_cap": 335108650376.0
+   },
+   {
+    "ticker": "MS",
+    "name": "Morgan Stanley",
+    "market_cap": 273921950000.0
+   },
+   {
+    "ticker": "GS",
+    "name": "Goldman Sachs",
+    "market_cap": 244580989001.0
+   },
+   {
+    "ticker": "WFC",
+    "name": "Wells Fargo",
+    "market_cap": 241979154053.0
+   },
+   {
+    "ticker": "AXP",
+    "name": "American Express",
+    "market_cap": 208642260401.0
+   },
+   {
+    "ticker": "C",
+    "name": "Citigroup",
+    "market_cap": 190745248000.0
+   },
+   {
+    "ticker": "BLK",
+    "name": "BlackRock",
+    "market_cap": 175531558416.0
+   }
+  ],
+  "Health Care": [
+   {
+    "ticker": "LLY",
+    "name": "Lilly (Eli)",
+    "market_cap": 1271558021151.0
+   },
+   {
+    "ticker": "JNJ",
+    "name": "Johnson & Johnson",
+    "market_cap": 642992572049.0
+   },
+   {
+    "ticker": "ABBV",
+    "name": "AbbVie",
+    "market_cap": 501136898914.0
+   },
+   {
+    "ticker": "MRK",
+    "name": "Merck & Co.",
+    "market_cap": 327236712625.0
+   },
+   {
+    "ticker": "UNH",
+    "name": "UnitedHealth Group",
+    "market_cap": 296018989996.0
+   },
+   {
+    "ticker": "TMO",
+    "name": "Thermo Fisher Scientific",
+    "market_cap": 255252086624.0
+   },
+   {
+    "ticker": "AMGN",
+    "name": "Amgen",
+    "market_cap": 237362780042.0
+   },
+   {
+    "ticker": "GILD",
+    "name": "Gilead Sciences",
+    "market_cap": 206553589389.0
+   },
+   {
+    "ticker": "ABT",
+    "name": "Abbott Laboratories",
+    "market_cap": 180061308548.0
+   },
+   {
+    "ticker": "DHR",
+    "name": "Danaher Corporation",
+    "market_cap": 160081401645.0
+   }
+  ],
+  "Industrials": [
+   {
+    "ticker": "GE",
+    "name": "GE Aerospace",
+    "market_cap": 329448092694.0
+   },
+   {
+    "ticker": "RTX",
+    "name": "RTX Corporation",
+    "market_cap": 261008790794.0
+   },
+   {
+    "ticker": "CAT",
+    "name": "Caterpillar Inc.",
+    "market_cap": 245760103030.0
+   },
+   {
+    "ticker": "GEV",
+    "name": "GE Vernova",
+    "market_cap": 200291722925.0
+   },
+   {
+    "ticker": "UNP",
+    "name": "Union Pacific Corporation",
+    "market_cap": 172677285881.0
+   },
+   {
+    "ticker": "DE",
+    "name": "Deere & Company",
+    "market_cap": 168502401229.0
+   },
+   {
+    "ticker": "UBER",
+    "name": "Uber",
+    "market_cap": 133968932373.0
+   },
+   {
+    "ticker": "LMT",
+    "name": "Lockheed Martin",
+    "market_cap": 132136964126.0
+   },
+   {
+    "ticker": "ETN",
+    "name": "Eaton Corporation",
+    "market_cap": 128410905000.0
+   },
+   {
+    "ticker": "BA",
+    "name": "Boeing",
+    "market_cap": 127219913368.0
+   }
+  ],
+  "Information Technology": [
+   {
+    "ticker": "AAPL",
+    "name": "Apple Inc.",
+    "market_cap": 5074783276220.0
+   },
+   {
+    "ticker": "MSFT",
+    "name": "Microsoft",
+    "market_cap": 3700472745262.0
+   },
+   {
+    "ticker": "NVDA",
+    "name": "Nvidia",
+    "market_cap": 3518118000000.0
+   },
+   {
+    "ticker": "AVGO",
+    "name": "Broadcom",
+    "market_cap": 1654778792702.0
+   },
+   {
+    "ticker": "SNDK",
+    "name": "Sandisk",
+    "market_cap": 967062099221.0
+   },
+   {
+    "ticker": "AMD",
+    "name": "Advanced Micro Devices",
+    "market_cap": 809641527656.0
+   },
+   {
+    "ticker": "MU",
+    "name": "Micron Technology",
+    "market_cap": 781179842493.0
+   },
+   {
+    "ticker": "CSCO",
+    "name": "Cisco",
+    "market_cap": 373349843025.0
+   },
+   {
+    "ticker": "PLTR",
+    "name": "Palantir Technologies",
+    "market_cap": 370291571804.0
+   },
+   {
+    "ticker": "ORCL",
+    "name": "Oracle Corporation",
+    "market_cap": 334153065360.0
+   }
+  ],
+  "Materials": [
+   {
+    "ticker": "LIN",
+    "name": "Linde plc",
+    "market_cap": 234229134884.0
+   },
+   {
+    "ticker": "NEM",
+    "name": "Newmont",
+    "market_cap": 103877750773.0
+   },
+   {
+    "ticker": "ECL",
+    "name": "Ecolab",
+    "market_cap": 83402705225.0
+   },
+   {
+    "ticker": "SHW",
+    "name": "Sherwin-Williams",
+    "market_cap": 82091626866.0
+   },
+   {
+    "ticker": "FCX",
+    "name": "Freeport-McMoRan",
+    "market_cap": 70426660549.0
+   },
+   {
+    "ticker": "APD",
+    "name": "Air Products",
+    "market_cap": 67662051924.0
+   },
+   {
+    "ticker": "CRH",
+    "name": "CRH plc",
+    "market_cap": 60239970657.0
+   },
+   {
+    "ticker": "NUE",
+    "name": "Nucor",
+    "market_cap": 55671434366.0
+   },
+   {
+    "ticker": "MLM",
+    "name": "Martin Marietta Materials",
+    "market_cap": 36051026824.0
+   },
+   {
+    "ticker": "VMC",
+    "name": "Vulcan Materials Company",
+    "market_cap": 35181772959.0
+   }
+  ],
+  "Real Estate": [
+   {
+    "ticker": "WELL",
+    "name": "Welltower",
+    "market_cap": 178476275520.0
+   },
+   {
+    "ticker": "PLD",
+    "name": "Prologis",
+    "market_cap": 117245778550.0
+   },
+   {
+    "ticker": "EQIX",
+    "name": "Equinix",
+    "market_cap": 100775057140.0
+   },
+   {
+    "ticker": "AMT",
+    "name": "American Tower",
+    "market_cap": 84029318530.0
+   },
+   {
+    "ticker": "SPG",
+    "name": "Simon Property Group",
+    "market_cap": 72633190326.0
+   },
+   {
+    "ticker": "DLR",
+    "name": "Digital Realty",
+    "market_cap": 65836258152.0
+   },
+   {
+    "ticker": "PSA",
+    "name": "Public Storage",
+    "market_cap": 61028675747.0
+   },
+   {
+    "ticker": "O",
+    "name": "Realty Income",
+    "market_cap": 54843999758.0
+   },
+   {
+    "ticker": "VMRK",
+    "name": "Vivmark Residential",
+    "market_cap": 48572120786.0
+   },
+   {
+    "ticker": "VTR",
+    "name": "Ventas",
+    "market_cap": 46007340000.0
+   }
+  ],
+  "Utilities": [
+   {
+    "ticker": "NEE",
+    "name": "NextEra Energy",
+    "market_cap": 175712300785.0
+   },
+   {
+    "ticker": "SO",
+    "name": "Southern Company",
+    "market_cap": 108590626175.0
+   },
+   {
+    "ticker": "DUK",
+    "name": "Duke Energy",
+    "market_cap": 100473211151.0
+   },
+   {
+    "ticker": "CEG",
+    "name": "Constellation Energy",
+    "market_cap": 88615891263.0
+   },
+   {
+    "ticker": "AEP",
+    "name": "American Electric Power",
+    "market_cap": 68049455460.0
+   },
+   {
+    "ticker": "D",
+    "name": "Dominion Energy",
+    "market_cap": 58640670420.0
+   },
+   {
+    "ticker": "XEL",
+    "name": "Xcel Energy",
+    "market_cap": 51003343638.0
+   },
+   {
+    "ticker": "ETR",
+    "name": "Entergy",
+    "market_cap": 50726127165.0
+   },
+   {
+    "ticker": "SRE",
+    "name": "Sempra",
+    "market_cap": 49896242401.0
+   },
+   {
+    "ticker": "EXC",
+    "name": "Exelon",
+    "market_cap": 47005007478.0
+   }
+  ]
+ }
+}

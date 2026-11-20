@@ -107,6 +107,22 @@ def scan_single_ticker(
         candidates = []
         eligible_puts = puts[puts['strike'] <= spot].sort_values(by='strike', ascending=False)
 
+        # Raw put chain for this expiry (every strike at or below spot, before any filter),
+        # kept so the Signals page can show safer strikes next to the recommended one.
+        def _num(v, default=0.0):
+            try:
+                v = float(v)
+                return default if math.isnan(v) else v
+            except (TypeError, ValueError):
+                return default
+        chain_puts = [{
+            'strike': float(r['strike']),
+            'bid': _num(r.get('bid')),
+            'ask': _num(r.get('ask')),
+            'iv': _num(r.get('impliedVolatility')),
+            'open_interest': int(_num(r.get('openInterest'))),
+        } for _, r in eligible_puts.iterrows()]
+
         for _, row in eligible_puts.iterrows():
             strike = float(row['strike'])
             # Strictly use quoted bid; never substitute last price for bid
@@ -167,7 +183,8 @@ def scan_single_ticker(
                 'macro_support': smc.get('macro_support_shelf'),
                 'macro_vpoc': smc.get('avwap_252'),
                 'is_near_macro_support': smc.get('is_near_macro_support', False),
-                'is_primary_pick': strike <= strike_ceiling
+                'is_primary_pick': strike <= strike_ceiling,
+                'chain_puts': chain_puts,
             })
 
         return candidates
@@ -227,7 +244,8 @@ def run_screener(
                     # Ticker does NOT satisfy the effective cushion requirement; omit from selected signals
                     continue
                 best = dict(primary[0])
-                best['all_ladder_strikes'] = [dict(c) for c in cands[:8]]
+                best['all_ladder_strikes'] = [{k: v for k, v in c.items() if k != 'chain_puts'} for c in cands[:8]]
+                best['chain_puts'] = cands[0].get('chain_puts', [])
                 best['regime'] = regime
                 best['regime_name'] = regime['regime_name']
                 best['regime_badge'] = regime['regime_badge']

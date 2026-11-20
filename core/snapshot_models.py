@@ -57,6 +57,21 @@ class TradePlan(BaseModel):
     stress_drop_pct: float = 30.0
     stress_loss: float
 
+class LadderStrike(BaseModel):
+    """One put strike in a setup's strike ladder (recommended strike plus safer, lower strikes)."""
+    strike: float
+    role: Literal["recommended", "safer"]
+    bid: float
+    ask: float
+    mid: float
+    cushion_pct: float        # % the stock must fall to reach the strike
+    roi_cycle_pct: float      # mid / strike, for this expiry
+    roi_annual_pct: float
+    pos_pct: float            # market-implied probability of expiring out of the money (1 - |delta|)
+    breakeven: float          # strike - mid
+    open_interest: int = 0
+    iv: float = 0.0
+
 class SetupModel(BaseModel):
     ticker: str
     name: str
@@ -91,6 +106,7 @@ class SetupModel(BaseModel):
     held_position: Optional[HeldPositionSummary] = None
     watchouts: List[WatchoutItem] = Field(default_factory=list)
     plan: TradePlan
+    strike_ladder: List[LadderStrike] = Field(default_factory=list)
 
 class HeldBackModel(BaseModel):
     ticker: str

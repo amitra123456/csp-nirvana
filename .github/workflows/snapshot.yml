@@ -94,7 +94,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/snapshots/ data/last_update.json data/daily_sim_results.json data/positions.csv
+          git add data/snapshots/ data/last_update.json data/daily_sim_results.json data/sim_closed_trades.json data/positions.csv
           if git diff --staged --quiet; then
             print "No snapshot changes to commit."
           else

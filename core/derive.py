@@ -13,13 +13,61 @@ import math
 from typing import Dict, Any, Optional, List
 import numpy as np
 import pandas as pd
-from core.snapshot_models import SetupModel, PositionModel, Levels, TradePlan, HeldPositionSummary, WatchoutItem
+from core.snapshot_models import SetupModel, PositionModel, Levels, TradePlan, HeldPositionSummary, WatchoutItem, LadderStrike
 
 try:
     from config.settings import get_company_name
 except Exception:
     def get_company_name(ticker: str) -> str:
         return ticker
+
+def derive_strike_ladder(
+    spot: float,
+    dte: int,
+    recommended_strike: float,
+    chain_puts: List[Dict[str, Any]],
+    recommended_delta: Optional[float] = None,
+    n_safer: int = 2,
+) -> List[LadderStrike]:
+    """
+    Recommended strike plus the next `n_safer` lower strikes from the same expiry.
+    Prices use the bid/ask midpoint. Probability of expiring out of the money is the
+    market-implied 1 - |delta| (delta from the quoted IV when the chain has no delta).
+    Breakeven = strike - mid. Strikes with no bid are kept and show zero premium.
+    """
+    rows = sorted({float(c['strike']): c for c in (chain_puts or [])}.values(),
+                  key=lambda c: float(c['strike']), reverse=True)
+    idx = next((i for i, c in enumerate(rows) if abs(float(c['strike']) - recommended_strike) < 1e-6), None)
+    if idx is None:
+        return []
+    ladder: List[LadderStrike] = []
+    for j, c in enumerate(rows[idx: idx + 1 + n_safer]):
+        strike = float(c['strike'])
+        bid = max(0.0, float(c.get('bid') or 0.0))
+        ask = max(bid, float(c.get('ask') or 0.0))
+        mid = round((bid + ask) / 2.0, 2)
+        iv = float(c.get('iv') or 0.0)
+        if j == 0 and recommended_delta is not None:
+            delta = float(recommended_delta)
+        else:
+            delta = compute_bs_put_delta(spot, strike, dte, iv) if iv > 0 else None
+        roi = (mid / strike) * 100.0 if strike > 0 else 0.0
+        ladder.append(LadderStrike(
+            strike=strike,
+            role="recommended" if j == 0 else "safer",
+            bid=round(bid, 2),
+            ask=round(ask, 2),
+            mid=mid,
+            cushion_pct=round(((spot - strike) / spot) * 100.0, 1) if spot > 0 else 0.0,
+            roi_cycle_pct=round(roi, 2),
+            roi_annual_pct=round(roi * (365.0 / max(1, dte)), 1),
+            pos_pct=round((1.0 - abs(delta)) * 100.0, 1) if delta is not None else 0.0,
+            breakeven=round(strike - mid, 2),
+            open_interest=int(c.get('open_interest') or 0),
+            iv=round(iv, 3),
+        ))
+    return ladder
+
 
 def compute_bs_put_delta(spot: float, strike: float, dte: int, iv: float, r: float = 0.045) -> float:
     """Computes analytical Black-Scholes Put Delta."""
