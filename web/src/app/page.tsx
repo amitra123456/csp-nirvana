@@ -50,13 +50,6 @@ function positionView(a: ActiveSignal): { label: string; color: string; detail?:
   };
 }
 
-/** Days from the snapshot date to an option's expiry (negative = already expired). */
-function daysUntil(expiry: string, asOf?: string): number {
-  const ref = asOf ? new Date(asOf.slice(0, 10) + "T00:00:00Z") : new Date();
-  const exp = new Date(expiry + "T00:00:00Z");
-  return Math.round((exp.getTime() - ref.getTime()) / 86400000);
-}
-
 export default function SignalsPage() {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [loading, setLoading] = useState(true);
@@ -179,33 +172,6 @@ export default function SignalsPage() {
     return { totalCash, totalCredit, avgRoc };
   }, [filteredSetups]);
 
-  // "Act today": real ledger positions (data/positions.csv) that need a decision
-  const actItems = useMemo(() => {
-    const asOf = snapshot?.run?.as_of_et;
-    return (snapshot?.positions || [])
-      .map((p) => {
-        const days = daysUntil(p.expiry, asOf);
-        let action = "";
-        let urgency = 0;
-        if (days < 0) {
-          action = `Expired ${p.expiry}. Record the outcome in the ledger (positions.csv).`;
-          urgency = 3;
-        } else if (p.next_step === "plan_assignment") {
-          action = "In the money with rolls used up: plan for assignment.";
-          urgency = 2;
-        } else if (p.next_step === "decide") {
-          action = "In the money: roll for a net credit or accept assignment.";
-          urgency = 2;
-        } else if (days <= 7) {
-          action = "Expires within a week: check it.";
-          urgency = 1;
-        }
-        return { p, days, action, urgency };
-      })
-      .filter((x) => x.urgency > 0)
-      .sort((x, y) => y.urgency - x.urgency || x.days - y.days);
-  }, [snapshot]);
-
   // Card 2: Active in-flight open positions
   const activeSignals = useMemo(() => {
     return (snapshot?.active_signals || []) as ActiveSignal[];
@@ -296,57 +262,6 @@ export default function SignalsPage() {
           ))}
         </div>
       </div>
-
-      {/* 1b. Act today: what needs doing, from your real positions */}
-      <section className="rounded-card border border-desk-border bg-desk-card p-4 space-y-3" aria-label="Act today">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="text-sm font-bold text-desk-text uppercase tracking-wider">Act today</h2>
-          <span className="text-xs text-desk-tertiary">From your positions ledger &middot; {formatAsOf(snapshot.run?.as_of_et)}</span>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="rounded-control bg-desk-raised/60 border border-desk-border p-3">
-            <span className="text-xs text-desk-tertiary block">Need a decision</span>
-            <span className={`text-lg font-bold font-mono ${actItems.length ? "text-amber-400" : "text-desk-text"}`}>{actItems.length}</span>
-            <span className="text-xs text-desk-tertiary"> of {snapshot.positions?.length || 0} open</span>
-          </div>
-          <div className="rounded-control bg-desk-raised/60 border border-desk-border p-3">
-            <span className="text-xs text-desk-tertiary block">Collateral in use</span>
-            <span className="text-lg font-bold font-mono text-desk-text">{formatCurrency(snapshot.portfolio?.collateral || 0)}</span>
-          </div>
-          <div className="rounded-control bg-desk-raised/60 border border-desk-border p-3">
-            <span className="text-xs text-desk-tertiary block">Unrealised P&amp;L</span>
-            <span className={`text-lg font-bold font-mono ${(snapshot.portfolio?.unrealized || 0) < 0 ? "text-desk-riskText" : "text-emerald-400"}`}>
-              {(snapshot.portfolio?.unrealized || 0) < 0 ? "-" : "+"}{formatCurrency(Math.abs(snapshot.portfolio?.unrealized || 0))}
-            </span>
-          </div>
-          <div className="rounded-control bg-desk-raised/60 border border-desk-border p-3">
-            <span className="text-xs text-desk-tertiary block">New setups today</span>
-            <span className="text-lg font-bold font-mono text-desk-text">{filteredSetups.length}</span>
-            <span className="text-xs text-desk-tertiary"> &middot; {formatCurrency(totals.totalCash)} if all taken</span>
-          </div>
-        </div>
-
-        {actItems.length === 0 ? (
-          <p className="text-sm text-desk-secondary">No open position needs action today.</p>
-        ) : (
-          <ul className="divide-y divide-desk-border/60 rounded-control border border-desk-border">
-            {actItems.map(({ p, days, action, urgency }) => (
-              <li key={`${p.ticker}-${p.expiry}-${p.strike}`} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-3 py-2.5 text-sm">
-                <span className={`h-2 w-2 rounded-full shrink-0 ${urgency >= 3 ? "bg-desk-riskText" : urgency === 2 ? "bg-amber-400" : "bg-desk-accent"}`} />
-                <Link href={`/ticket/${p.ticker}`} className="font-mono font-bold text-desk-accent hover:underline w-14">{p.ticker}</Link>
-                <span className="font-mono text-desk-text">${p.strike} put</span>
-                <span className="font-mono text-desk-secondary">
-                  {days < 0 ? `expired ${-days}d ago` : days === 0 ? "expires today" : `expires in ${days}d`} ({p.expiry})
-                </span>
-                <span className="font-mono text-desk-secondary">stock ${p.spot.toFixed(2)} ({p.spot_vs_strike_pct > 0 ? "+" : ""}{p.spot_vs_strike_pct.toFixed(1)}% vs strike)</span>
-                <span className={`font-mono font-semibold ${p.pnl < 0 ? "text-desk-riskText" : "text-emerald-400"}`}>{p.pnl < 0 ? "-" : "+"}{formatCurrency(Math.abs(p.pnl))}</span>
-                <span className="text-desk-text basis-full md:basis-auto md:ml-auto">{action}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
 
       {/* 2. Preset Segmented Control & Filter Toggles */}
       <div className="rounded-card border border-desk-border bg-desk-card p-4 space-y-3">
@@ -774,7 +689,7 @@ export default function SignalsPage() {
               <span className="text-xs font-mono font-normal text-amber-400">({activeSignals.length} simulated)</span>
             </h2>
             <p className="text-xs text-desk-secondary mt-0.5">
-              Trades the simulator would have opened, marked with model (Black-Scholes) prices. These are not your account; your own positions are in &ldquo;Act today&rdquo; above. Sorted newest first.
+              Trades the simulator would have opened, marked with model (Black-Scholes) prices. These are not your account. Sorted newest first.
             </p>
           </div>
 

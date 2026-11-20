@@ -48,7 +48,7 @@ from core.snapshot_models import (
     Snapshot, RunMetadata, RunError, RulesConfig, HeldBackModel,
     PositionModel, PortfolioModel, BacktestModel, MonthlyPnl
 )
-from core.derive import derive_setup, derive_position, derive_strike_ladder
+from core.derive import derive_setup, derive_position, derive_strike_ladder, held_position_blackout_reason
 from core.portfolio_tracker import (
     run_candle_by_candle_population_sim,
     load_real_positions_ledger,
@@ -246,7 +246,15 @@ def run_daily_pipeline(force_alpaca_fail: bool = False) -> Snapshot:
     for r in scan_results:
         ticker = r['ticker']
         sym_df = ohlcv_cache.get(ticker)
-        
+
+        # Blackout: no new setup on a stock within N trading days of opening a position on it
+        blackout_reason = held_position_blackout_reason(
+            ticker, raw_positions, now_et.date(), DEFAULTS.get("held_blackout_trading_days", 5)
+        )
+        if blackout_reason:
+            held_back.append(HeldBackModel(ticker=ticker, reason=blackout_reason))
+            continue
+
         # Gate 6: At least 200 adjusted daily bars for SMA200
         if sym_df is None or len(sym_df) < 200:
             held_back.append(HeldBackModel(

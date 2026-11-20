@@ -21,6 +21,42 @@ except Exception:
     def get_company_name(ticker: str) -> str:
         return ticker
 
+def held_position_blackout_reason(
+    ticker: str,
+    positions: List[Dict[str, Any]],
+    today: Any,
+    blackout_trading_days: int = 5,
+) -> Optional[str]:
+    """
+    Blackout rule: if an open position on `ticker` was opened fewer than
+    `blackout_trading_days` trading days (Mon-Fri) before `today`, the stock is not offered
+    as a new setup. Returns the held-back reason, or None when the stock may be selected.
+    """
+    sym = str(ticker).upper()
+    today_d = pd.Timestamp(today).date()
+    latest_open = None
+    for p in positions or []:
+        if str(p.get('ticker', '')).upper() != sym:
+            continue
+        raw = str(p.get('open_date') or '').strip()
+        if not raw or raw.lower() == 'nan':
+            continue
+        try:
+            d = pd.Timestamp(raw[:10]).date()
+        except (ValueError, TypeError):
+            continue
+        if latest_open is None or d > latest_open:
+            latest_open = d
+    if latest_open is None:
+        return None
+    elapsed = int(np.busday_count(latest_open, today_d))  # trading days since opening (open day = 0)
+    if elapsed < blackout_trading_days:
+        clear_on = pd.Timestamp(np.busday_offset(latest_open, blackout_trading_days, roll='forward')).date()
+        return (f"Position opened {latest_open.isoformat()}: {blackout_trading_days}-trading-day blackout "
+                f"on new entries (clears {clear_on.isoformat()})")
+    return None
+
+
 def derive_strike_ladder(
     spot: float,
     dte: int,

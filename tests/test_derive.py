@@ -131,3 +131,18 @@ def test_derive_strike_ladder_recommended_plus_two_safer():
 def test_derive_strike_ladder_missing_strike_returns_empty():
     from core.derive import derive_strike_ladder
     assert derive_strike_ladder(spot=100, dte=30, recommended_strike=95.0, chain_puts=[]) == []
+
+
+def test_held_position_blackout_five_trading_days():
+    from core.derive import held_position_blackout_reason
+    pos = [{"ticker": "HOOD", "open_date": "2026-11-16"}]   # Monday
+    # opened Mon 11-16: Tue..Fri are trading days 1..4 -> blocked; next Mon (day 5) -> allowed
+    assert held_position_blackout_reason("HOOD", pos, "2026-11-16") is not None
+    assert "clears 2026-11-23" in held_position_blackout_reason("HOOD", pos, "2026-11-20")
+    assert held_position_blackout_reason("HOOD", pos, "2026-11-23") is None
+    # other tickers and missing dates are not affected
+    assert held_position_blackout_reason("NVDA", pos, "2026-11-17") is None
+    assert held_position_blackout_reason("HOOD", [{"ticker": "HOOD", "open_date": ""}], "2026-11-17") is None
+    # the most recent open position on the ticker counts
+    two = pos + [{"ticker": "HOOD", "open_date": "2026-11-19"}]
+    assert held_position_blackout_reason("HOOD", two, "2026-11-23") is not None

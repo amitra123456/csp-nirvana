@@ -107,6 +107,7 @@ DEFAULTS = {
     "min_roc_pct": 1.20,       # Minimum Return on Cash Collateral per cycle
     "risk_free_rate": 0.045,   # 4.5% annual risk-free rate
     "take_profit_pcts": (50.0, 60.0), # Standard buyback targets (50% and 60% profit)
+    "held_blackout_trading_days": 5,  # No new setup on a stock for 5 trading days after opening a position on it
 }
 
 # Company Name Mapping for Display
